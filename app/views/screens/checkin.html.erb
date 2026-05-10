@@ -1,0 +1,21 @@
+<div data-controller="checkin">
+  <h2>Check-In</h2>
+  <p class="subtitle">How are you feeling right now?</p>
+
+  <div class="card">
+    <label class="lbl">Mood Score (1-10)</label>
+    <input type="range" min="1" max="10" data-checkin-target="score" />
+
+    <label class="lbl">Mode</label>
+    <select data-checkin-target="mode">
+      <option value="pre">Pre-session</option>
+      <option value="post">Post-session</option>
+    </select>
+
+    <button class="btn" style="margin-top:10px;" data-action="click->checkin#save">Save Check-In</button>
+  </div>
+
+  <div data-checkin-target="entries">
+    <!-- Populated by JS -->
+  </div>
+</div>

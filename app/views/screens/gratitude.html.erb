@@ -1,0 +1,25 @@
+<div data-controller="gratitude">
+  <h2>Gratitude Log</h2>
+  <p class="subtitle">What are you grateful for today?</p>
+
+  <div class="card">
+    <label class="lbl">I am grateful for...</label>
+    <input type="text" data-gratitude-target="item1" placeholder="Something wonderful..." />
+    <input type="text" data-gratitude-target="item2" placeholder="Another blessing..." />
+    <input type="text" data-gratitude-target="item3" placeholder="And one more..." />
+
+    <button class="btn" style="margin-top:10px;" data-action="click->gratitude#save">Save Entry</button>
+  </div>
+
+  <div class="card">
+    <strong>Current Streak: <span data-gratitude-target="streak">0</span> days</strong>
+    <div data-gratitude-target="certificate" style="display:none;margin-top:10px;">
+      <div class="tip">🎉 You've completed 30 days of gratitude!</div>
+      <button class="btn" data-action="click->gratitude#downloadCertificate">Download Certificate</button>
+    </div>
+  </div>
+
+  <div data-gratitude-target="entries">
+    <!-- Populated by JS -->
+  </div>
+</div>

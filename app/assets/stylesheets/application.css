@@ -1,10 +1,40 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brown:#583c25;--blue:#32b1c3;--orange:#f06623;
+  --deep:#1a6b78;--lt-brown:#a67245;--white:#ffffff;
+  --bg:#f3f8f9;--light-blue:#e4f3f7;
+  --card-shadow:0 1px 5px rgba(50,177,195,0.1);
+}
+body{font-family:'Open Sans',sans-serif;background:#e8f0f2;min-height:100vh;display:flex;justify-content:center;padding:20px 0}
+#app-root{background:var(--bg);width:100%;max-width:420px;min-height:600px;position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;border:1px solid rgba(50,177,195,0.18);box-shadow:0 4px 30px rgba(50,177,195,0.15)}
+.topbar{background:var(--brown);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{color:white;font-family:'Lora',serif;font-size:13px;letter-spacing:1.5px;text-align:center;flex:1}
+.content{flex:1;padding:16px 14px 84px;overflow-y:auto}
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-top:1.5px solid var(--light-blue);display:flex;overflow-x:auto;z-index:10}
+.bottom-nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:1;padding:7px 4px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nav-icon{font-size:16px}
+.nav-label{font-size:9px;font-weight:600;color:#bbb;transition:color .15s;font-family:inherit}
+.nav-btn.active .nav-label{color:var(--orange)}
+.card{background:var(--white);border-radius:10px;padding:14px 16px;box-shadow:var(--card-shadow);margin-bottom:12px;border:1px solid rgba(50,177,195,0.1)}
+.card-blue{border-left:3px solid var(--blue)}
+.card-orange{border-left:3px solid var(--orange)}
+.card-brown{border-left:3px solid var(--brown)}
+h2{font-family:'Lora',serif;color:var(--brown);font-size:19px;margin-bottom:3px;font-weight:600}
+.subtitle{color:var(--lt-brown);font-size:12px;margin-bottom:14px;font-style:italic;font-family:'Lora',serif}
+.lbl{font-weight:600;color:var(--brown);font-size:12px;display:block;margin:10px 0 4px}
+textarea,input[type=text],input[type=email],input[type=password],select{width:100%;border:1.5px solid var(--light-blue);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:13px;resize:vertical;outline:none}
+textarea:focus,input[type=text]:focus,input[type=email]:focus,input[type=password]:focus,select:focus{border-color:var(--blue)}
+.btn{background:var(--orange);color:white;border:2px solid var(--orange);border-radius:6px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s;letter-spacing:.3px}
+.btn:hover{opacity:.9}
+.btn-o{background:transparent;color:var(--orange)}
+.tip{background:var(--light-blue);border-radius:7px;padding:10px 12px;font-size:12px;color:var(--deep);font-style:italic;font-family:'Lora',serif;margin:10px 0;line-height:1.6}
+.link-btn{display:block;background:var(--blue);color:white;border-radius:8px;padding:12px;text-decoration:none;font-weight:600;margin-bottom:8px;transition:opacity .15s}
+.link-btn small{display:block;font-size:11px;font-weight:400;opacity:.85;margin-top:2px}
+.link-btn:hover{opacity:.9}
+.flash{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--brown);color:white;padding:10px 20px;border-radius:8px;font-size:13px;z-index:1000;animation:fadein .3s}
+@keyframes fadein{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.auth-screen{padding:20px}
+.auth-screen h2{font-family:'Lora',serif;color:var(--brown);margin-bottom:8px}
+.auth-screen .field{margin-bottom:12px}
+.auth-screen label{display:block;font-size:12px;font-weight:600;color:var(--brown);margin-bottom:4px}

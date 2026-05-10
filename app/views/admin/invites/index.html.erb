@@ -1,0 +1,22 @@
+<div style="max-width:600px;margin:40px auto;padding:20px;">
+  <h1>Counselor Dashboard</h1>
+  <p>Generate invite codes for new clients. No client data is accessible here.</p>
+
+  <%= button_to "Generate New Invite Code", admin_invites_path, method: :post, class: "btn" %>
+
+  <h2 style="margin-top:30px;">Active Codes</h2>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr>
+      <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Code</th>
+      <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Status</th>
+      <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Created</th>
+    </tr>
+    <% @codes.each do |code| %>
+      <tr>
+        <td style="padding:8px;border-bottom:1px solid #eee;font-family:monospace;"><%= code.code %></td>
+        <td style="padding:8px;border-bottom:1px solid #eee;"><%= code.used ? "Used" : "Available" %></td>
+        <td style="padding:8px;border-bottom:1px solid #eee;"><%= code.created_at.strftime("%Y-%m-%d") %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

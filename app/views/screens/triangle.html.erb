@@ -1,0 +1,21 @@
+<div data-controller="triangle">
+  <h2>Triangle</h2>
+  <p class="subtitle">God / Self / Others balance.</p>
+
+  <div class="card">
+    <label class="lbl">God</label>
+    <input type="range" min="1" max="10" data-triangle-target="god" />
+
+    <label class="lbl">Self</label>
+    <input type="range" min="1" max="10" data-triangle-target="self" />
+
+    <label class="lbl">Others</label>
+    <input type="range" min="1" max="10" data-triangle-target="others" />
+
+    <button class="btn" style="margin-top:10px;" data-action="click->triangle#save">Save Snapshot</button>
+  </div>
+
+  <div data-triangle-target="snaps">
+    <!-- Populated by JS -->
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div data-controller="coping">
+  <h2>Coping Skills</h2>
+  <p class="subtitle">Tools to help you through difficult moments.</p>
+
+  <div class="card">
+    <div data-coping-target="skills">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="lbl">Add Custom Skill</label>
+    <input type="text" data-coping-target="newSkill" placeholder="My coping skill..." />
+    <button class="btn" style="margin-top:8px;" data-action="click->coping#add">Add Skill</button>
+  </div>
+</div>

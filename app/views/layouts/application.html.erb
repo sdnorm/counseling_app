@@ -1,29 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title><%= content_for(:title) || "Counseling App" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Counseling App">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="%= csrf_token_value %">
+    <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+    <meta name="theme-color" content="#32b1c3">
+    <title>Crossroads Professional Counseling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    %= stylesheet_link_tag "application" %
+    %= javascript_importmap_tags %
   </head>
-
-  <body>
-    <%= yield %>
+  <body data-controller="sync">
+    <div id="app-root">
+      <div class="topbar">
+        <span class="topbar-title" id="topbar-title">CROSSROADS</span>
+      </div>
+      <div id="flash-container"></div>
+      <div class="content" id="main-content">
+        %= yield %
+      </div>
+      <nav class="bottom-nav" id="bottom-nav">
+        <button class="nav-btn active" data-id="home" data-action="click->navigation#go">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-btn" data-id="schedule" data-action="click->navigation#go">
+          <span class="nav-icon">🗓️</span>
+          <span class="nav-label">Schedule</span>
+        </button>
+        <button class="nav-btn" data-id="more" data-action="click->navigation#toggleMore">
+          <span class="nav-icon">⋯</span>
+          <span class="nav-label">More</span>
+        </button>
+      </nav>
+    </div>
   </body>
 </html>

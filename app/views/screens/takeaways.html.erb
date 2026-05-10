@@ -1,0 +1,21 @@
+<div data-controller="takeaways">
+  <h2>Takeaways</h2>
+  <p class="subtitle">Reflect on your session insights.</p>
+
+  <div class="card">
+    <label class="lbl">Insight</label>
+    <textarea rows="3" data-takeaways-target="insight" placeholder="What did you learn?"></textarea>
+
+    <label class="lbl">What I did great</label>
+    <textarea rows="2" data-takeaways-target="great" placeholder="Celebrate your wins..."></textarea>
+
+    <label class="lbl">What I missed</label>
+    <textarea rows="2" data-takeaways-target="miss" placeholder="Areas for growth..."></textarea>
+
+    <button class="btn" style="margin-top:10px;" data-action="click->takeaways#save">Save Takeaway</button>
+  </div>
+
+  <div data-takeaways-target="entries">
+    <!-- Populated by JS -->
+  </div>
+</div>

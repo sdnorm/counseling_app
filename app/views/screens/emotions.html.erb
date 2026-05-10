@@ -1,0 +1,29 @@
+<div data-controller="emotions">
+  <h2>Emotions</h2>
+  <p class="subtitle">Select what you're feeling right now.</p>
+
+  <div class="card">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Joy" style="font-size:24px;">😊 Joy</button>
+      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Sadness" style="font-size:24px;">😢 Sadness</button>
+      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Anger" style="font-size:24px;">😠 Anger</button>
+      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Fear" style="font-size:24px;">😨 Fear</button>
+      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Surprise" style="font-size:24px;">😮 Surprise</button>
+      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Disgust" style="font-size:24px;">🤢 Disgust</button>
+    </div>
+
+    <div data-emotions-target="details" style="display:none;">
+      <label class="lbl">More specific feelings</label>
+      <div id="emotion-children" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn" data-action="click->emotions#save">Save Snapshot</button>
+      <button class="btn btn-o" data-action="click->emotions#clear">Clear</button>
+    </div>
+  </div>
+
+  <div data-emotions-target="log">
+    <!-- Populated by JS -->
+  </div>
+</div>

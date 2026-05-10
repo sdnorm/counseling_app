@@ -1,0 +1,26 @@
+<div data-controller="settings">
+  <h2>Settings</h2>
+  <p class="subtitle">Customize your experience.</p>
+
+  <div class="card">
+    <label class="lbl">Your Name</label>
+    <input type="text" data-settings-target="name" placeholder="Danny" />
+
+    <label class="lbl">Gratitude Reminder Time</label>
+    <input type="time" data-settings-target="reminderTime" />
+
+    <label class="lbl">
+      <input type="checkbox" data-settings-target="haptics" /> Enable haptics
+    </label>
+
+    <label class="lbl">
+      <input type="checkbox" data-settings-target="confetti" /> Enable celebrations
+    </label>
+
+    <button class="btn" style="margin-top:10px;" data-action="click->settings#save">Save Settings</button>
+  </div>
+
+  <div class="card">
+    <%= button_to "Log Out", session_path, method: :delete, class: "btn btn-o" %>
+  </div>
+</div>

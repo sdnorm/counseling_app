@@ -1,0 +1,38 @@
+<div data-controller="journal">
+  <h2>My Journal</h2>
+  <p class="subtitle">Reflect on your thoughts and experiences.</p>
+
+  <div class="card">
+    <label class="lbl">Mode</label>
+    <select data-journal-target="mode" data-action="change->journal#toggleMode">
+      <option value="long">Long form</option>
+      <option value="bullets">Bulleted list</option>
+    </select>
+
+    <label class="lbl">Prompt (optional)</label>
+    <select data-journal-target="prompt">
+      <option>Free write</option>
+      <option>What am I grateful for today?</option>
+      <option>What challenged me today?</option>
+      <option>What am I feeling right now?</option>
+      <option>What do I need to let go of?</option>
+    </select>
+
+    <div data-journal-target="longInput">
+      <textarea rows="6" placeholder="Write your thoughts here..."></textarea>
+    </div>
+
+    <div data-journal-target="bulletInput" style="display:none;">
+      <div id="bullet-container">
+        <div class="ag-row"><span style="color:var(--orange);font-weight:700">•</span><input type="text" placeholder="Item 1"/></div>
+      </div>
+      <button class="btn btn-o" data-action="click->journal#addBullet">+ Add Item</button>
+    </div>
+
+    <button class="btn" style="margin-top:10px;" data-action="click->journal#save">Save Entry</button>
+  </div>
+
+  <div data-journal-target="entries">
+    <!-- Populated by JS -->
+  </div>
+</div>
