@@ -14,7 +14,7 @@ export default class extends Controller {
   showUnlockScreen() {
     const overlay = document.getElementById("unlock-overlay");
     const btn = document.getElementById("unlock-btn");
-    const input = document.getElementById("unlock-password");
+    const input = document.getElementById("unlock-passphrase");
     const error = document.getElementById("unlock-error");
 
     if (!overlay || !btn || !input) return;
@@ -25,10 +25,10 @@ export default class extends Controller {
 
     btn.onclick = async (e) => {
       e.preventDefault();
-      const password = input.value;
-      if (!password) return;
+      const passphrase = input.value;
+      if (!passphrase) return;
 
-      const success = await this.unlock(password);
+      const success = await this.unlock(passphrase);
       if (success) {
         overlay.style.display = "none";
         this.unlocked = true;
@@ -44,7 +44,7 @@ export default class extends Controller {
     };
   }
 
-  async unlock(password) {
+  async unlock(passphrase) {
     try {
       const response = await fetch("/api/sync", {
         headers: { "Accept": "application/json" },
@@ -54,13 +54,13 @@ export default class extends Controller {
       if (response.status === 404) {
         // First time user, create new key
         this.salt = window.crypto.getRandomValues(new Uint8Array(16));
-        this.key = await deriveKey(password, this.salt);
+        this.key = await deriveKey(passphrase, this.salt);
         return true;
       }
 
       const blob = await response.json();
       this.salt = new Uint8Array(atob(blob.salt).split("").map(c => c.charCodeAt(0)));
-      this.key = await deriveKey(password, this.salt);
+      this.key = await deriveKey(passphrase, this.salt);
 
       // Try to decrypt to verify password is correct
       const plaintext = await decrypt(blob.ciphertext, blob.nonce, this.key);
