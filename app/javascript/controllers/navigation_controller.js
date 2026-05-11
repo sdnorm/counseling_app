@@ -132,7 +132,8 @@ export default class extends Controller {
     const main = document.getElementById("main-content");
     main.innerHTML = '<div class="tip">Loading...</div>';
     const response = await fetch(`/screens/${screen}`, {
-      headers: { "Accept": "text/html" }
+      headers: { "Accept": "text/html" },
+      credentials: "same-origin"
     });
     if (response.ok) {
       main.innerHTML = await response.text();

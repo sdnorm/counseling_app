@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
-import { deriveKey, encrypt, decrypt } from "../lib/crypto";
-import { exportState, importState } from "../lib/db";
+import { deriveKey, encrypt, decrypt } from "lib/crypto";
+import { exportState, importState } from "lib/db";
 
 export default class extends Controller {
   connect() {

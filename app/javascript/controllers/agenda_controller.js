@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-import { put, getAll, remove } from "../lib/db";
+import { put, getAll, remove } from "lib/db";
 
 export default class extends Controller {
   static targets = ["items"];

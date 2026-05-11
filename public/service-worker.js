@@ -1,8 +1,5 @@
 const CACHE_NAME = "crossroads-v1";
-const STATIC_ASSETS = [
-  "/",
-  "/assets/application.css",
-];
+const STATIC_ASSETS = ["/"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

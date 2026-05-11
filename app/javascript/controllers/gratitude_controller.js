@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
-import { put, getAll } from "../lib/db";
-import { triggerConfetti, showAffirmation } from "../lib/celebration";
+import { put, getAll } from "lib/db";
+import { triggerConfetti, showAffirmation } from "lib/celebration";
 
 export default class extends Controller {
   static targets = ["item1", "item2", "item3", "streak", "certificate", "entries"];
