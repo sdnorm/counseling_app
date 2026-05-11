@@ -5,8 +5,9 @@
   --bg:#f3f8f9;--light-blue:#e4f3f7;
   --card-shadow:0 1px 5px rgba(50,177,195,0.1);
 }
-body{font-family:'Open Sans',sans-serif;background:#e8f0f2;min-height:100vh;display:flex;justify-content:center;padding:20px 0}
-#app-root{background:var(--bg);width:100%;max-width:420px;min-height:600px;position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;border:1px solid rgba(50,177,195,0.18);box-shadow:0 4px 30px rgba(50,177,195,0.15)}
+body,html{height:100%;margin:0}
+body{font-family:'Open Sans',sans-serif;background:#e8f0f2;display:flex;justify-content:center;align-items:stretch}
+#app-root{background:var(--bg);width:100%;max-width:420px;height:100%;position:relative;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(50,177,195,0.18);box-shadow:0 4px 30px rgba(50,177,195,0.15)}
 .topbar{background:var(--brown);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .topbar-title{color:white;font-family:'Lora',serif;font-size:13px;letter-spacing:1.5px;text-align:center;flex:1}
 .content{flex:1;padding:16px 14px 84px;overflow-y:auto}

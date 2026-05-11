@@ -7,6 +7,7 @@ export default class extends Controller {
     this.key = null;
     this.salt = null;
     this.unlocked = false;
+    document.addEventListener("sync:save", () => this.save());
     this.showUnlockScreen();
   }
 
