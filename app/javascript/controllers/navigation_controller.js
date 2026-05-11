@@ -44,21 +44,22 @@ export default class extends Controller {
         ${this.moreLink("settings", "⚙️", "Settings")}
       </div>
     `;
+    menu.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-id]");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      document.getElementById("more-menu")?.remove();
+      this.currentValue = id;
+      this.render();
+    });
     this.element.querySelector("#app-root").appendChild(menu);
   }
 
   moreLink(id, icon, label) {
-    return `<button class="nav-btn" data-id="${id}" data-action="click->navigation#goMore" style="border:1px solid var(--light-blue);border-radius:6px;padding:8px;">
+    return `<button class="nav-btn" data-id="${id}" style="border:1px solid var(--light-blue);border-radius:6px;padding:8px;">
       <span class="nav-icon">${icon}</span>
       <span class="nav-label">${label}</span>
     </button>`;
-  }
-
-  goMore(event) {
-    const id = event.currentTarget.dataset.id;
-    document.getElementById("more-menu")?.remove();
-    this.currentValue = id;
-    this.render();
   }
 
   render() {

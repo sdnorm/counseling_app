@@ -77,13 +77,22 @@ export default class extends Controller {
 
   downloadCertificate() {
     const name = "Client";
-    const doc = new jsPDF();
-    doc.setFontSize(22);
-    doc.text("Certificate of Completion", 105, 60, { align: "center" });
-    doc.setFontSize(14);
-    doc.text(`This certifies that ${name}`, 105, 90, { align: "center" });
-    doc.text("has completed 30 days of gratitude journaling.", 105, 105, { align: "center" });
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 140, { align: "center" });
-    doc.save("gratitude-certificate.pdf");
+    const certWindow = window.open("", "_blank");
+    certWindow.document.write(`
+      <html>
+      <head><title>Gratitude Certificate</title></head>
+      <body style="font-family:'Lora',serif;text-align:center;padding:60px 20px;background:#f3f8f9;">
+        <div style="border:4px solid #32b1c3;padding:40px;max-width:500px;margin:0 auto;background:white;">
+          <h1 style="color:#583c25;">Certificate of Completion</h1>
+          <p style="font-size:18px;color:#a67245;margin-top:30px;">This certifies that</p>
+          <p style="font-size:24px;color:#32b1c3;font-weight:bold;">${name}</p>
+          <p style="font-size:18px;color:#a67245;">has completed 30 days of gratitude journaling.</p>
+          <p style="font-size:14px;color:#583c25;margin-top:40px;">${new Date().toLocaleDateString()}</p>
+        </div>
+        <script>window.print();</script>
+      </body>
+      </html>
+    `);
+    certWindow.document.close();
   }
 }
