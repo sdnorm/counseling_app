@@ -6,7 +6,10 @@ export default class extends Controller {
 
   connect() {
     this.currentValue = "home";
-    this.render();
+    // Wait for the sync controller to unlock before rendering
+    document.addEventListener("app:unlocked", () => {
+      this.render();
+    });
   }
 
   go(event) {
