@@ -53,6 +53,7 @@ export default class extends Controller {
       });
 
       if (response.status === 401) {
+        document.getElementById("unlock-first-time").style.display = "none";
         errorEl.innerHTML = 'Session expired. <a href="/session/new" style="color:var(--blue);text-decoration:underline;">Log in again</a>.';
         return false;
       }
@@ -62,9 +63,11 @@ export default class extends Controller {
         this.salt = window.crypto.getRandomValues(new Uint8Array(16));
         this.key = await deriveKey(passphrase, this.salt);
         errorEl.textContent = "Incorrect passphrase. Please try again.";
+        document.getElementById("unlock-first-time").style.display = "block";
         return true;
       }
 
+      document.getElementById("unlock-first-time").style.display = "none";
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.includes("application/json")) {
         errorEl.textContent = "Unexpected server response. Please refresh.";
@@ -82,6 +85,7 @@ export default class extends Controller {
       return true;
     } catch (e) {
       console.error("Unlock failed:", e);
+      document.getElementById("unlock-first-time").style.display = "none";
       errorEl.textContent = "Incorrect passphrase. Please try again.";
       this.key = null;
       this.salt = null;
