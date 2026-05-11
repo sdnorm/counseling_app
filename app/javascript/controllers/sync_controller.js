@@ -32,8 +32,7 @@ export default class extends Controller {
       if (success) {
         overlay.style.display = "none";
         this.unlocked = true;
-        // Initialize the app
-        this.dispatch("app:unlocked", { target: document.body });
+        document.dispatchEvent(new CustomEvent("app:unlocked", { bubbles: true }));
       } else {
         error.style.display = "block";
         input.value = "";
@@ -68,7 +67,7 @@ export default class extends Controller {
       await importState(plaintext);
       return true;
     } catch (e) {
-      // Decryption failed = wrong password
+      console.error("Unlock failed:", e);
       this.key = null;
       this.salt = null;
       return false;
