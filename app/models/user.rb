@@ -6,4 +6,5 @@ class User < ApplicationRecord
   belongs_to :invite_code
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+  encrypts :email_address, deterministic: true
 end

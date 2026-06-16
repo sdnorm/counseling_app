@@ -38,5 +38,8 @@ module CounselingApp
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Allow reading unencrypted data while migrating existing records
+    config.active_record.encryption.support_unencrypted_data = true
   end
 end

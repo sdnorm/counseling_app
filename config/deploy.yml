@@ -2,23 +2,19 @@
 service: counseling_app
 
 # Name of the container image (use your-user/app-name on external registries).
-image: counseling_app
+image: sdnorm24/counseling_app
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 68.183.112.79
   # job:
   #   hosts:
-  #     - 192.168.0.1
+  #     - 68.183.112.79
   #   cmd: bin/jobs
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-#
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
+# SSL is disabled for now — app is accessible via the Droplet IP address.
+# To enable SSL later, add your domain to proxy.host and set ssl: true.
 #
 # proxy:
 #   ssl: true
@@ -26,15 +22,15 @@ servers:
 
 # Where you keep your container images.
 registry:
-  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
+  # Alternatives: registry.digitalocean.com / ghcr.io / ...
+  server: registry.hub.docker.com
 
   # Needed for authenticated registries.
-  # username: your-user
+  username: sdnorm24
 
   # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
@@ -42,7 +38,6 @@ env:
     - RAILS_MASTER_KEY
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
     SOLID_QUEUE_IN_PUMA: true
 
     # Set number of processes dedicated to Solid Queue (default: 1)
@@ -52,7 +47,6 @@ env:
     # WEB_CONCURRENCY: 2
 
     # Match this to any external database server to configure Active Record correctly
-    # Use counseling_app-db for a db accessory server on same machine via local kamal docker network.
     # DB_HOST: 192.168.0.2
 
     # Log everything from Rails
@@ -90,15 +84,17 @@ builder:
   #   - GITHUB_TOKEN
   #   - RAILS_MASTER_KEY
 
-# Use a different ssh user than root
-# ssh:
-#   user: app
+# SSH configuration for the Digital Ocean Droplet
+ssh:
+  # user: root
+  user: deployer
+  keys: ["~/.ssh/id_ed25519_do"]
 
 # Use accessory services (secrets come from .kamal/secrets).
 # accessories:
 #   db:
 #     image: mysql:8.0
-#     host: 192.168.0.2
+#     host: 68.183.112.79
 #     # Change to 3306 to expose port to the world instead of just local network.
 #     port: "127.0.0.1:3306:3306"
 #     env:
@@ -113,7 +109,7 @@ builder:
 #       - data:/var/lib/mysql
 #   redis:
 #     image: valkey/valkey:8
-#     host: 192.168.0.2
+#     host: 68.183.112.79
 #     port: 6379
 #     directories:
 #       - data:/data
