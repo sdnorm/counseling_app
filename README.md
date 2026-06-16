@@ -64,7 +64,25 @@ active_record_encryption:
 > allows the app (and `rails credentials:edit`) to boot even when the key is not
 > configured.
 
-## Running tests
+## Continuous integration
+
+This project uses Rails 8's built-in `ActiveSupport::ContinuousIntegration`
+runner. The CI pipeline is defined in `config/ci.rb` and runs via:
+
+```bash
+bin/ci
+```
+
+`bin/ci` executes setup, the full Minitest suite, Ruby style checks, security
+audits, and finally signs off with [`gh-signoff`](https://github.com/basecamp/gh-signoff)
+when everything passes.
+
+### Required checks
+
+`gh signoff` must be installed and enabled as a required status check for PR
+merges (see repository settings below).
+
+## Running tests manually
 
 ```bash
 bin/rails test
