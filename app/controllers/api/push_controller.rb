@@ -1,5 +1,5 @@
 class Api::PushController < Api::BaseController
-  skip_before_action :authenticate_user!, only: [:vapid_public_key]
+  skip_before_action :authenticate_user!, only: [:vapid_public_key], raise: false
 
   def vapid_public_key
     render json: { public_key: Rails.application.credentials.dig(:web_push, :public_key) }
