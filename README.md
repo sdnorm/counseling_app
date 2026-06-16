@@ -67,7 +67,8 @@ active_record_encryption:
 ## Running tests
 
 ```bash
-bin/rspec
+bin/rails test
+bin/rails test:system
 ```
 
 ## Background jobs
