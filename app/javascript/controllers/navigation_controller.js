@@ -32,7 +32,7 @@ export default class extends Controller {
     const menu = document.createElement("div");
     menu.id = "more-menu";
     menu.className = "card";
-    menu.style.cssText = "position:absolute;bottom:70px;left:10px;right:10px;z-index:20;";
+    menu.style.cssText = "position:absolute;bottom:calc(70px + env(safe-area-inset-bottom));left:10px;right:10px;z-index:20;";
     menu.innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         ${this.moreLink("journal", "📓", "My Journal")}
