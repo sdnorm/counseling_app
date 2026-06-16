@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#32b1c3">
+    <title>Sign In · Crossroads Professional Counseling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <div id="app-root" style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;">
+      <div style="width:100%;max-width:320px;">
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>
