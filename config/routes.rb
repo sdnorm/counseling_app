@@ -1,16 +1,16 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
-  resources :users, only: [:new, :create]
+  resources :users, only: [ :new, :create ]
 
   namespace :api do
-    resource :sync, only: [:show, :update], controller: "sync"
-    resource :push, only: [:create, :destroy], controller: "push"
+    resource :sync, only: [ :show, :update ], controller: "sync"
+    resource :push, only: [ :create, :destroy ], controller: "push"
     get "push/vapid_public_key", to: "push#vapid_public_key"
   end
 
   namespace :admin do
-    resources :invites, only: [:index, :create]
+    resources :invites, only: [ :index, :create ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
