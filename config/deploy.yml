@@ -16,9 +16,9 @@ servers:
 # SSL is disabled for now — app is accessible via the Droplet IP address.
 # To enable SSL later, add your domain to proxy.host and set ssl: true.
 #
-# proxy:
-#   ssl: true
-#   host: app.example.com
+proxy:
+  ssl: true
+  host: app.crossroadcounselor.com
 
 # Where you keep your container images.
 registry:
