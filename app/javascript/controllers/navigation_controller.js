@@ -22,9 +22,17 @@ export default class extends Controller {
   toggleMore() {
     const moreMenu = document.getElementById("more-menu");
     if (moreMenu) {
-      moreMenu.remove();
+      this.closeMoreMenu();
     } else {
       this.showMoreMenu();
+    }
+  }
+
+  closeMoreMenu() {
+    document.getElementById("more-menu")?.remove();
+    if (this._outsideMenuListener) {
+      document.removeEventListener("pointerdown", this._outsideMenuListener);
+      this._outsideMenuListener = null;
     }
   }
 
@@ -51,11 +59,21 @@ export default class extends Controller {
       const btn = e.target.closest("[data-id]");
       if (!btn) return;
       const id = btn.dataset.id;
-      document.getElementById("more-menu")?.remove();
+      this.closeMoreMenu();
       this.currentValue = id;
       this.render();
     });
     this.element.querySelector("#app-root").appendChild(menu);
+
+    this._outsideMenuListener = (e) => {
+      if (e.target.closest("#more-menu")) return;
+      if (e.target.closest('[data-id="more"]')) return;
+      this.closeMoreMenu();
+    };
+    // Defer so the pointer event that opened the menu doesn't close it immediately.
+    setTimeout(() => {
+      document.addEventListener("pointerdown", this._outsideMenuListener);
+    }, 0);
   }
 
   moreLink(id, icon, label) {
