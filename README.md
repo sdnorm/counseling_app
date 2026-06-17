@@ -63,6 +63,7 @@ admin:
 
 mailgun:
   api_key: "your_mailgun_api_key"
+  domain: "mg.crossroadcounselor.com"
 ```
 
 > **Note:** `config/honeybadger.yml` reads the Honeybadger API key from
@@ -74,8 +75,9 @@ mailgun:
 > `admin` and the password from `Rails.application.credentials.admin&.dig(:password)`,
 > falling back to `changeme`. Configure a real password before deploying.
 >
-> Mailgun is configured for transactional email. Add the `mailgun.api_key`
-> credential to enable invite-code emails from the admin dashboard.
+> Mailgun is configured to send via the Mailgun API using the domain from
+> `mailgun.domain` (default `mg.crossroadcounselor.com`). Emails are sent from
+> `no-reply@crossroadcounselor.com` regardless of the Mailgun domain.
 
 ## Continuous integration
 

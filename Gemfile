@@ -26,6 +26,9 @@ gem "web-push"
 # QR code generation for invite codes
 gem "rqrcode"
 
+# Mailgun API delivery for Action Mailer
+gem "mailgun-ruby", "~> 1.2"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 

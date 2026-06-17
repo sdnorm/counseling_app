@@ -40,16 +40,11 @@ Rails.application.configure do
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
-  # Mailgun SMTP configuration
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp.mailgun.org",
-    port: 587,
-    domain: "your-domain.com",
-    user_name: "postmaster@your-domain.com",
-    password: Rails.application.credentials.dig(:mailgun, :api_key),
-    authentication: "plain",
-    enable_starttls_auto: true
+  # Mailgun API configuration
+  config.action_mailer.delivery_method = :mailgun
+  config.action_mailer.mailgun_settings = {
+    api_key: Rails.application.credentials.dig(:mailgun, :api_key),
+    domain: Rails.application.credentials.dig(:mailgun, :domain) || "mg.crossroadcounselor.com"
   }
 
   # Print deprecation notices to the Rails logger.
