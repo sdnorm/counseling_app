@@ -57,12 +57,36 @@ active_record_encryption:
   primary_key: "generated_primary_key"
   deterministic_key: "generated_deterministic_key"
   key_derivation_salt: "generated_key_derivation_salt"
+
+admin:
+  password: "your_secure_admin_password"
+
+mailgun:
+  api_key: "your_mailgun_api_key"
+  domain: "mg.crossroadcounselor.com"
+
+web_push:
+  public_key: "your_vapid_public_key"
+  private_key: "your_vapid_private_key"
 ```
 
 > **Note:** `config/honeybadger.yml` reads the Honeybadger API key from
 > `Rails.application.credentials.honeybadger&.dig(:api_key)`. The safe navigation
 > allows the app (and `rails credentials:edit`) to boot even when the key is not
 > configured.
+>
+> Generate VAPID keys with:
+> ```bash
+> bundle exec ruby -r web-push -e 'key = WebPush.generate_key; puts({public_key: key.public_key, private_key: key.private_key}.to_json)'
+> ```
+>
+> The admin dashboard at `/admin/invites` uses HTTP Basic Auth with username
+> `admin` and the password from `Rails.application.credentials.admin&.dig(:password)`,
+> falling back to `changeme`. Configure a real password before deploying.
+>
+> Mailgun is configured to send via the Mailgun API using the domain from
+> `mailgun.domain` (default `mg.crossroadcounselor.com`). Emails are sent from
+> `no-reply@crossroadcounselor.com` regardless of the Mailgun domain.
 
 ## Continuous integration
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_09_024251) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_001402) do
   create_table "encrypted_blobs", force: :cascade do |t|
     t.text "ciphertext", null: false
     t.datetime "created_at", null: false
@@ -24,6 +24,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_024251) do
   create_table "invite_codes", force: :cascade do |t|
     t.string "code"
     t.datetime "created_at", null: false
+    t.text "email_address"
     t.datetime "updated_at", null: false
     t.boolean "used", default: false, null: false
     t.integer "user_id"

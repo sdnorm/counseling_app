@@ -1,10 +1,19 @@
-<div style="max-width:600px;margin:40px auto;padding:20px;">
+<div style="width:100%;padding:20px;">
   <h1>Counselor Dashboard</h1>
   <p>Generate invite codes for new clients. No client data is accessible here.</p>
 
-  <%= button_to "Generate New Invite Code", admin_invites_path, method: :post, class: "btn" %>
+  <%= tag.div(flash[:alert], style: "color:#c0392b;margin-bottom:16px;") if flash[:alert] %>
+  <%= tag.div(flash[:notice], style: "color:#27ae60;margin-bottom:16px;") if flash[:notice] %>
 
-  <h2 style="margin-top:30px;">Active Codes</h2>
+  <%= form_with scope: :invite, url: admin_invites_path, style: "display:flex;gap:8px;align-items:flex-end;margin-bottom:30px;" do |form| %>
+    <div style="flex:1;max-width:400px;">
+      <%= form.label :email_address, "Client email", style: "display:block;font-weight:600;margin-bottom:4px;" %>
+      <%= form.email_field :email_address, required: true, placeholder: "client@example.com", style: "width:100%;" %>
+    </div>
+    <%= form.submit "Generate & Send Invite Code", class: "btn" %>
+  <% end %>
+
+  <h2>Active Codes</h2>
   <table style="width:100%;border-collapse:collapse;">
     <tr>
       <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Code</th>
