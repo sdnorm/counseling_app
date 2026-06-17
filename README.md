@@ -57,12 +57,25 @@ active_record_encryption:
   primary_key: "generated_primary_key"
   deterministic_key: "generated_deterministic_key"
   key_derivation_salt: "generated_key_derivation_salt"
+
+admin:
+  password: "your_secure_admin_password"
+
+mailgun:
+  api_key: "your_mailgun_api_key"
 ```
 
 > **Note:** `config/honeybadger.yml` reads the Honeybadger API key from
 > `Rails.application.credentials.honeybadger&.dig(:api_key)`. The safe navigation
 > allows the app (and `rails credentials:edit`) to boot even when the key is not
 > configured.
+>
+> The admin dashboard at `/admin/invites` uses HTTP Basic Auth with username
+> `admin` and the password from `Rails.application.credentials.admin&.dig(:password)`,
+> falling back to `changeme`. Configure a real password before deploying.
+>
+> Mailgun is configured for transactional email. Add the `mailgun.api_key`
+> credential to enable invite-code emails from the admin dashboard.
 
 ## Continuous integration
 
