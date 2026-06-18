@@ -1,4 +1,4 @@
-const CACHE_NAME = "crossroads-v3";
+const CACHE_NAME = "crossroads-v4";
 const STATIC_ASSETS = ["/"];
 
 self.addEventListener("install", (event) => {
@@ -54,8 +54,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "Crossroads", {
       body: data.body || "Time for your gratitude practice!",
-      icon: "/icon.png",
-      badge: "/icon.png",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
     })
   );
 });
