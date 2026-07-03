@@ -48,6 +48,29 @@ class SendGratitudeRemindersJobTest < ActiveSupport::TestCase
     assert_empty notified
   end
 
+  test "one user's transport failure does not block other users" do
+    maria = users(:maria)
+    maria.update!(reminder_time: "09:00", time_zone: "America/Chicago")
+    maria.push_subscriptions.create!(endpoint: "https://push.example.com/subs/maria", p256dh: "mk", auth: "ma")
+
+    danny_endpoint = push_subscriptions(:danny_sub).endpoint
+    sent_endpoints = []
+    fake_send = ->(**kwargs) {
+      raise SocketError, "unreachable" if kwargs[:endpoint] == danny_endpoint
+      sent_endpoints << kwargs[:endpoint]
+    }
+
+    travel_to(PAST_REMINDER_UTC) do
+      WebPush.stub(:payload_send, fake_send) do
+        SendGratitudeRemindersJob.perform_now
+      end
+    end
+
+    assert_includes sent_endpoints, "https://push.example.com/subs/maria"
+    assert_equal Date.new(2026, 7, 2), maria.reload.last_reminded_on
+    assert_nil users(:danny).reload.last_reminded_on, "failed user should not be stamped (will retry next run)"
+  end
+
   test "respects the user's time zone" do
     # 15:00 UTC is 08:00 in Los Angeles (PDT, UTC-7) — not yet due there.
     @user.update!(time_zone: "America/Los_Angeles")

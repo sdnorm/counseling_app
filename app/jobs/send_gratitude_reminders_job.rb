@@ -10,6 +10,8 @@ class SendGratitudeRemindersJob < ApplicationJob
       next if now_local.strftime("%H:%M") < user.reminder_time
       next if user.last_reminded_on && user.last_reminded_on >= now_local.to_date
 
+      # Notify before stamping: at-least-once on purpose. A crash between the two
+      # re-sends next run; stamping first would silently drop a failed day's reminder.
       begin
         user.notify_via_push(
           title: "Gratitude time",
