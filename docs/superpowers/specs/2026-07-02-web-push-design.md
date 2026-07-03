@@ -99,6 +99,8 @@ Per Spencer's direction: behavior lives on models via concerns; no `app/services
 ### 5. Error handling summary
 
 - 410/404 from push service → destroy `PushSubscription` (in `PushSubscription#deliver`).
+- Corrupt stored key material (OpenSSL/decode errors during payload encryption —
+  found in live verification) → destroy `PushSubscription`; it can never succeed.
 - Other push errors → log, continue with remaining subscriptions.
 - Permission denied in browser → toggle disabled with hint; no server call.
 - VAPID key rotation (operational note): rotating keys invalidates all browser
