@@ -124,16 +124,13 @@ bin/jobs
 
 ## Deployment
 
-Deployment is managed with Kamal. See `config/deploy.yml` for server and Docker
-configuration.
-
-```bash
-# Deploy to production
-kamal deploy
-```
+Deployment is managed with [Hatchbox](https://hatchbox.io/). The app runs on a
+DigitalOcean droplet at `app.crossroadcounselor.com`, deployed from the `main`
+branch. Trigger deploys from the Hatchbox dashboard (or push to `main` if
+auto-deploy is enabled).
 
 ## Useful links
 
 - [Rails Guides](https://guides.rubyonrails.org/)
 - [Honeybadger Ruby docs](https://docs.honeybadger.io/lib/ruby/)
-- [Kamal docs](https://kamal-deploy.org/)
+- [Hatchbox](https://hatchbox.io/)
