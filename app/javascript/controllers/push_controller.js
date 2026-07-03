@@ -1,7 +1,38 @@
 import { Controller } from "@hotwired/stimulus";
+import { getAll } from "lib/db";
 
 export default class extends Controller {
-  static targets = ["toggle"];
+  static targets = ["toggle", "hint"];
+
+  async connect() {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      this.element.hidden = true;
+      return;
+    }
+
+    if (Notification.permission === "denied") {
+      this.showBlocked();
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    this.toggleTarget.checked = !!subscription;
+  }
+
+  async toggle() {
+    if (this.toggleTarget.checked) {
+      try {
+        await this.subscribe();
+        await this.sendPreferences();
+      } catch {
+        this.toggleTarget.checked = false;
+        if (Notification.permission === "denied") this.showBlocked();
+      }
+    } else {
+      await this.unsubscribe();
+    }
+  }
 
   async subscribe() {
     const response = await fetch("/api/push/vapid_public_key");
@@ -41,6 +72,29 @@ export default class extends Controller {
         body: JSON.stringify({ endpoint: subscription.endpoint }),
       });
     }
+  }
+
+  async sendPreferences() {
+    const settings = await getAll("settings");
+    const remind = settings.find((s) => s.id === "reminderTime");
+
+    await fetch("/api/push/preferences", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+      },
+      body: JSON.stringify({
+        reminder_time: remind?.value || "09:00",
+        time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }),
+    });
+  }
+
+  showBlocked() {
+    this.toggleTarget.checked = false;
+    this.toggleTarget.disabled = true;
+    this.hintTarget.hidden = false;
   }
 
   urlBase64ToUint8Array(base64String) {
