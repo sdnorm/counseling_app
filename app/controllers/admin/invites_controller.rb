@@ -1,8 +1,7 @@
 class Admin::InvitesController < ApplicationController
   layout "admin"
   allow_unauthenticated_access
-  http_basic_authenticate_with name: "admin", password: Rails.application.credentials.dig(:admin, :password) || "changeme"
-
+  before_action :authenticate_admin
   before_action :set_no_cache_headers
 
   def index
@@ -24,6 +23,18 @@ class Admin::InvitesController < ApplicationController
   end
 
   private
+
+  # Fails closed: admin access is impossible until an admin password is
+  # configured in the environment's encrypted credentials.
+  def authenticate_admin
+    expected = Rails.application.credentials.dig(:admin, :password)
+    return request_http_basic_authentication if expected.blank?
+
+    authenticate_or_request_with_http_basic do |name, password|
+      ActiveSupport::SecurityUtils.secure_compare(name, "admin") &
+        ActiveSupport::SecurityUtils.secure_compare(password, expected)
+    end
+  end
 
   def invite_params
     params.require(:invite).permit(:email_address)
