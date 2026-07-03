@@ -1,0 +1,9 @@
+danny:
+  email_address: danny@example.com
+  password_digest: <%= BCrypt::Password.create("password") %>
+  invite_code: danny_invite
+
+maria:
+  email_address: maria@example.com
+  password_digest: <%= BCrypt::Password.create("password") %>
+  invite_code: maria_invite

@@ -22,6 +22,13 @@ Rails.application.configure do
   config.consider_all_requests_local = true
   config.cache_store = :null_store
 
+  # Dummy encryption keys so encrypted attributes (User#email_address,
+  # InviteCode#email_address) work in tests. Real keys live in env credentials.
+  config.active_record.encryption.primary_key = "test_primary_key_00000000000000000"
+  config.active_record.encryption.deterministic_key = "test_deterministic_key_00000000000"
+  config.active_record.encryption.key_derivation_salt = "test_key_derivation_salt_000000000"
+  config.active_record.encryption.encrypt_fixtures = true
+
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
 
