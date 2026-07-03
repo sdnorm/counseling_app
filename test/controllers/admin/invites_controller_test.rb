@@ -22,6 +22,36 @@ class Admin::InvitesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "creates an invite and emails the code" do
+    with_admin_password("correct-password") do
+      assert_difference -> { InviteCode.count }, 1 do
+        assert_emails 1 do
+          post admin_invites_path,
+            params: { invite: { email_address: "Client@Example.com " } },
+            headers: basic_auth("admin", "correct-password")
+        end
+      end
+    end
+
+    assert_redirected_to admin_invites_path
+    assert_equal "client@example.com", InviteCode.last.email_address
+    assert_equal [ "client@example.com" ], ActionMailer::Base.deliveries.last.to
+  end
+
+  test "rejects a blank email address" do
+    with_admin_password("correct-password") do
+      assert_no_difference -> { InviteCode.count } do
+        assert_emails 0 do
+          post admin_invites_path,
+            params: { invite: { email_address: "  " } },
+            headers: basic_auth("admin", "correct-password")
+        end
+      end
+    end
+
+    assert_redirected_to admin_invites_path
+  end
+
   private
 
   def basic_auth(user, password)
