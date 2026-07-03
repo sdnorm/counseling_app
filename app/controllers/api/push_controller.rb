@@ -1,5 +1,5 @@
 class Api::PushController < Api::BaseController
-  skip_before_action :authenticate_user!, only: [ :vapid_public_key ], raise: false
+  allow_unauthenticated_access only: %i[ vapid_public_key ]
 
   def vapid_public_key
     render json: { public_key: Rails.application.credentials.dig(:web_push, :public_key) }
@@ -24,5 +24,19 @@ class Api::PushController < Api::BaseController
     else
       render json: { success: false }, status: :not_found
     end
+  end
+
+  def update_preferences
+    if current_user.update(preferences_params)
+      render json: { success: true }
+    else
+      render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def preferences_params
+    params.permit(:reminder_time, :time_zone)
   end
 end
