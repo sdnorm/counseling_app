@@ -69,6 +69,19 @@ class PushSubscriptionTest < ActiveSupport::TestCase
     assert PushSubscription.exists?(subscription.id)
   end
 
+  test "deliver destroys itself when stored key material is corrupt" do
+    subscription = users(:danny).push_subscriptions.create!(
+      endpoint: "https://push.example.com/subs/corrupt",
+      p256dh: Base64.urlsafe_encode64("not a valid EC point"),
+      auth: "garbage"
+    )
+
+    assert_nothing_raised do
+      subscription.deliver(title: "t", body: "b")
+    end
+    assert_not PushSubscription.exists?(subscription.id)
+  end
+
   private
 
   FakeResponse = Struct.new(:code, :message, :body)

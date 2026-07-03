@@ -18,6 +18,10 @@ class PushSubscription < ApplicationRecord
     )
   rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
     destroy
+  rescue OpenSSL::OpenSSLError, ArgumentError => e
+    # Corrupt stored key material can never succeed — treat like a dead subscription.
+    Rails.logger.warn("Push subscription #{id} has invalid keys (#{e.class}); removing")
+    destroy
   rescue WebPush::ResponseError => e
     Rails.logger.warn("Push delivery failed for subscription #{id}: #{e.message}")
   end
