@@ -6,6 +6,11 @@ class UserTest < ActiveSupport::TestCase
     user.reminder_time = "09:30"
     user.time_zone = "America/Chicago"
     assert user.valid?
+
+    [ "00:00", "23:59" ].each do |boundary|
+      user.reminder_time = boundary
+      assert user.valid?, "expected boundary #{boundary.inspect} to be valid"
+    end
   end
 
   test "valid with nil reminder_time and time_zone" do

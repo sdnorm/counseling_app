@@ -10,6 +10,7 @@ class User < ApplicationRecord
 
   normalizes :reminder_time, :time_zone, with: ->(value) { value.presence }
 
+  # Zero-padded HH:MM required: SendGratitudeRemindersJob compares these lexicographically.
   validates :reminder_time, format: { with: /\A([01]\d|2[0-3]):[0-5]\d\z/ }, allow_nil: true
   validate :time_zone_must_be_valid
 
