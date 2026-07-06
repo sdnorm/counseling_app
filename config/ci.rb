@@ -14,10 +14,6 @@ CI.run do
 
   if success?
     step "Signoff: All systems go. Ready for merge and deploy.", "gh signoff"
-
-    if `git branch --show-current`.strip == "main"
-      step "Deploy", "kamal deploy"
-    end
   else
     failure "Signoff: CI failed. Do not merge or deploy.", "Fix the issues and try again."
   end

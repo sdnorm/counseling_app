@@ -35,4 +35,12 @@ class MailgunDeliveryMethod
   end
 end
 
-ActionMailer::Base.add_delivery_method :mailgun, MailgunDeliveryMethod
+# Referencing ActionMailer::Base directly here would trigger its load hooks
+# before this delivery method exists, so the railtie would silently drop
+# config.action_mailer.mailgun_settings and leave it as {}. Registering
+# inside on_load runs after those hooks, so the settings must be re-applied
+# from the environment config.
+ActiveSupport.on_load(:action_mailer) do
+  add_delivery_method :mailgun, MailgunDeliveryMethod
+  self.mailgun_settings = Rails.application.config.action_mailer.mailgun_settings || {}
+end
