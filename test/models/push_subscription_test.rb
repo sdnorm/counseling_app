@@ -84,17 +84,15 @@ class PushSubscriptionTest < ActiveSupport::TestCase
 
   private
 
-  FakeResponse = Struct.new(:code, :message, :body)
-
   def expired_error
-    WebPush::ExpiredSubscription.new(FakeResponse.new("410", "Gone", ""), "push.example.com")
+    web_push_error(WebPush::ExpiredSubscription, "410", "Gone")
   end
 
   def invalid_error
-    WebPush::InvalidSubscription.new(FakeResponse.new("404", "Not Found", ""), "push.example.com")
+    web_push_error(WebPush::InvalidSubscription, "404", "Not Found")
   end
 
   def generic_error
-    WebPush::ResponseError.new(FakeResponse.new("500", "Server Error", ""), "push.example.com")
+    web_push_error(WebPush::ResponseError, "500", "Server Error")
   end
 end

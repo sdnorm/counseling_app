@@ -61,7 +61,9 @@ Per Spencer's direction: behavior lives on models via concerns; no `app/services
 
 `app/jobs/send_gratitude_reminders_job.rb` → `SendGratitudeRemindersJob`
 
-- Registered in `config/recurring.yml` (production): `schedule: every 5 minutes`.
+- Registered in `config/recurring.yml` (production): `schedule: every minute`.
+  (Was every 5 minutes; a 5-minute tick means reminder times 23:56–23:59 could
+  never fire, since the last tick of a local day is 23:55.)
 - Logic: for each user with `reminder_time` and `time_zone` present and at least one
   push subscription:
   - Compute `now_local = Time.current.in_time_zone(user.time_zone)`

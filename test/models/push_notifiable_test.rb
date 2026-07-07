@@ -23,8 +23,7 @@ class PushNotifiableTest < ActiveSupport::TestCase
     @user.push_subscriptions.create!(endpoint: "https://push.example.com/subs/danny2", p256dh: "k2", auth: "a2")
 
     calls = 0
-    response = Struct.new(:code, :message, :body).new("500", "Server Error", "")
-    raise_server_error = ->(**) { calls += 1; raise WebPush::ResponseError.new(response, "push.example.com") }
+    raise_server_error = ->(**) { calls += 1; raise web_push_error(WebPush::ResponseError, "500", "Server Error") }
 
     WebPush.stub(:payload_send, raise_server_error) do
       @user.notify_via_push(title: "t", body: "b")

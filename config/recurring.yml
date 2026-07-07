@@ -16,4 +16,4 @@ production:
   send_gratitude_reminders:
     class: SendGratitudeRemindersJob
     queue: default
-    schedule: every 5 minutes
+    schedule: every minute
