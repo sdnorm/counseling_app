@@ -4,6 +4,8 @@ class PushSubscription < ApplicationRecord
   belongs_to :user
   validates :endpoint, :p256dh, :auth, presence: true
 
+  after_destroy :clear_reminder_settings, unless: :destroyed_by_association
+
   def deliver(title:, body:)
     WebPush.payload_send(
       message: { title: title, body: body }.to_json,
@@ -24,5 +26,13 @@ class PushSubscription < ApplicationRecord
     destroy
   rescue WebPush::ResponseError => e
     Rails.logger.warn("Push delivery failed for subscription #{id}: #{e.message}")
+  end
+
+  private
+
+  def clear_reminder_settings
+    return if user.push_subscriptions.where.not(id: id).exists?
+
+    user.update(reminder_time: nil, time_zone: nil)
   end
 end

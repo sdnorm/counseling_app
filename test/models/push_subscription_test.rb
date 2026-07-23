@@ -82,6 +82,35 @@ class PushSubscriptionTest < ActiveSupport::TestCase
     assert_not PushSubscription.exists?(subscription.id)
   end
 
+  test "destroying the last subscription clears the user's reminder settings" do
+    user = users(:danny)
+    user.update!(reminder_time: "09:00", time_zone: "America/Chicago")
+
+    push_subscriptions(:danny_sub).destroy
+
+    user.reload
+    assert_nil user.reminder_time
+    assert_nil user.time_zone
+  end
+
+  test "destroying one of several subscriptions keeps the user's reminder settings" do
+    user = users(:danny)
+    user.update!(reminder_time: "09:00", time_zone: "America/Chicago")
+    user.push_subscriptions.create!(endpoint: "https://push.example.com/subs/danny2", p256dh: "k2", auth: "a2")
+
+    push_subscriptions(:danny_sub).destroy
+
+    user.reload
+    assert_equal "09:00", user.reminder_time
+    assert_equal "America/Chicago", user.time_zone
+  end
+
+  test "destroying a user with subscriptions does not error" do
+    user = users(:danny)
+    user.update!(reminder_time: "09:00", time_zone: "America/Chicago")
+    assert user.destroy
+  end
+
   private
 
   def expired_error
