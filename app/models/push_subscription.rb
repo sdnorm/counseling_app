@@ -33,6 +33,6 @@ class PushSubscription < ApplicationRecord
   def clear_reminder_settings
     return if user.push_subscriptions.where.not(id: id).exists?
 
-    user.update(reminder_time: nil, time_zone: nil)
+    user.update!(reminder_time: nil, time_zone: nil)
   end
 end
