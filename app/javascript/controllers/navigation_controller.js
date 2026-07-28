@@ -133,8 +133,9 @@ export default class extends Controller {
         Important: This app is not monitored. If you're in a mental health crisis,
         call 911 or go to your nearest ER. You may also call/text 988.
         This app is not a substitute for professional mental health care and does
-        not constitute a therapeutic relationship. Your entries are stored only on
-        your device - privacy depends on how you secure your phone.
+        not constitute a therapeutic relationship. The content you save on this app
+        is encrypted and neither the server nor any user has access to your data
+        apart from your passphrase/key.
       </div>
     `;
   }

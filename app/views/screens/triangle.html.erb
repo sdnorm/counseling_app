@@ -1,28 +1,31 @@
 <div data-controller="triangle">
-  <h2>Triangle</h2>
-  <p class="subtitle">God / Self / Others balance.</p>
-
-  <div class="tip">
-    The triangle looks at the three relationships that shape your well-being:
-    your relationship with God, with yourself, and with others.
-    Rate how connected you feel in each one right now, from 1 (distant) to 10 (strong).
-    Your answers draw the triangle below — the fuller and more even it is,
-    the more balanced these relationships are.
-  </div>
+  <h2>Relational Health Triangle</h2>
+  <p class="subtitle">Healthy people have strong relationships with God, self, and others. Assess the strength of each relational domain with the triangle below.</p>
 
   <div class="card">
-    <label class="lbl">God</label>
-    <input type="range" min="1" max="10" data-triangle-target="god" data-action="input->triangle#draw" />
+    <div style="display:flex;justify-content:space-between;align-items:baseline;">
+      <label class="lbl">Relationship with God</label>
+      <span style="color:var(--orange);font-weight:700;font-size:13px;"><span data-triangle-target="godVal">5</span>/10</span>
+    </div>
+    <input type="range" min="1" max="10" value="5" style="accent-color:var(--orange);" data-triangle-target="god" data-action="input->triangle#draw" />
 
-    <label class="lbl">Self</label>
-    <input type="range" min="1" max="10" data-triangle-target="self" data-action="input->triangle#draw" />
+    <div style="display:flex;justify-content:space-between;align-items:baseline;">
+      <label class="lbl">Relationship with Self</label>
+      <span style="color:var(--blue);font-weight:700;font-size:13px;"><span data-triangle-target="selfVal">5</span>/10</span>
+    </div>
+    <input type="range" min="1" max="10" value="5" style="accent-color:var(--blue);" data-triangle-target="self" data-action="input->triangle#draw" />
 
-    <label class="lbl">Others</label>
-    <input type="range" min="1" max="10" data-triangle-target="others" data-action="input->triangle#draw" />
+    <div style="display:flex;justify-content:space-between;align-items:baseline;">
+      <label class="lbl">Relationship with Others</label>
+      <span style="color:var(--deep);font-weight:700;font-size:13px;"><span data-triangle-target="othersVal">5</span>/10</span>
+    </div>
+    <input type="range" min="1" max="10" value="5" style="accent-color:var(--deep);" data-triangle-target="others" data-action="input->triangle#draw" />
 
     <div data-triangle-target="chart" style="display:flex;justify-content:center;margin-top:12px;"></div>
 
-    <button class="btn" style="margin-top:10px;" data-action="click->triangle#save">Save Snapshot</button>
+    <div class="tip" data-triangle-target="insight"></div>
+
+    <button class="btn" style="margin-top:10px;" data-action="click->triangle#save">Save Today's Triangle</button>
   </div>
 
   <div data-triangle-target="snaps">
