@@ -2,15 +2,25 @@
   <h2>Triangle</h2>
   <p class="subtitle">God / Self / Others balance.</p>
 
+  <div class="tip">
+    The triangle looks at the three relationships that shape your well-being:
+    your relationship with God, with yourself, and with others.
+    Rate how connected you feel in each one right now, from 1 (distant) to 10 (strong).
+    Your answers draw the triangle below — the fuller and more even it is,
+    the more balanced these relationships are.
+  </div>
+
   <div class="card">
     <label class="lbl">God</label>
-    <input type="range" min="1" max="10" data-triangle-target="god" />
+    <input type="range" min="1" max="10" data-triangle-target="god" data-action="input->triangle#draw" />
 
     <label class="lbl">Self</label>
-    <input type="range" min="1" max="10" data-triangle-target="self" />
+    <input type="range" min="1" max="10" data-triangle-target="self" data-action="input->triangle#draw" />
 
     <label class="lbl">Others</label>
-    <input type="range" min="1" max="10" data-triangle-target="others" />
+    <input type="range" min="1" max="10" data-triangle-target="others" data-action="input->triangle#draw" />
+
+    <div data-triangle-target="chart" style="display:flex;justify-content:center;margin-top:12px;"></div>
 
     <button class="btn" style="margin-top:10px;" data-action="click->triangle#save">Save Snapshot</button>
   </div>
