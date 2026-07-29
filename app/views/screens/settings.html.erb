@@ -20,6 +20,13 @@
     <button class="btn" style="margin-top:10px;" data-action="click->settings#save">Save Settings</button>
   </div>
 
+  <div class="card" data-controller="push">
+    <label class="lbl">
+      <input type="checkbox" data-push-target="toggle" data-action="change->push#toggle" /> Enable push notifications
+    </label>
+    <p class="subtitle" data-push-target="hint" hidden>Notifications are blocked in your browser settings.</p>
+  </div>
+
   <div class="card">
     <%= button_to "Log Out", session_path, method: :delete, class: "btn btn-o" %>
   </div>

@@ -36,34 +36,43 @@ generic reminder message.
   accepts `reminder_time` and `time_zone`, updates `current_user`. Sending a null
   `reminder_time` clears the reminder.
 
-### 2. Push sender — `PushNotifier` service
+### 2. Push sender — model-centric (no service objects)
 
-`app/services/push_notifier.rb`
+Per Spencer's direction: behavior lives on models via concerns; no `app/services/`.
 
-- `PushNotifier.notify(user, title:, body:)`
-- Iterates `user.push_subscriptions`; for each, calls `WebPush.payload_send` with:
+- `PushSubscription#deliver(title:, body:)` — the record that owns
+  `endpoint`/`p256dh`/`auth` knows how to push to itself and clean itself up.
+- `PushNotifiable` concern (`app/models/concerns/push_notifiable.rb`), included in
+  `User`: owns the `has_many :push_subscriptions` association and
+  `notify_via_push(title:, body:)`, which delivers to each subscription.
+- `PushSubscription#deliver` calls `WebPush.payload_send` with:
   - `message:` JSON `{ title:, body: }` (matches what `public/service-worker.js`
     already parses in its `push` handler — verify the exact shape during implementation
     and adapt whichever side is cheaper)
   - `endpoint:`, `p256dh:`, `auth:` from the record
   - `vapid:` `{ subject: "mailto:spencernorman@hey.com", public_key:, private_key: }`
     with keys from `Rails.application.credentials.dig(:web_push, ...)`
-- Rescues `WebPush::ExpiredSubscription` and `WebPush::InvalidSubscription`
-  (gem's 410/404 errors) → destroys that subscription record. Other
-  `WebPush::ResponseError`s are logged and skipped (do not raise out of the loop).
+- `deliver` rescues `WebPush::ExpiredSubscription` and `WebPush::InvalidSubscription`
+  (gem's 410/404 errors) → destroys the record. Other `WebPush::ResponseError`s are
+  logged and skipped. Transport-level errors (timeouts, DNS, SSL) are not rescued
+  here; the recurring job guards per-user so one bad endpoint cannot abort a run.
 
 ### 3. Scheduling — recurring job
 
 `app/jobs/send_gratitude_reminders_job.rb` → `SendGratitudeRemindersJob`
 
-- Registered in `config/recurring.yml` (production): `schedule: every 5 minutes`.
+- Registered in `config/recurring.yml` (production): `schedule: every minute`.
+  (Was every 5 minutes; a 5-minute tick means reminder times 23:56–23:59 could
+  never fire, since the last tick of a local day is 23:55.)
 - Logic: for each user with `reminder_time` and `time_zone` present and at least one
   push subscription:
   - Compute `now_local = Time.current.in_time_zone(user.time_zone)`
   - Due when `now_local.strftime("%H:%M") >= reminder_time` AND
     (`last_reminded_on` is nil or `< now_local.to_date`)
-  - When due: `PushNotifier.notify(user, title: "Gratitude time", body: "Take a moment
+  - When due: `user.notify_via_push(title: "Gratitude time", body: "Take a moment
     for your gratitude practice.")` then update `last_reminded_on = now_local.to_date`.
+  - Each user is processed inside a `rescue StandardError` (log + continue) so a
+    transport failure on one user's endpoint doesn't abort the whole run.
 - "Has passed the time today" rather than "matches the current 5-minute window" makes
   the job self-healing across missed runs, deploys, and DST shifts. Worst-case delay
   is one schedule interval (5 minutes).
@@ -91,7 +100,9 @@ generic reminder message.
 
 ### 5. Error handling summary
 
-- 410/404 from push service → destroy `PushSubscription` (in `PushNotifier`).
+- 410/404 from push service → destroy `PushSubscription` (in `PushSubscription#deliver`).
+- Corrupt stored key material (OpenSSL/decode errors during payload encryption —
+  found in live verification) → destroy `PushSubscription`; it can never succeed.
 - Other push errors → log, continue with remaining subscriptions.
 - Permission denied in browser → toggle disabled with hint; no server call.
 - VAPID key rotation (operational note): rotating keys invalidates all browser
@@ -103,9 +114,9 @@ generic reminder message.
 - `User` model: reminder_time / time_zone format validations.
 - `Api::PushController`: vapid_public_key (no auth), create (new + upsert by
   endpoint), destroy (found + not found), preferences update, auth required.
-- `PushNotifier`: sends payload per subscription (WebPush stubbed); destroys record
-  on `WebPush::ExpiredSubscription` / `InvalidSubscription`; continues loop on other
-  errors.
+- `PushSubscription#deliver` / `User#notify_via_push`: sends payload per subscription
+  (WebPush stubbed); destroys record on `WebPush::ExpiredSubscription` /
+  `InvalidSubscription`; continues loop on other errors.
 - `SendGratitudeRemindersJob` with `travel_to`: sends when local time passed and not
   yet reminded today; skips when already reminded, when before time, when no
   subscriptions, when no reminder_time; timezone correctness (user in a zone ahead

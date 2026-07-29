@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     resource :sync, only: [ :show, :update ], controller: "sync"
     resource :push, only: [ :create, :destroy ], controller: "push"
     get "push/vapid_public_key", to: "push#vapid_public_key"
+    patch "push/preferences", to: "push#update_preferences"
   end
 
   namespace :admin do

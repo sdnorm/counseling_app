@@ -1,0 +1,5 @@
+danny_sub:
+  user: danny
+  endpoint: https://push.example.com/subs/danny
+  p256dh: danny-p256dh-key
+  auth: danny-auth-secret

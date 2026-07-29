@@ -65,4 +65,9 @@ group :development do
   gem "web-console"
 end
 
+group :test do
+  # minitest 6 extracted Minitest::Mock / Object#stub into this gem
+  gem "minitest-mock"
+end
+
 gem "honeybadger", "~> 6.9"

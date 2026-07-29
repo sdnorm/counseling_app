@@ -27,6 +27,23 @@ export default class extends Controller {
     await put("settings", { id: "haptics", value: this.hapticsTarget.checked });
     await put("settings", { id: "confetti", value: this.confettiTarget.checked });
 
+    try {
+      const response = await fetch("/api/push/preferences", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+        },
+        body: JSON.stringify({
+          reminder_time: this.reminderTimeTarget.value,
+          time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
+      });
+      if (!response.ok) console.error("Reminder preferences not saved:", response.status);
+    } catch (error) {
+      console.error("Reminder preferences not synced:", error);
+    }
+
     const el = document.getElementById("flash-container");
     if (el) {
       el.innerHTML = '<div class="flash">Settings saved!</div>';
