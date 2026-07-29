@@ -12,7 +12,7 @@ const EMOTION_CHILDREN = {
 };
 
 export default class extends Controller {
-  static targets = ["details", "log"];
+  static targets = ["details", "log", "about", "because"];
 
   connect() {
     this.selected = new Set();
@@ -72,6 +72,8 @@ export default class extends Controller {
       id: crypto.randomUUID(),
       date: new Date().toISOString(),
       emotions: Array.from(this.selected),
+      about: this.aboutTarget.value.trim(),
+      because: this.becauseTarget.value.trim(),
     };
 
     await put("emotionSnapshots", entry);
@@ -80,14 +82,18 @@ export default class extends Controller {
     showAffirmation();
     this.dispatch("sync:save", { target: document.body });
 
-    this.selected.clear();
-    this.element.querySelectorAll(".active").forEach(el => el.classList.remove("active"));
-    this.detailsTarget.style.display = "none";
+    this.reset();
   }
 
   clear() {
+    this.reset();
+  }
+
+  reset() {
     this.selected.clear();
     this.element.querySelectorAll(".active").forEach(el => el.classList.remove("active"));
+    this.aboutTarget.value = "";
+    this.becauseTarget.value = "";
     this.detailsTarget.style.display = "none";
   }
 
@@ -101,6 +107,7 @@ export default class extends Controller {
         <div style="display:flex;flex-wrap:wrap;gap:4px;">
           ${e.emotions.map(em => `<span style="background:var(--light-blue);color:var(--deep);padding:2px 8px;border-radius:4px;font-size:11px;">${em}</span>`).join("")}
         </div>
+        ${e.about || e.because ? `<div style="font-size:12px;color:var(--brown);margin-top:6px;">${e.about ? `About: ${e.about}` : ""}${e.about && e.because ? " — " : ""}${e.because ? `Because: ${e.because}` : ""}</div>` : ""}
       </div>
     `).join("");
   }

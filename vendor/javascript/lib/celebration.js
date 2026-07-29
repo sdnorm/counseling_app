@@ -1,4 +1,22 @@
-export function triggerConfetti() {
+import { getAll } from "lib/db";
+
+async function setting(id, fallback = true) {
+  try {
+    const settings = await getAll("settings");
+    const found = settings.find(s => s.id === id);
+    return found ? found.value : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function triggerConfetti() {
+  if (await setting("haptics") && navigator.vibrate) {
+    navigator.vibrate(15);
+  }
+
+  if (!(await setting("confetti"))) return;
+
   if (typeof window.confetti === "function") {
     window.confetti({
       particleCount: 100,
@@ -19,7 +37,9 @@ const AFFIRMATIONS = [
   "Small progress is still progress.",
 ];
 
-export function showAffirmation() {
+export async function showAffirmation() {
+  if (!(await setting("confetti"))) return;
+
   const msg = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
   const el = document.getElementById("flash-container");
   if (el) {
