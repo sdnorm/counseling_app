@@ -15,6 +15,15 @@
     <button class="btn" style="margin-top:10px;" data-action="click->checkin#save">Save Check-In</button>
   </div>
 
+  <div class="card" data-checkin-target="chartCard" style="display:none;">
+    <label class="lbl">Your mood over time</label>
+    <div data-checkin-target="chart"></div>
+    <div style="display:flex;gap:12px;font-size:11px;color:var(--lt-brown);margin-top:4px;">
+      <span><span style="color:var(--blue);">●</span> Pre-session</span>
+      <span><span style="color:var(--orange);">●</span> Post-session</span>
+    </div>
+  </div>
+
   <div data-checkin-target="entries">
     <!-- Populated by JS -->
   </div>

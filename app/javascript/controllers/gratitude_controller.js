@@ -75,8 +75,9 @@ export default class extends Controller {
     }
   }
 
-  downloadCertificate() {
-    const name = "Client";
+  async downloadCertificate() {
+    const profile = await getAll("profile");
+    const name = profile.find(p => p.id === "name")?.value || "Client";
     const certWindow = window.open("", "_blank");
     certWindow.document.write(`
       <html>

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import { getAll } from "lib/db";
 
 export default class extends Controller {
   static targets = ["main", "title", "nav"];
@@ -6,8 +7,11 @@ export default class extends Controller {
 
   connect() {
     this.currentValue = "home";
+    this.userName = "";
     // Wait for the sync controller to unlock before rendering
-    document.addEventListener("app:unlocked", () => {
+    document.addEventListener("app:unlocked", async () => {
+      const profile = await getAll("profile");
+      this.userName = profile.find(p => p.id === "name")?.value || "";
       this.render();
     });
   }
@@ -111,19 +115,27 @@ export default class extends Controller {
 
   renderHome() {
     return `
-      <h2>Welcome!</h2>
+      <h2>Welcome${this.userName ? `, ${this.userName}` : ""}!</h2>
       <p class="subtitle">What would you like to work on today?</p>
       <div class="card card-blue" data-action="click->navigation#go" data-id="journal">
         <strong>📓 My Journal</strong>
       </div>
-      <div class="card card-orange" data-action="click->navigation#go" data-id="gratitude">
-        <strong>✦ Gratitude Log</strong>
+      <div class="card card-orange" data-action="click->navigation#go" data-id="agenda">
+        <strong>📋 Agenda</strong>
       </div>
-      <div class="card card-blue" data-action="click->navigation#go" data-id="emotions">
-        <strong>💛 Emotions</strong>
+      <div class="card card-blue" data-action="click->navigation#go" data-id="checkin">
+        <strong>✓ Pre/Post Check-In</strong>
       </div>
       <div class="card card-brown" data-action="click->navigation#go" data-id="schedule">
         <strong>🗓️ Schedule</strong>
+      </div>
+      <div class="tip" style="margin-top:16px;">
+        Important: This app is not monitored. If you're in a mental health crisis,
+        call 911 or go to your nearest ER. You may also call/text 988.
+        This app is not a substitute for professional mental health care and does
+        not constitute a therapeutic relationship. The content you save on this app
+        is encrypted and neither the server nor any user has access to your data
+        apart from your passphrase/key.
       </div>
     `;
   }
