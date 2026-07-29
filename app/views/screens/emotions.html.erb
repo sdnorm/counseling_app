@@ -3,13 +3,13 @@
   <p class="subtitle">Select what you're feeling right now.</p>
 
   <div class="card">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
-      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Joy" style="font-size:24px;">😊 Joy</button>
-      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Sadness" style="font-size:24px;">😢 Sadness</button>
-      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Anger" style="font-size:24px;">😠 Anger</button>
-      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Fear" style="font-size:24px;">😨 Fear</button>
-      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Surprise" style="font-size:24px;">😮 Surprise</button>
-      <button class="btn btn-o" data-action="click->emotions#toggle" data-emotion="Disgust" style="font-size:24px;">🤢 Disgust</button>
+    <div class="emotion-grid">
+      <button class="btn btn-o emotion-btn" data-action="click->emotions#toggle" data-emotion="Joy"><span class="emoji">😊</span><span class="name">Joy</span></button>
+      <button class="btn btn-o emotion-btn" data-action="click->emotions#toggle" data-emotion="Sadness"><span class="emoji">😢</span><span class="name">Sadness</span></button>
+      <button class="btn btn-o emotion-btn" data-action="click->emotions#toggle" data-emotion="Anger"><span class="emoji">😠</span><span class="name">Anger</span></button>
+      <button class="btn btn-o emotion-btn" data-action="click->emotions#toggle" data-emotion="Fear"><span class="emoji">😨</span><span class="name">Fear</span></button>
+      <button class="btn btn-o emotion-btn" data-action="click->emotions#toggle" data-emotion="Surprise"><span class="emoji">😮</span><span class="name">Surprise</span></button>
+      <button class="btn btn-o emotion-btn" data-action="click->emotions#toggle" data-emotion="Disgust"><span class="emoji">🤢</span><span class="name">Disgust</span></button>
     </div>
 
     <div data-emotions-target="details" style="display:none;">
