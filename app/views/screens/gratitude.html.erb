@@ -1,14 +1,20 @@
 <div data-controller="gratitude">
   <h2>Gratitude Log</h2>
-  <p class="subtitle">What are you grateful for today?</p>
+  <p class="subtitle">Three things you're grateful for today &mdash; big or small.</p>
+
+  <div class="tip">
+    💙 Research suggests that if you write down 3 things you're grateful for each day
+    for 30 days &mdash; with no repeating answers &mdash; you will train your brain to
+    look for things to be grateful for.
+  </div>
 
   <div class="card">
-    <label class="lbl">I am grateful for...</label>
-    <input type="text" data-gratitude-target="item1" placeholder="Something wonderful..." />
-    <input type="text" data-gratitude-target="item2" placeholder="Another blessing..." />
-    <input type="text" data-gratitude-target="item3" placeholder="And one more..." />
+    <label class="lbl">Today I'm grateful for...</label>
+    <input type="text" data-gratitude-target="item1" placeholder="1." />
+    <input type="text" data-gratitude-target="item2" placeholder="2." />
+    <input type="text" data-gratitude-target="item3" placeholder="3." />
 
-    <button class="btn" style="margin-top:10px;" data-action="click->gratitude#save">Save Entry</button>
+    <button class="btn" style="margin-top:10px;" data-action="click->gratitude#save">Save Today's Gratitude</button>
   </div>
 
   <div class="card">

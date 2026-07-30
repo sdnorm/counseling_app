@@ -27,6 +27,7 @@ h2{font-family:'Lora',serif;color:var(--brown);font-size:19px;margin-bottom:3px;
 /* 16px minimum on form controls: iOS Safari auto-zooms the page on focus below 16px and stays zoomed */
 textarea,input[type=text],input[type=email],input[type=password],select{width:100%;border:1.5px solid var(--light-blue);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:16px;resize:vertical;outline:none}
 textarea:focus,input[type=text]:focus,input[type=email]:focus,input[type=password]:focus,select:focus{border-color:var(--blue)}
+input[type=range]{width:100%}
 .btn{background:var(--orange);color:white;border:2px solid var(--orange);border-radius:6px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s;letter-spacing:.3px}
 .btn:hover{opacity:.9}
 .btn-o{background:transparent;color:var(--orange)}

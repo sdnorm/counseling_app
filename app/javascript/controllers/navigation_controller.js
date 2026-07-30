@@ -129,15 +129,17 @@ export default class extends Controller {
       <div class="card card-brown" data-action="click->navigation#go" data-id="schedule">
         <strong>🗓️ Schedule</strong>
       </div>
-      <div class="tip" style="margin-top:16px;">
-        Important: This app is not monitored. If you're in a mental health crisis,
-        call 911 or go to your nearest ER. You may also call/text 988.
-        This app is not a substitute for professional mental health care and does
-        not constitute a therapeutic relationship. The content you save on this app
-        is encrypted and neither the server nor any user has access to your data
-        apart from your passphrase/key.
-      </div>
+      <div class="tip" style="margin-top:16px;">${this.legalDisclaimer()}</div>
     `;
+  }
+
+  legalDisclaimer() {
+    return `Important: This app is not monitored. If you're in a mental health crisis,
+      call 911 or go to your nearest ER. You may also call/text 988.
+      This app is not a substitute for professional mental health care and does
+      not constitute a therapeutic relationship. The content you save on this app
+      is encrypted and neither the server nor any user has access to your data
+      apart from your passphrase/key.`;
   }
 
   renderSchedule() {
@@ -158,6 +160,9 @@ export default class extends Controller {
           <small>logan@crossroadcounselor.com</small>
         </a>
       </div>
+      <div class="tip" style="margin-top:16px;">${this.legalDisclaimer()}
+        This email address delivers directly to our administrative assistant and is
+        for appointment requests only.</div>
     `;
   }
 

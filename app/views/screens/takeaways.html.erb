@@ -1,16 +1,26 @@
 <div data-controller="takeaways">
-  <h2>Takeaways</h2>
-  <p class="subtitle">Reflect on your session insights.</p>
+  <h2>Therapy Takeaways</h2>
+  <p class="subtitle">Capture what mattered from today's session.</p>
+
+  <div class="tip">
+    💙 This section is for you to capture the most memorable pieces from your therapy
+    session that you want to reflect on and consider more deeply.
+  </div>
 
   <div class="card">
-    <label class="lbl">Insight</label>
-    <textarea rows="3" data-takeaways-target="insight" placeholder="What did you learn?"></textarea>
+    <label class="lbl">Session Insight or Quote</label>
+    <textarea rows="3" data-takeaways-target="insight" placeholder="What stood out from today's session?"></textarea>
 
-    <label class="lbl">What I did great</label>
-    <textarea rows="2" data-takeaways-target="great" placeholder="Celebrate your wins..."></textarea>
+    <label class="lbl">✅ What felt great</label>
+    <textarea rows="2" data-takeaways-target="great" placeholder="What resonated or felt helpful?"></textarea>
 
-    <label class="lbl">Where to focus next</label>
-    <textarea rows="2" data-takeaways-target="miss" placeholder="Areas for growth..."></textarea>
+    <label class="lbl">🤔 What didn't quite land</label>
+    <textarea rows="2" data-takeaways-target="miss" placeholder="Anything to revisit with your therapist?"></textarea>
+
+    <p class="subtitle" style="font-size:12px;margin-top:8px;">
+      Use this space to flag anything that felt confusing, uncomfortable, or unresolved
+      &mdash; things worth bringing back up in a future session.
+    </p>
 
     <button class="btn" style="margin-top:10px;" data-action="click->takeaways#save">Save Takeaway</button>
   </div>
