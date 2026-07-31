@@ -8,6 +8,11 @@ export default class extends Controller {
     this.salt = null;
     this.unlocked = false;
     document.addEventListener("sync:save", () => this.save());
+    // A bfcache restore would revive the unlocked DOM (decrypted entries,
+    // hidden overlay) after logout. Force a clean boot instead.
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) window.location.reload();
+    });
     this.showUnlockScreen();
   }
 
