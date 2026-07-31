@@ -1,7 +1,7 @@
 # Client-Side Auth Lockdown
 
 **Date:** 2026-07-30
-**Status:** Approved design, pending implementation plan
+**Status:** Implemented (see docs/superpowers/plans/2026-07-30-client-side-auth-lockdown.md)
 
 ## Problem
 
