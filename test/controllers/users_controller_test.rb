@@ -1,6 +1,20 @@
 require "test_helper"
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
+  test "signup form prefills the invite code from a shared link" do
+    get new_user_path(code: "ABCD1234")
+
+    assert_response :success
+    assert_select "input[name='user[invite_code]'][value='ABCD1234']"
+  end
+
+  test "signup form leaves the invite code blank without a shared link" do
+    get new_user_path
+
+    assert_response :success
+    assert_select "input[name='user[invite_code]']:not([value])"
+  end
+
   test "signup with a valid invite code creates the account and consumes the code" do
     code = InviteCode.generate("newclient@example.com")
 

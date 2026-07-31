@@ -25,7 +25,7 @@
 
     <div class="field">
       <%= f.label :invite_code, "Invite Code" %>
-      <%= text_field_tag :"user[invite_code]", nil, placeholder: "8-character code" %>
+      <%= text_field_tag :"user[invite_code]", params[:code].presence, placeholder: "8-character code" %>
     </div>
 
     <div class="actions">

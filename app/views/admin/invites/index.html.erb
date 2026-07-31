@@ -19,13 +19,26 @@
       <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Code</th>
       <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Status</th>
       <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Created</th>
+      <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Signup link</th>
     </tr>
     <% @codes.each do |code| %>
       <tr>
         <td style="padding:8px;border-bottom:1px solid #eee;font-family:monospace;"><%= code.code %></td>
         <td style="padding:8px;border-bottom:1px solid #eee;"><%= code.used ? "Used" : "Available" %></td>
         <td style="padding:8px;border-bottom:1px solid #eee;"><%= code.created_at.strftime("%Y-%m-%d") %></td>
+        <td style="padding:8px;border-bottom:1px solid #eee;">
+          <% unless code.used %>
+            <span data-controller="clipboard" style="display:flex;gap:6px;align-items:center;">
+              <input type="text" readonly value="<%= new_user_url(code: code.code) %>"
+                     data-clipboard-target="source"
+                     style="flex:1;min-width:0;font-family:monospace;font-size:11px;padding:4px 6px;">
+              <button type="button" class="btn" data-action="clipboard#copy"
+                      data-clipboard-target="button" style="padding:4px 10px;font-size:12px;">Copy</button>
+            </span>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </table>
+  <p style="font-size:12px;color:#777;">Text or email a signup link to the client — it opens the signup page with their invite code already filled in. Each link works once.</p>
 </div>

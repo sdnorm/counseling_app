@@ -4,7 +4,7 @@
 
 <p>
   Use it to create your account on
-  <%= link_to "the sign-up page", new_user_url %>.
+  <%= link_to "the sign-up page", new_user_url(code: @code.code) %>.
 </p>
 
 <p>This code can only be used once. If you did not request it, you can safely ignore this email.</p>
