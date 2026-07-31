@@ -52,6 +52,35 @@ class Admin::InvitesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_invites_path
   end
 
+  test "invite email links to signup with the code prefilled" do
+    with_admin_password("correct-password") do
+      post admin_invites_path,
+        params: { invite: { email_address: "client@example.com" } },
+        headers: basic_auth("admin", "correct-password")
+    end
+
+    code = InviteCode.last
+    email = ActionMailer::Base.deliveries.last
+    email.body.parts.each do |part|
+      assert_includes part.body.to_s, "/users/new?code=#{code.code}",
+        "expected the #{part.content_type} part to link to signup with the code"
+    end
+  end
+
+  test "index shows a shareable signup link for available codes only" do
+    available = InviteCode.generate("waiting@example.com")
+    used = InviteCode.generate("done@example.com")
+    InviteCode.claim(used.code)
+
+    with_admin_password("correct-password") do
+      get admin_invites_path, headers: basic_auth("admin", "correct-password")
+    end
+
+    assert_response :success
+    assert_includes response.body, "/users/new?code=#{available.code}"
+    assert_not_includes response.body, "/users/new?code=#{used.code}"
+  end
+
   private
 
   def basic_auth(user, password)

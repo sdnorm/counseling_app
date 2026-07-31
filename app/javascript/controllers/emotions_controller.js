@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { put, getAll } from "lib/db";
+import { escapeHtml } from "lib/html";
 import { triggerConfetti, showAffirmation } from "lib/celebration";
 
 const EMOTION_CHILDREN = {
@@ -105,9 +106,9 @@ export default class extends Controller {
       <div class="card">
         <div style="font-size:11px;color:var(--lt-brown);margin-bottom:4px;">${new Date(e.date).toLocaleDateString()}</div>
         <div style="display:flex;flex-wrap:wrap;gap:4px;">
-          ${e.emotions.map(em => `<span style="background:var(--light-blue);color:var(--deep);padding:2px 8px;border-radius:4px;font-size:11px;">${em}</span>`).join("")}
+          ${e.emotions.map(em => `<span style="background:var(--light-blue);color:var(--deep);padding:2px 8px;border-radius:4px;font-size:11px;">${escapeHtml(em)}</span>`).join("")}
         </div>
-        ${e.about || e.because ? `<div style="font-size:12px;color:var(--brown);margin-top:6px;">${e.about ? `About: ${e.about}` : ""}${e.about && e.because ? " — " : ""}${e.because ? `Because: ${e.because}` : ""}</div>` : ""}
+        ${e.about || e.because ? `<div style="font-size:12px;color:var(--brown);margin-top:6px;">${e.about ? `About: ${escapeHtml(e.about)}` : ""}${e.about && e.because ? " — " : ""}${e.because ? `Because: ${escapeHtml(e.because)}` : ""}</div>` : ""}
       </div>
     `).join("");
   }

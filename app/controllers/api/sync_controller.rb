@@ -1,4 +1,11 @@
 class Api::SyncController < Api::BaseController
+  # Keyed by user rather than IP: clients behind one NAT must not throttle each
+  # other. Generous enough for save-on-every-entry usage.
+  rate_limit to: 60, within: 1.minute,
+    by: -> { current_user&.id || request.remote_ip },
+    only: :update,
+    with: -> { render json: { errors: [ "Too many requests" ] }, status: :too_many_requests }
+
   def show
     blob = current_user.encrypted_blob
     if blob

@@ -43,4 +43,23 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.valid?
     assert_includes user.errors[:time_zone], "is not a valid time zone"
   end
+
+  test "rejects a password shorter than the minimum" do
+    user = users(:danny)
+    user.password = "a" * (User::MINIMUM_PASSWORD_LENGTH - 1)
+    assert_not user.valid?
+    assert_includes user.errors[:password], "is too short (minimum is #{User::MINIMUM_PASSWORD_LENGTH} characters)"
+  end
+
+  test "accepts a password at the minimum length" do
+    user = users(:danny)
+    user.password = "a" * User::MINIMUM_PASSWORD_LENGTH
+    assert user.valid?
+  end
+
+  test "password length does not apply to updates that leave the password alone" do
+    user = users(:danny)
+    user.last_reminded_on = Date.current
+    assert user.valid?, "updating unrelated attributes must not trigger password validation"
+  end
 end

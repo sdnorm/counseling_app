@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { put, getAll, remove } from "lib/db";
+import { escapeHtml } from "lib/html";
 
 export default class extends Controller {
   static targets = ["items"];
@@ -17,8 +18,8 @@ export default class extends Controller {
     this.itemsTarget.innerHTML = items.map((item, i) => `
       <div style="display:flex;gap:8px;margin-bottom:6px;">
         <span style="color:var(--orange);font-weight:700">•</span>
-        <input type="text" value="${item.text || ""}" data-index="${i}" data-action="blur->agenda#update" style="flex:1;" />
-        <button class="btn btn-o" style="padding:2px 6px;font-size:11px;" data-action="click->agenda#remove" data-id="${item.id}">×</button>
+        <input type="text" value="${escapeHtml(item.text)}" data-index="${i}" data-action="blur->agenda#update" style="flex:1;" />
+        <button class="btn btn-o" style="padding:2px 6px;font-size:11px;" data-action="click->agenda#remove" data-id="${escapeHtml(item.id)}">×</button>
       </div>
     `).join("");
   }

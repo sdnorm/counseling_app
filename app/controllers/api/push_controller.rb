@@ -6,7 +6,11 @@ class Api::PushController < Api::BaseController
   end
 
   def create
-    sub = current_user.push_subscriptions.find_or_initialize_by(endpoint: params[:endpoint])
+    # Endpoints are unique per browser, not per account, so look them up globally:
+    # a device reused by a second account must transfer rather than collide with
+    # the unique index. Whoever is signed in owns the device from here on.
+    sub = PushSubscription.find_or_initialize_by(endpoint: params[:endpoint])
+    sub.user = current_user
     sub.assign_attributes(p256dh: params[:p256dh], auth: params[:auth])
 
     if sub.save

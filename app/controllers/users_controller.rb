@@ -1,31 +1,48 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: [ :new, :create ]
+  layout "session"
+  rate_limit to: 10, within: 10.minutes, only: :create,
+    with: -> { redirect_to new_user_path, alert: "Too many sign-up attempts. Try again later." }
 
   def new
     @user = User.new
   end
 
   def create
-    invite_code = InviteCode.find_by(code: user_params[:invite_code], used: false)
-    if invite_code.nil?
-      flash[:alert] = "Invalid or already used invite code."
-      redirect_to new_user_path and return
-    end
-
     @user = User.new(user_params.except(:invite_code))
-    @user.invite_code = invite_code
 
-    if @user.save
-      invite_code.update!(used: true, user: @user)
+    if claim_code_and_save
       start_new_session_for @user
       redirect_to root_path, notice: "Account created successfully."
     else
-      flash[:alert] = @user.errors.full_messages.join(", ")
+      flash.now[:alert] = @error
       render :new, status: :unprocessable_entity
     end
   end
 
   private
+
+  # Claiming the code and creating the user share one transaction: the claim has
+  # to be atomic so concurrent signups can't reuse a code, but a signup we then
+  # reject must roll the claim back rather than burn the code.
+  def claim_code_and_save
+    ActiveRecord::Base.transaction do
+      invite_code = InviteCode.claim(user_params[:invite_code])
+      if invite_code.nil?
+        @error = "Invalid or already used invite code."
+        raise ActiveRecord::Rollback
+      end
+
+      @user.invite_code = invite_code
+      unless @user.save
+        @error = @user.errors.full_messages.join(", ")
+        raise ActiveRecord::Rollback
+      end
+
+      invite_code.update!(user: @user)
+      true
+    end
+  end
 
   def user_params
     params.require(:user).permit(:email_address, :password, :password_confirmation, :invite_code)

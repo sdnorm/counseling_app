@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { put, getAll } from "lib/db";
+import { escapeHtml } from "lib/html";
 import { triggerConfetti, showAffirmation } from "lib/celebration";
 
 export default class extends Controller {
@@ -39,9 +40,9 @@ export default class extends Controller {
       <div class="card">
         <div style="font-size:11px;color:var(--lt-brown);margin-bottom:4px;">${new Date(e.date).toLocaleDateString()}</div>
         <div style="font-size:13px;">
-          ${e.insight ? `<div><strong>Insight:</strong> ${e.insight}</div>` : ""}
-          ${e.great ? `<div><strong>Great:</strong> ${e.great}</div>` : ""}
-          ${e.miss ? `<div><strong>Miss:</strong> ${e.miss}</div>` : ""}
+          ${e.insight ? `<div><strong>Insight:</strong> ${escapeHtml(e.insight)}</div>` : ""}
+          ${e.great ? `<div><strong>Great:</strong> ${escapeHtml(e.great)}</div>` : ""}
+          ${e.miss ? `<div><strong>Miss:</strong> ${escapeHtml(e.miss)}</div>` : ""}
         </div>
       </div>
     `).join("");

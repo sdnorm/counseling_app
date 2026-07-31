@@ -68,13 +68,30 @@ export async function exportState() {
   return JSON.stringify(state);
 }
 
+// Replaces local state wholesale rather than merging into it. Merging would let
+// records left behind by a previous account on this device survive into the next
+// user's data — and get re-encrypted into their synced blob. Every store is
+// cleared, including ones absent from the incoming state, in one transaction so
+// a failure can't leave the two accounts' records interleaved.
 export async function importState(json) {
   const state = JSON.parse(json);
-  for (const [store, items] of Object.entries(state)) {
-    for (const item of items) {
-      await put(store, item);
+  const db = await openDB();
+  const stores = Array.from(db.objectStoreNames);
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(stores, "readwrite");
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+
+    for (const name of stores) {
+      const store = tx.objectStore(name);
+      store.clear();
+      for (const item of state[name] || []) {
+        store.put(item);
+      }
     }
-  }
+  });
 }
 
 export async function wipeAll() {

@@ -1,5 +1,6 @@
 class PasswordsController < ApplicationController
   allow_unauthenticated_access
+  layout "session"
   before_action :set_user_by_token, only: %i[ edit update ]
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_password_path, alert: "Try again later." }
 
@@ -18,11 +19,18 @@ class PasswordsController < ApplicationController
   end
 
   def update
+    # has_secure_password ignores a blank password, so `update` would report
+    # success without changing the digest. Reject it before we get there.
+    if params[:password].blank?
+      redirect_to edit_password_path(params[:token]), alert: "Password can't be blank."
+      return
+    end
+
     if @user.update(params.permit(:password, :password_confirmation))
       @user.sessions.destroy_all
       redirect_to new_session_path, notice: "Password has been reset."
     else
-      redirect_to edit_password_path(params[:token]), alert: "Passwords did not match."
+      redirect_to edit_password_path(params[:token]), alert: @user.errors.full_messages.to_sentence
     end
   end
 
