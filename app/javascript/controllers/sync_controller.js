@@ -8,18 +8,26 @@ export default class extends Controller {
     this.salt = null;
     this.unlocked = false;
     this.saveHandler = () => this.save();
+    // Logout flushes through this handshake before wiping the device, so a
+    // failed upload can block the wipe instead of destroying unsynced data.
+    this.flushHandler = async () => {
+      const ok = await this.save();
+      document.dispatchEvent(new CustomEvent("sync:flushed", { detail: { ok } }));
+    };
     // A bfcache restore would revive the unlocked DOM (decrypted entries,
     // hidden overlay) after logout. Force a clean boot instead.
     this.pageshowHandler = (event) => {
       if (event.persisted) window.location.reload();
     };
     document.addEventListener("sync:save", this.saveHandler);
+    document.addEventListener("sync:flush", this.flushHandler);
     window.addEventListener("pageshow", this.pageshowHandler);
     this.showUnlockScreen();
   }
 
   disconnect() {
     document.removeEventListener("sync:save", this.saveHandler);
+    document.removeEventListener("sync:flush", this.flushHandler);
     window.removeEventListener("pageshow", this.pageshowHandler);
   }
 
@@ -106,7 +114,8 @@ export default class extends Controller {
   }
 
   async save() {
-    if (!this.key || !this.unlocked) return;
+    // Locked means the screens never rendered, so nothing new was written.
+    if (!this.key || !this.unlocked) return true;
 
     const { exportState } = await import("lib/db");
     const { encrypt } = await import("lib/crypto");
@@ -134,8 +143,10 @@ export default class extends Controller {
       // A rejected save means this entry exists only on this device. Say so
       // rather than letting the backup silently fall behind.
       if (!response.ok) this.warnSaveFailed(response.status);
+      return response.ok;
     } catch (error) {
       this.warnSaveFailed(error);
+      return false;
     }
   }
 
