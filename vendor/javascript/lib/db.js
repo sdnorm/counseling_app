@@ -76,3 +76,17 @@ export async function importState(json) {
     }
   }
 }
+
+export async function wipeAll() {
+  const db = await openDB();
+  const stores = Array.from(db.objectStoreNames);
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction(stores, "readwrite");
+    stores.forEach((name) => tx.objectStore(name).clear());
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+  // Best-effort: removes the database entirely once other connections close.
+  indexedDB.deleteDatabase(DB_NAME);
+}
