@@ -8,8 +8,10 @@ export default class extends Controller {
   connect() {
     this.currentValue = "home";
     this.userName = "";
+    this.appUnlocked = false;
     // Wait for the sync controller to unlock before rendering
     document.addEventListener("app:unlocked", async () => {
+      this.appUnlocked = true;
       const profile = await getAll("profile");
       this.userName = profile.find(p => p.id === "name")?.value || "";
       this.render();
@@ -88,6 +90,7 @@ export default class extends Controller {
   }
 
   render() {
+    if (!this.appUnlocked) return;
     const titles = {
       home: "CROSSROADS", schedule: "Schedule", journal: "My Journal",
       gratitude: "Gratitude Log", emotions: "Emotions", coping: "Coping Skills",
