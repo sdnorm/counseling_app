@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: [ :new, :create ]
+  layout "session"
   rate_limit to: 10, within: 10.minutes, only: :create,
     with: -> { redirect_to new_user_path, alert: "Too many sign-up attempts. Try again later." }
 

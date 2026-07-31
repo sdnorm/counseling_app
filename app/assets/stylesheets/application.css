@@ -48,3 +48,13 @@ input[type=range]{width:100%}
 .auth-screen h2{font-family:'Lora',serif;color:var(--brown);margin-bottom:8px}
 .auth-screen .field{margin-bottom:12px}
 .auth-screen label{display:block;font-size:12px;font-weight:600;color:var(--brown);margin-bottom:4px}
+.auth-brand{text-align:center;margin-bottom:22px}
+.auth-brand .mark{display:block;font-family:'Lora',serif;color:var(--brown);font-size:15px;letter-spacing:2.5px}
+.auth-brand .sub{display:block;font-size:9px;color:var(--lt-brown);letter-spacing:1.5px;margin-top:3px}
+.auth-screen .actions{margin-top:16px}
+.auth-screen .actions .btn{width:100%}
+.auth-alt{margin-top:18px;font-size:12px;color:var(--lt-brown);text-align:center;line-height:2}
+.auth-alt a{color:var(--blue);font-weight:600;text-decoration:none}
+.auth-alt a:hover{text-decoration:underline}
+.form-error{background:#fdecea;border:1px solid #f2c2ba;color:#8c2f22;border-radius:6px;padding:9px 12px;font-size:12px;margin-bottom:12px}
+.form-notice{background:var(--light-blue);border:1px solid rgba(50,177,195,.35);color:var(--deep);border-radius:6px;padding:9px 12px;font-size:12px;margin-bottom:12px}

@@ -2,7 +2,7 @@
   <h2>Create Account</h2>
   <p class="subtitle">You'll need an invite code from your counselor.</p>
 
-  <%= tag.div(flash[:alert], class: "form-error", style: "color:#c0392b;margin-bottom:12px;font-size:13px;") if flash[:alert] %>
+  <%= tag.div(flash[:alert], class: "form-error") if flash[:alert] %>
 
   <%= form_with model: @user, url: users_path do |f| %>
     <div class="field">
@@ -30,5 +30,5 @@
     </div>
   <% end %>
 
-  <p style="margin-top:16px;font-size:12px;">Already have an account? <%= link_to "Log in", new_session_path %></p>
+  <p class="auth-alt">Already have an account? <%= link_to "Sign in", new_session_path %></p>
 </div>
