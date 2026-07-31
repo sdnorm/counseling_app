@@ -10,13 +10,16 @@ class Api::SyncController < Api::BaseController
     blob = current_user.encrypted_blob
     if blob
       render json: {
+        account: current_user.id,
         ciphertext: blob.ciphertext,
         nonce: blob.nonce,
         salt: blob.salt,
         updated_at: blob.updated_at
       }
     else
-      render json: {}, status: :not_found
+      # Still name the account: the client stamps its local database with this
+      # so it can tell whose data the device is holding.
+      render json: { account: current_user.id }, status: :not_found
     end
   end
 

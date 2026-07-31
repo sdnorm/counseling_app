@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { deriveKey, decrypt } from "lib/crypto";
-import { importState } from "lib/db";
+import { importState, mergeState, clearData, readAccountStamp, writeAccountStamp } from "lib/db";
 
 export default class extends Controller {
   connect() {
@@ -80,6 +80,11 @@ export default class extends Controller {
 
       if (response.status === 404) {
         // First time user, create new key
+        const account = (await response.json().catch(() => ({}))).account;
+        // Nothing on the server to import, so anything already on this device
+        // belongs to whoever used it last. Clear it before it gets swept into
+        // this account's first sync.
+        await this.discardOtherAccountData(account);
         this.salt = window.crypto.getRandomValues(new Uint8Array(16));
         this.key = await deriveKey(passphrase, this.salt);
         errorEl.textContent = "Incorrect passphrase. Please try again.";
@@ -100,7 +105,7 @@ export default class extends Controller {
 
       // Try to decrypt to verify passphrase is correct
       const plaintext = await decrypt(blob.ciphertext, blob.nonce, this.key);
-      await importState(plaintext);
+      await this.applyRemoteState(plaintext, blob.account);
       errorEl.textContent = "Incorrect passphrase. Please try again.";
       return true;
     } catch (e) {
@@ -111,6 +116,38 @@ export default class extends Controller {
       this.salt = null;
       return false;
     }
+  }
+
+  // Merge only when this device is stamped as already holding this account's
+  // data. Merging is what keeps entries that were saved locally but haven't
+  // reached the server yet (offline, or a save the server rejected): the
+  // passphrase screen runs on every page load, so replacing every time would be
+  // a routine way to lose an entry.
+  //
+  // Anything else — including an unstamped device — is replaced. An unstamped
+  // device is either a fresh install (nothing to lose) or one that predates the
+  // stamp, where the local data may belong to whoever used it last and we can't
+  // tell. Leaking one client's entries into another's account is the worse
+  // failure, so the unknown case resolves to replace. This costs at most the
+  // unsynced delta, once, on the first unlock after upgrading.
+  async applyRemoteState(plaintext, account) {
+    const stamp = await readAccountStamp();
+
+    if (stamp !== null && stamp === account) {
+      await mergeState(plaintext);
+    } else {
+      await importState(plaintext);
+    }
+
+    if (account !== undefined) await writeAccountStamp(account);
+  }
+
+  // The 404 path: the server has nothing to import, so local data can only be
+  // kept when the device is stamped as this account's.
+  async discardOtherAccountData(account) {
+    const stamp = await readAccountStamp();
+    if (stamp === null || stamp !== account) await clearData();
+    if (account !== undefined) await writeAccountStamp(account);
   }
 
   async save() {
