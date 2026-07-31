@@ -79,7 +79,7 @@ export default class extends Controller {
     this.loadSnaps();
     triggerConfetti();
     showAffirmation();
-    this.dispatch("sync:save", { target: document.body });
+    this.dispatch("sync:save", { target: document.body, prefix: false });
   }
 
   async loadSnaps() {

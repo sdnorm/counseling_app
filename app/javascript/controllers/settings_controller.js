@@ -26,6 +26,7 @@ export default class extends Controller {
     await put("settings", { id: "reminderTime", value: this.reminderTimeTarget.value });
     await put("settings", { id: "haptics", value: this.hapticsTarget.checked });
     await put("settings", { id: "confetti", value: this.confettiTarget.checked });
+    this.dispatch("sync:save", { target: document.body, prefix: false });
 
     try {
       const response = await fetch("/api/push/preferences", {

@@ -31,7 +31,7 @@ export default class extends Controller {
     this.updateStreak();
     triggerConfetti();
     showAffirmation();
-    this.dispatch("sync:save", { target: document.body });
+    this.dispatch("sync:save", { target: document.body, prefix: false });
 
     this.item1Target.value = "";
     this.item2Target.value = "";

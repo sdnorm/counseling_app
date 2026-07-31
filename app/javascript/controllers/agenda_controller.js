@@ -26,6 +26,7 @@ export default class extends Controller {
 
   async add() {
     await put("agendaItems", { id: crypto.randomUUID(), text: "" });
+    this.dispatch("sync:save", { target: document.body, prefix: false });
     this.loadItems();
   }
 
@@ -35,12 +36,14 @@ export default class extends Controller {
     if (items[index]) {
       items[index].text = event.target.value;
       await put("agendaItems", items[index]);
+      this.dispatch("sync:save", { target: document.body, prefix: false });
     }
   }
 
   async remove(event) {
     const id = event.currentTarget.dataset.id;
     await remove("agendaItems", id);
+    this.dispatch("sync:save", { target: document.body, prefix: false });
     this.loadItems();
   }
 }

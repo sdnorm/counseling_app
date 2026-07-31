@@ -50,7 +50,7 @@ export default class extends Controller {
     this.loadEntries();
     triggerConfetti();
     showAffirmation();
-    this.dispatch("sync:save", { target: document.body });
+    this.dispatch("sync:save", { target: document.body, prefix: false });
 
     if (mode === "long") {
       this.longInputTarget.querySelector("textarea").value = "";

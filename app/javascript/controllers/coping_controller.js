@@ -63,6 +63,7 @@ export default class extends Controller {
     if (skill) {
       skill.starred = !skill.starred;
       await put("copingSkills", skill);
+      this.dispatch("sync:save", { target: document.body, prefix: false });
       this.loadSkills();
     }
   }
@@ -72,6 +73,7 @@ export default class extends Controller {
     if (!text) return;
 
     await put("copingSkills", { text, starred: false, custom: true });
+    this.dispatch("sync:save", { target: document.body, prefix: false });
     this.newSkillTarget.value = "";
     this.loadSkills();
   }
