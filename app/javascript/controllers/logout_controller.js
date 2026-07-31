@@ -26,11 +26,12 @@ export default class extends Controller {
     this.element.submit();
   }
 
-  // Asks the sync controller to upload now; resolves false on failure or if
-  // no answer arrives (bounded so logout can never hang).
+  // Asks the sync controller to upload now. save() aborts its own request
+  // after 10s, so sync:flushed always arrives with a settled verdict; the
+  // fallback timer only covers a page with no sync controller mounted.
   flushSync() {
     return new Promise((resolve) => {
-      const timer = setTimeout(() => finish(false), 5000);
+      const timer = setTimeout(() => finish(false), 12000);
       const handler = (event) => finish(!!event.detail?.ok);
       const finish = (ok) => {
         clearTimeout(timer);

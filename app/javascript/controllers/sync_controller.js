@@ -117,13 +117,17 @@ export default class extends Controller {
     // Locked means the screens never rendered, so nothing new was written.
     if (!this.key || !this.unlocked) return true;
 
-    const { exportState } = await import("lib/db");
-    const { encrypt } = await import("lib/crypto");
-
-    const state = await exportState();
-    const { ciphertext, nonce } = await encrypt(state, this.key);
-
+    // Abort rather than hang so every caller gets a settled answer, and no
+    // upload is left in flight for a later logout navigation to kill.
+    const abort = new AbortController();
+    const timer = setTimeout(() => abort.abort(), 10000);
     try {
+      const { exportState } = await import("lib/db");
+      const { encrypt } = await import("lib/crypto");
+
+      const state = await exportState();
+      const { ciphertext, nonce } = await encrypt(state, this.key);
+
       const response = await fetch("/api/sync", {
         method: "PUT",
         headers: {
@@ -131,6 +135,7 @@ export default class extends Controller {
           "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content
         },
         credentials: "same-origin",
+        signal: abort.signal,
         body: JSON.stringify({
           blob: {
             ciphertext,
@@ -147,6 +152,8 @@ export default class extends Controller {
     } catch (error) {
       this.warnSaveFailed(error);
       return false;
+    } finally {
+      clearTimeout(timer);
     }
   }
 
