@@ -1,4 +1,4 @@
-const CACHE_NAME = "crossroads-v4";
+const CACHE_NAME = "crossroads-v5";
 const STATIC_ASSETS = ["/"];
 
 self.addEventListener("install", (event) => {
@@ -46,6 +46,15 @@ self.addEventListener("fetch", (event) => {
     caches.match(event.request).then((cached) => {
       return cached || fetch(event.request);
     })
+  );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type !== "logout") return;
+  event.waitUntil(
+    caches.keys()
+      .then((names) => Promise.all(names.map((name) => caches.delete(name))))
+      .then(() => event.ports[0]?.postMessage({ ok: true }))
   );
 });
 
