@@ -10,12 +10,18 @@ export default class extends Controller {
     this.userName = "";
     this.appUnlocked = false;
     // Wait for the sync controller to unlock before rendering
-    document.addEventListener("app:unlocked", async () => {
+    this.unlockedHandler = async () => {
       this.appUnlocked = true;
       const profile = await getAll("profile");
       this.userName = profile.find(p => p.id === "name")?.value || "";
       this.render();
-    });
+    };
+    document.addEventListener("app:unlocked", this.unlockedHandler);
+  }
+
+  disconnect() {
+    document.removeEventListener("app:unlocked", this.unlockedHandler);
+    this.closeMoreMenu();
   }
 
   go(event) {
