@@ -26,16 +26,15 @@ class ClientSyncContractTest < ActiveSupport::TestCase
 
     writers.each do |path|
       source = path.read
-      dispatches = source.scan(/dispatch\("sync:save",\s*\{([^}]*)\}/)
+      total = source.scan(/dispatch\("sync:save"/).size
+      compliant = source.scan(/dispatch\("sync:save",\s*\{[^}]*\bprefix: false\b[^}]*\}/).size
 
-      assert_not_empty dispatches,
+      assert total.positive?,
         "#{path.basename} writes to lib/db but never dispatches sync:save — its data will never reach the server"
 
-      dispatches.each do |(options)|
-        assert_includes options, "prefix: false",
-          "#{path.basename} dispatches sync:save without `prefix: false` — Stimulus will " \
-          "emit a controller-prefixed event name that sync_controller never receives"
-      end
+      assert_equal total, compliant,
+        "#{path.basename} has #{total - compliant} sync:save dispatch(es) without `prefix: false` — " \
+        "Stimulus will emit a controller-prefixed event name that sync_controller never receives"
     end
   end
 end
