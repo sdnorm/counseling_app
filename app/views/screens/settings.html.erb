@@ -28,6 +28,7 @@
   </div>
 
   <div class="card">
-    <%= button_to "Log Out", session_path, method: :delete, class: "btn btn-o" %>
+    <%= button_to "Log Out", session_path, method: :delete, class: "btn btn-o",
+          form: { data: { controller: "logout", action: "submit->logout#submit" } } %>
   </div>
 </div>
