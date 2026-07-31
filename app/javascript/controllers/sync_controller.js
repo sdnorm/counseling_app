@@ -107,21 +107,37 @@ export default class extends Controller {
     const state = await exportState();
     const { ciphertext, nonce } = await encrypt(state, this.key);
 
-    await fetch("/api/sync", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content
-      },
-      credentials: "same-origin",
-      body: JSON.stringify({
-        blob: {
-          ciphertext,
-          nonce,
-          salt: btoa(String.fromCharCode(...this.salt))
-        }
-      })
-    });
+    try {
+      const response = await fetch("/api/sync", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          blob: {
+            ciphertext,
+            nonce,
+            salt: btoa(String.fromCharCode(...this.salt))
+          }
+        })
+      });
+
+      // A rejected save means this entry exists only on this device. Say so
+      // rather than letting the backup silently fall behind.
+      if (!response.ok) this.warnSaveFailed(response.status);
+    } catch (error) {
+      this.warnSaveFailed(error);
+    }
+  }
+
+  warnSaveFailed(reason) {
+    console.error("Sync save failed:", reason);
+    const el = document.getElementById("flash-container");
+    if (!el) return;
+    el.innerHTML = '<div class="flash">Saved on this device, but not backed up. Check your connection.</div>';
+    setTimeout(() => { el.innerHTML = ""; }, 4000);
   }
 
   clear() {

@@ -69,4 +69,30 @@ class Api::PushControllerTest < ActionDispatch::IntegrationTest
     patch api_push_preferences_path, params: { reminder_time: "08:15", time_zone: "America/Denver" }, as: :json
     assert_response :unauthorized
   end
+
+  test "create claims an endpoint previously registered to another user" do
+    existing = push_subscriptions(:danny_sub)
+    sign_in_as users(:maria)
+
+    assert_no_difference -> { PushSubscription.count } do
+      post api_push_path, params: { endpoint: existing.endpoint, p256dh: "maria-key", auth: "maria-secret" }, as: :json
+    end
+
+    assert_response :success
+    existing.reload
+    assert_equal users(:maria), existing.user, "the device now belongs to the signed-in user"
+    assert_equal "maria-key", existing.p256dh
+    assert_empty users(:danny).push_subscriptions.reload,
+      "previous owner must not keep a subscription to a device they no longer use"
+  end
+
+  test "destroy only removes the current user's own subscription" do
+    existing = push_subscriptions(:danny_sub)
+    sign_in_as users(:maria)
+
+    assert_no_difference -> { PushSubscription.count } do
+      delete api_push_path, params: { endpoint: existing.endpoint }, as: :json
+    end
+    assert_response :not_found
+  end
 end

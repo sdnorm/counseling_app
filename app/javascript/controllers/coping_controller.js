@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { put, getAll, remove } from "lib/db";
+import { escapeHtml } from "lib/html";
 
 const DEFAULT_SKILLS = [
   "Deep breathing / box breathing",
@@ -49,8 +50,8 @@ export default class extends Controller {
   skillRow(skill, isStarred) {
     return `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--light-blue);">
-        <span>${skill.text}</span>
-        <button class="btn btn-o" style="padding:4px 8px;font-size:11px;" data-action="click->coping#toggleStar" data-text="${skill.text}">${isStarred ? "★" : "☆"}</button>
+        <span>${escapeHtml(skill.text)}</span>
+        <button class="btn btn-o" style="padding:4px 8px;font-size:11px;" data-action="click->coping#toggleStar" data-text="${escapeHtml(skill.text)}">${isStarred ? "★" : "☆"}</button>
       </div>
     `;
   }
