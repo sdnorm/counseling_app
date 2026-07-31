@@ -7,22 +7,25 @@
   <%= form_with model: @user, url: users_path do |f| %>
     <div class="field">
       <%= f.label :email_address, "Email" %>
-      <%= f.email_field :email_address, autofocus: true, autocomplete: "email" %>
+      <%= f.email_field :email_address, autofocus: true, autocomplete: "email",
+            placeholder: "you@example.com" %>
     </div>
 
     <div class="field">
       <%= f.label :password %>
-      <%= f.password_field :password, autocomplete: "new-password" %>
+      <%= f.password_field :password, autocomplete: "new-password",
+            placeholder: "At least #{User::MINIMUM_PASSWORD_LENGTH} characters", maxlength: 72 %>
     </div>
 
     <div class="field">
-      <%= f.label :password_confirmation %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+      <%= f.label :password_confirmation, "Confirm password" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            placeholder: "Repeat your password", maxlength: 72 %>
     </div>
 
     <div class="field">
       <%= f.label :invite_code, "Invite Code" %>
-      <%= text_field_tag :"user[invite_code]", nil %>
+      <%= text_field_tag :"user[invite_code]", nil, placeholder: "8-character code" %>
     </div>
 
     <div class="actions">
