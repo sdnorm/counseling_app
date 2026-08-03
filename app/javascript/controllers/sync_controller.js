@@ -142,11 +142,17 @@ export default class extends Controller {
     if (account !== undefined) await writeAccountStamp(account);
   }
 
-  // The 404 path: the server has nothing to import, so local data can only be
-  // kept when the device is stamped as this account's.
+  // The 404 path: the server has no blob, so anything here is the only copy.
+  // Clear only when a stamp positively identifies the data as another account's
+  // — an unstamped device is adopted, not wiped.
+  //
+  // This is deliberately not symmetrical with applyRemoteState above. There, the
+  // server holds a copy, so replacing an unrecognised device costs at most the
+  // unsynced delta. Here there is nothing to restore from, so treating "unknown"
+  // as "discard" destroys every entry a pre-existing user ever wrote.
   async discardOtherAccountData(account) {
     const stamp = await readAccountStamp();
-    if (stamp === null || stamp !== account) await clearData();
+    if (stamp !== null && stamp !== account) await clearData();
     if (account !== undefined) await writeAccountStamp(account);
   }
 
