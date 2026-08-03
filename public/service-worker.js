@@ -1,4 +1,6 @@
-const CACHE_NAME = "crossroads-v5";
+// Bumped to evict caches poisoned before /api was excluded above: activate
+// deletes every cache whose name isn't this one.
+const CACHE_NAME = "crossroads-v6";
 const STATIC_ASSETS = ["/"];
 
 self.addEventListener("install", (event) => {
@@ -22,8 +24,15 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // Admin routes and non-GET requests go straight to the network.
-  if (url.pathname.startsWith("/admin/") || event.request.method !== "GET") {
+  // API and admin routes, and every non-GET, go straight to the network.
+  // /api responses are per-account and change constantly: unlock reads the
+  // encrypted blob and the account id from /api/sync, so answering it from the
+  // cache can hand a client stale data or another account's id entirely.
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/admin/") ||
+    event.request.method !== "GET"
+  ) {
     return;
   }
 
@@ -32,8 +41,14 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          // Cache only real HTML. A navigation can land on a JSON endpoint —
+          // an expired session mid-fetch makes the API path the post-login
+          // redirect — and caching that would poison the URL for later fetches.
+          const contentType = response.headers.get("Content-Type") || "";
+          if (response.ok && contentType.includes("text/html")) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
           return response;
         })
         .catch(() => caches.match(event.request))
