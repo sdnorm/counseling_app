@@ -35,10 +35,13 @@ module Authentication
     end
 
     def request_authentication
-      session[:return_to_after_authenticating] = request.url
-      if request.format.json?
+      # Only pages are worth returning to. Remembering an API path would land the
+      # user on raw JSON after signing in, and a background /api 401 would
+      # displace the page they were actually trying to reach.
+      if request.format.json? || request.path.start_with?("/api/")
         head :unauthorized
       else
+        session[:return_to_after_authenticating] = request.url
         redirect_to new_session_path
       end
     end
