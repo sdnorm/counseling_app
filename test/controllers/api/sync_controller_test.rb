@@ -49,4 +49,115 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     assert_equal "nonce", response.parsed_body["nonce"]
     assert_equal "salt", response.parsed_body["salt"]
   end
+
+  # --- passphrase reset ---
+
+  test "reset with the correct password and a blob replaces the encrypted blob" do
+    user = users(:danny)
+    user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
+    sign_in_as user
+
+    post reset_api_sync_path, params: {
+      password: "password",
+      blob: { ciphertext: "new", nonce: "n2", salt: "s2" }
+    }, as: :json
+
+    assert_response :success
+    blob = user.reload.encrypted_blob
+    assert_equal "new", blob.ciphertext
+    assert_equal "s2", blob.salt
+  end
+
+  test "reset with the correct password and a blob works when no blob exists yet" do
+    user = users(:maria)
+    sign_in_as user
+
+    post reset_api_sync_path, params: {
+      password: "password",
+      blob: { ciphertext: "new", nonce: "n2", salt: "s2" }
+    }, as: :json
+
+    assert_response :success
+    assert_equal "new", user.reload.encrypted_blob.ciphertext
+  end
+
+  test "reset without a blob deletes the encrypted blob" do
+    user = users(:danny)
+    user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
+    sign_in_as user
+
+    post reset_api_sync_path, params: { password: "password" }, as: :json
+
+    assert_response :success
+    assert_nil user.reload.encrypted_blob
+  end
+
+  test "reset without a blob succeeds even when there is nothing to delete" do
+    sign_in_as users(:maria)
+
+    post reset_api_sync_path, params: { password: "password" }, as: :json
+
+    assert_response :success
+    assert response.parsed_body["success"]
+  end
+
+  test "reset with an empty blob does not wipe the existing blob" do
+    user = users(:danny)
+    user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
+    sign_in_as user
+
+    post reset_api_sync_path, params: { password: "password", blob: {} }, as: :json
+
+    assert_operator response.status, :>=, 400
+    assert_not_nil user.reload.encrypted_blob
+  end
+
+  test "reset with a wrong password changes nothing and says so" do
+    user = users(:danny)
+    user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
+    sign_in_as user
+
+    post reset_api_sync_path, params: {
+      password: "wrong",
+      blob: { ciphertext: "new", nonce: "n2", salt: "s2" }
+    }, as: :json
+
+    assert_response :unauthorized
+    assert_equal "old", user.reload.encrypted_blob.ciphertext
+    assert_includes response.parsed_body["errors"], "Incorrect password"
+  end
+
+  test "reset with a wrong password and no blob does not delete anything" do
+    user = users(:danny)
+    user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
+    sign_in_as user
+
+    post reset_api_sync_path, params: { password: "wrong" }, as: :json
+
+    assert_response :unauthorized
+    assert_not_nil user.reload.encrypted_blob
+  end
+
+  test "reset with an invalid blob is rejected without touching the old blob" do
+    user = users(:danny)
+    user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
+    sign_in_as user
+
+    post reset_api_sync_path, params: {
+      password: "password",
+      blob: { ciphertext: "", nonce: "n2", salt: "s2" }
+    }, as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal "old", user.reload.encrypted_blob.ciphertext
+  end
+
+  test "api responses are never cacheable" do
+    sign_in_as users(:danny)
+
+    get api_sync_path, headers: { "Accept" => "application/json" }
+
+    assert_equal "no-store", response.headers["Cache-Control"],
+      "a cached /api/sync response could hand a fresh account another account's blob or salt"
+  end
 end

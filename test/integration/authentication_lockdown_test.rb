@@ -22,6 +22,9 @@ class AuthenticationLockdownTest < ActionDispatch::IntegrationTest
 
     put api_sync_path, params: { blob: { ciphertext: "x", nonce: "n", salt: "s" } }, as: :json
     assert_response :unauthorized
+
+    post reset_api_sync_path, params: { password: "password" }, as: :json
+    assert_response :unauthorized
   end
 
   test "push api requires authentication" do

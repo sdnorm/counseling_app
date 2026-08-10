@@ -28,15 +28,27 @@
         <div style="max-width:320px;width:100%;">
           <h2 style="text-align:center;margin-bottom:8px;">Unlock Your Data</h2>
           <p class="subtitle" style="text-align:center;margin-bottom:20px;">Your passphrase decrypts your journal, emotions, and gratitude entries. It never leaves this device.</p>
-          <div class="card">
+          <div class="card" id="unlock-card">
             <label class="lbl">Your Passphrase</label>
             <input type="password" id="unlock-passphrase" placeholder="Enter your passphrase" style="margin-bottom:12px;" />
             <button class="btn" id="unlock-btn" style="width:100%;">Unlock</button>
             <p id="unlock-first-time" style="color:var(--deep);font-size:12px;margin-top:8px;display:none;">First time? Any passphrase works. Write it down — it cannot be recovered.</p>
             <p id="unlock-error" style="color:#c0392b;font-size:12px;margin-top:8px;display:none;">Incorrect passphrase. Please try again.</p>
           </div>
-          <p style="text-align:center;font-size:11px;color:var(--lt-brown);margin-top:16px;">
-            Forgot your passphrase? Your data cannot be recovered. Contact your counselor for a new account.
+          <div class="card" id="reset-card" style="display:none;">
+            <label class="lbl">Account Password</label>
+            <input type="password" id="reset-password" placeholder="Your login password" style="margin-bottom:12px;" />
+            <label class="lbl">New Passphrase</label>
+            <input type="password" id="reset-passphrase" placeholder="Choose a new passphrase" style="margin-bottom:12px;" />
+            <p id="reset-warning-keep" style="color:var(--deep);font-size:12px;margin-bottom:12px;display:none;">Your entries on this device will be kept. Entries made on other devices since this one last synced won't be included.</p>
+            <p id="reset-warning-wipe" style="color:#c0392b;font-size:12px;margin-bottom:12px;display:none;">This permanently erases your encrypted backup. Your entries cannot be recovered.</p>
+            <button class="btn" id="reset-btn" style="width:100%;">Reset Passphrase</button>
+            <p id="reset-error" style="color:#c0392b;font-size:12px;margin-top:8px;display:none;"></p>
+            <p style="color:var(--deep);font-size:12px;margin-top:8px;">Write your new passphrase down — it cannot be recovered.</p>
+            <p style="text-align:center;font-size:12px;margin-top:12px;"><a href="#" id="reset-back" style="color:var(--blue);text-decoration:underline;">Back</a></p>
+          </div>
+          <p style="text-align:center;font-size:11px;margin-top:16px;">
+            <a href="#" id="unlock-forgot" style="color:var(--lt-brown);text-decoration:underline;">Forgot your passphrase?</a>
           </p>
         </div>
       </div>
