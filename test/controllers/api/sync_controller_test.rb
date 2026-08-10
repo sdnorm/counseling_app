@@ -98,6 +98,18 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     post reset_api_sync_path, params: { password: "password" }, as: :json
 
     assert_response :success
+    assert response.parsed_body["success"]
+  end
+
+  test "reset with an empty blob does not wipe the existing blob" do
+    user = users(:danny)
+    user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
+    sign_in_as user
+
+    post reset_api_sync_path, params: { password: "password", blob: {} }, as: :json
+
+    assert_operator response.status, :>=, 400
+    assert_not_nil user.reload.encrypted_blob
   end
 
   test "reset with a wrong password changes nothing and says so" do

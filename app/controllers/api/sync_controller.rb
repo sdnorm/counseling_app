@@ -44,10 +44,10 @@ class Api::SyncController < Api::BaseController
       return render json: { errors: [ "Incorrect password" ] }, status: :unauthorized
     end
 
-    if params[:blob].present?
+    if params.key?(:blob)
       save_blob
     else
-      current_user.encrypted_blob&.destroy
+      current_user.encrypted_blob&.destroy!
       render json: { success: true }
     end
   end
