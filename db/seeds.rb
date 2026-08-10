@@ -4,6 +4,7 @@
 
 # Create a default invite code for local development
 invite = InviteCode.find_or_create_by!(code: "DEVCODE1") do |code|
+  code.email_address = "dev@example.com"
   code.used = false
 end
 puts "Dev invite code: DEVCODE1"
