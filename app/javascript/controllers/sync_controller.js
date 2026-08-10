@@ -69,6 +69,12 @@ export default class extends Controller {
     if (back) back.onclick = (e) => { e.preventDefault(); this.closeResetPanel(); };
     const resetBtn = document.getElementById("reset-btn");
     if (resetBtn) resetBtn.onclick = (e) => { e.preventDefault(); this.performReset(); };
+
+    const resetEnter = (e) => { if (e.key === "Enter" && resetBtn) resetBtn.click(); };
+    const resetPassword = document.getElementById("reset-password");
+    if (resetPassword) resetPassword.onkeydown = resetEnter;
+    const resetPassphrase = document.getElementById("reset-passphrase");
+    if (resetPassphrase) resetPassphrase.onkeydown = resetEnter;
   }
 
   // The reset panel needs to know up front whether this device still holds the
@@ -76,6 +82,7 @@ export default class extends Controller {
   // can only wipe the backup. The warning shown must match the path taken.
   async openResetPanel() {
     const error = document.getElementById("unlock-error");
+    let stamp;
     try {
       const response = await fetch("/api/sync", {
         headers: { "Accept": "application/json" },
@@ -87,7 +94,18 @@ export default class extends Controller {
         error.style.display = "block";
         return;
       }
+      if (!response.ok && response.status !== 404) {
+        error.textContent = "Reset is unavailable right now. Please try again.";
+        error.style.display = "block";
+        return;
+      }
       this.resetAccount = (await response.json().catch(() => ({}))).account;
+      if (this.resetAccount === undefined) {
+        error.textContent = "Reset is unavailable right now. Please try again.";
+        error.style.display = "block";
+        return;
+      }
+      stamp = await readAccountStamp();
     } catch (e) {
       console.error("Reset unavailable:", e);
       error.textContent = "Reset needs a connection. Please try again.";
@@ -95,7 +113,6 @@ export default class extends Controller {
       return;
     }
 
-    const stamp = await readAccountStamp();
     this.resetKeepsData = stamp !== null && stamp === this.resetAccount;
 
     document.getElementById("reset-warning-keep").style.display = this.resetKeepsData ? "block" : "none";
@@ -114,13 +131,39 @@ export default class extends Controller {
   }
 
   async performReset() {
+    if (this.resetting) return;
     const password = document.getElementById("reset-password").value;
     const passphrase = document.getElementById("reset-passphrase").value;
     const error = document.getElementById("reset-error");
     if (!password || !passphrase) return;
     error.style.display = "none";
+    this.resetting = true;
+    const btn = document.getElementById("reset-btn");
+    if (btn) btn.disabled = true;
 
     try {
+      // The panel may have sat open while the session or the device's data
+      // changed. Re-derive both decisions; if either differs from what the
+      // user was shown, re-open the panel so the warning matches the path
+      // before anything destructive happens.
+      const check = await fetch("/api/sync", {
+        headers: { "Accept": "application/json" },
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+      const account = (check.ok || check.status === 404)
+        ? (await check.json().catch(() => ({}))).account
+        : undefined;
+      const stamp = await readAccountStamp();
+      const keeps = stamp !== null && stamp === account;
+      if (account === undefined || account !== this.resetAccount || keeps !== this.resetKeepsData) {
+        await this.openResetPanel();
+        const staleError = document.getElementById("reset-error");
+        staleError.textContent = "Something changed since you opened this screen. Please review the warning and try again.";
+        staleError.style.display = "block";
+        return;
+      }
+
       const body = { password };
       let salt = null;
       let key = null;
@@ -188,6 +231,9 @@ export default class extends Controller {
       console.error("Reset failed:", e);
       error.textContent = "Reset failed. Please try again.";
       error.style.display = "block";
+    } finally {
+      this.resetting = false;
+      if (btn) btn.disabled = false;
     }
   }
 
