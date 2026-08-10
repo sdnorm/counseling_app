@@ -151,4 +151,13 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_equal "old", user.reload.encrypted_blob.ciphertext
   end
+
+  test "api responses are never cacheable" do
+    sign_in_as users(:danny)
+
+    get api_sync_path, headers: { "Accept" => "application/json" }
+
+    assert_equal "no-store", response.headers["Cache-Control"],
+      "a cached /api/sync response could hand a fresh account another account's blob or salt"
+  end
 end
