@@ -119,7 +119,9 @@ the reset flow replaces it. First-time copy is unchanged.
 
 - Controller tests: reset with correct password replaces the blob; reset
   without blob destroys it; wrong password → 401 and blob unchanged;
-  unauthenticated → 401; rate limit returns 429 after 10 attempts.
+  unauthenticated → 401. The rate limit is verified manually in development
+  (`:memory_store`) — the test env's `:null_store` cache makes `rate_limit`
+  inert there, which is also why the login limiter has no test.
 - Client behavior verified manually: re-key on a stamped device keeps entries
   and unlocks; wipe path on a fresh device warns and starts over; wrong
   password shows the inline error and changes nothing.
