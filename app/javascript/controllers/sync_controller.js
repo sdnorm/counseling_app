@@ -62,6 +62,133 @@ export default class extends Controller {
     input.onkeydown = (e) => {
       if (e.key === "Enter") btn.click();
     };
+
+    const forgot = document.getElementById("unlock-forgot");
+    if (forgot) forgot.onclick = (e) => { e.preventDefault(); this.openResetPanel(); };
+    const back = document.getElementById("reset-back");
+    if (back) back.onclick = (e) => { e.preventDefault(); this.closeResetPanel(); };
+    const resetBtn = document.getElementById("reset-btn");
+    if (resetBtn) resetBtn.onclick = (e) => { e.preventDefault(); this.performReset(); };
+  }
+
+  // The reset panel needs to know up front whether this device still holds the
+  // account's data: if it does, reset re-keys and loses nothing; if not, reset
+  // can only wipe the backup. The warning shown must match the path taken.
+  async openResetPanel() {
+    const error = document.getElementById("unlock-error");
+    try {
+      const response = await fetch("/api/sync", {
+        headers: { "Accept": "application/json" },
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+      if (response.status === 401) {
+        error.innerHTML = 'Session expired. <a href="/session/new" style="color:var(--blue);text-decoration:underline;">Log in again</a>.';
+        error.style.display = "block";
+        return;
+      }
+      this.resetAccount = (await response.json().catch(() => ({}))).account;
+    } catch (e) {
+      console.error("Reset unavailable:", e);
+      error.textContent = "Reset needs a connection. Please try again.";
+      error.style.display = "block";
+      return;
+    }
+
+    const stamp = await readAccountStamp();
+    this.resetKeepsData = stamp !== null && stamp === this.resetAccount;
+
+    document.getElementById("reset-warning-keep").style.display = this.resetKeepsData ? "block" : "none";
+    document.getElementById("reset-warning-wipe").style.display = this.resetKeepsData ? "none" : "block";
+    document.getElementById("reset-password").value = "";
+    document.getElementById("reset-passphrase").value = "";
+    document.getElementById("reset-error").style.display = "none";
+    error.style.display = "none";
+    document.getElementById("unlock-card").style.display = "none";
+    document.getElementById("reset-card").style.display = "block";
+  }
+
+  closeResetPanel() {
+    document.getElementById("reset-card").style.display = "none";
+    document.getElementById("unlock-card").style.display = "block";
+  }
+
+  async performReset() {
+    const password = document.getElementById("reset-password").value;
+    const passphrase = document.getElementById("reset-passphrase").value;
+    const error = document.getElementById("reset-error");
+    if (!password || !passphrase) return;
+    error.style.display = "none";
+
+    try {
+      const body = { password };
+      let salt = null;
+      let key = null;
+
+      if (this.resetKeepsData) {
+        // Re-key: encrypt the state this device already holds under the new
+        // passphrase. Only ciphertext leaves the device, same as every save.
+        const { exportState } = await import("lib/db");
+        const { encrypt } = await import("lib/crypto");
+        salt = window.crypto.getRandomValues(new Uint8Array(16));
+        key = await deriveKey(passphrase, salt);
+        const state = await exportState();
+        const { ciphertext, nonce } = await encrypt(state, key);
+        body.blob = { ciphertext, nonce, salt: btoa(String.fromCharCode(...salt)) };
+      }
+
+      const response = await fetch("/api/sync/reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content
+        },
+        credentials: "same-origin",
+        body: JSON.stringify(body)
+      });
+
+      if (response.status === 401) {
+        // Our action's wrong-password 401 carries an errors body; the
+        // authentication concern's session-expired 401 is an empty head.
+        const data = await response.json().catch(() => null);
+        if (data && data.errors) {
+          error.textContent = "Incorrect password. Please try again.";
+        } else {
+          error.innerHTML = 'Session expired. <a href="/session/new" style="color:var(--blue);text-decoration:underline;">Log in again</a>.';
+        }
+        error.style.display = "block";
+        return;
+      }
+      if (response.status === 429) {
+        error.textContent = "Too many attempts. Please try again later.";
+        error.style.display = "block";
+        return;
+      }
+      if (!response.ok) {
+        error.textContent = "Reset failed. Please try again.";
+        error.style.display = "block";
+        return;
+      }
+
+      if (!this.resetKeepsData) {
+        // Start-over path, only after the server confirmed the old backup is
+        // gone: same first-run behavior as a 404 unlock.
+        await this.discardOtherAccountData(this.resetAccount);
+        salt = window.crypto.getRandomValues(new Uint8Array(16));
+        key = await deriveKey(passphrase, salt);
+      }
+
+      this.salt = salt;
+      this.key = key;
+      this.closeResetPanel();
+      document.getElementById("unlock-overlay").style.display = "none";
+      this.unlocked = true;
+      document.dispatchEvent(new CustomEvent("app:unlocked", { bubbles: true }));
+    } catch (e) {
+      console.error("Reset failed:", e);
+      error.textContent = "Reset failed. Please try again.";
+      error.style.display = "block";
+    }
   }
 
   async unlock(passphrase) {
@@ -69,7 +196,8 @@ export default class extends Controller {
     try {
       const response = await fetch("/api/sync", {
         headers: { "Accept": "application/json" },
-        credentials: "same-origin"
+        credentials: "same-origin",
+        cache: "no-store"
       });
 
       if (response.status === 401) {
