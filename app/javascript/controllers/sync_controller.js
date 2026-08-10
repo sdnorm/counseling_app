@@ -19,9 +19,20 @@ export default class extends Controller {
     this.pageshowHandler = (event) => {
       if (event.persisted) window.location.reload();
     };
+    // iOS Safari pans the whole page up to keep a focused input above the
+    // keyboard and sometimes never pans back after the keyboard closes,
+    // leaving the page stuck half off-screen. Once the visual viewport is
+    // back to full height, snap the scroll position home.
+    this.viewportHandler = () => {
+      const vv = window.visualViewport;
+      if (vv.height >= window.innerHeight - 1 && (window.scrollY > 0 || vv.offsetTop > 0)) {
+        window.scrollTo(0, 0);
+      }
+    };
     document.addEventListener("sync:save", this.saveHandler);
     document.addEventListener("sync:flush", this.flushHandler);
     window.addEventListener("pageshow", this.pageshowHandler);
+    window.visualViewport?.addEventListener("resize", this.viewportHandler);
     this.showUnlockScreen();
   }
 
@@ -29,6 +40,7 @@ export default class extends Controller {
     document.removeEventListener("sync:save", this.saveHandler);
     document.removeEventListener("sync:flush", this.flushHandler);
     window.removeEventListener("pageshow", this.pageshowHandler);
+    window.visualViewport?.removeEventListener("resize", this.viewportHandler);
   }
 
   showUnlockScreen() {
