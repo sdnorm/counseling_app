@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   resources :users, only: [ :new, :create ]
 
   namespace :api do
-    resource :sync, only: [ :show, :update ], controller: "sync"
+    resource :sync, only: [ :show, :update ], controller: "sync" do
+      post :reset
+    end
     resource :push, only: [ :create, :destroy ], controller: "push"
     get "push/vapid_public_key", to: "push#vapid_public_key"
     patch "push/preferences", to: "push#update_preferences"
