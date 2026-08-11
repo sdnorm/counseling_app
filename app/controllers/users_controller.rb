@@ -42,6 +42,11 @@ class UsersController < ApplicationController
       invite_code.update!(user: @user)
       true
     end
+  # Backstop for the race where a duplicate email passes validation but loses to
+  # the unique index. Rescuing outside the transaction rolls the claim back too.
+  rescue ActiveRecord::RecordNotUnique
+    @error = "That email address already has an account — sign in or reset your password below."
+    false
   end
 
   def user_params
