@@ -62,4 +62,27 @@ class UserTest < ActiveSupport::TestCase
     user.last_reminded_on = Date.current
     assert user.valid?, "updating unrelated attributes must not trigger password validation"
   end
+
+  test "invalid with an email address that already has an account" do
+    user = User.new(email_address: "danny@example.com",
+      password: "supersecret1", password_confirmation: "supersecret1",
+      invite_code: invite_codes(:danny_invite))
+    assert_not user.valid?
+    assert user.errors[:email_address].any?,
+      "a duplicate email must fail validation instead of raising at the database"
+  end
+
+  test "duplicate email detection survives normalization differences" do
+    user = User.new(email_address: "  DANNY@example.com ",
+      password: "supersecret1", password_confirmation: "supersecret1",
+      invite_code: invite_codes(:danny_invite))
+    assert_not user.valid?
+  end
+
+  test "invalid without an email address" do
+    user = User.new(password: "supersecret1", password_confirmation: "supersecret1",
+      invite_code: invite_codes(:danny_invite))
+    assert_not user.valid?
+    assert user.errors[:email_address].any?
+  end
 end

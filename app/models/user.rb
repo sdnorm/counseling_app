@@ -10,6 +10,11 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   encrypts :email_address, deterministic: true
 
+  # Deterministic encryption keeps this uniqueness check queryable. Without it a
+  # duplicate email hits the unique index and 500s instead of re-rendering the form.
+  validates :email_address, presence: true,
+    uniqueness: { message: "already has an account — please sign in instead" }
+
   # allow_nil so updates that don't touch the password (reminder settings, the
   # reminder job's timestamp) skip this entirely.
   validates :password, length: { minimum: MINIMUM_PASSWORD_LENGTH }, allow_nil: true

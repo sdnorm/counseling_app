@@ -104,6 +104,49 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_match(/invite code/i, response.body)
   end
 
+  test "signup with an email that already has an account is rejected with sign-in guidance" do
+    code = InviteCode.generate("danny@example.com")
+
+    assert_no_difference -> { User.count } do
+      post users_path, params: { user: {
+        email_address: "DANNY@example.com",
+        password: "supersecret1",
+        password_confirmation: "supersecret1",
+        invite_code: code.code
+      } }
+    end
+
+    assert_response :unprocessable_entity
+    assert_match(/sign in/i, response.body,
+      "the form must point an existing account holder at sign-in")
+    assert_not code.reload.used?,
+      "a rejected duplicate signup must leave the code usable"
+  end
+
+  test "a duplicate email that slips past validation is still rejected cleanly" do
+    code = InviteCode.generate("race@example.com")
+    user = User.new(email_address: "race@example.com",
+      password: "supersecret1", password_confirmation: "supersecret1")
+    user.define_singleton_method(:save) do |**|
+      raise ActiveRecord::RecordNotUnique, "UNIQUE constraint failed: users.email_address"
+    end
+
+    User.stub :new, user do
+      assert_no_difference -> { User.count } do
+        post users_path, params: { user: {
+          email_address: "race@example.com",
+          password: "supersecret1",
+          password_confirmation: "supersecret1",
+          invite_code: code.code
+        } }
+      end
+    end
+
+    assert_response :unprocessable_entity
+    assert_not code.reload.used?,
+      "a signup lost to the unique-index race must release the code"
+  end
+
   test "the invite code is still usable after a failed attempt" do
     code = InviteCode.generate("retry2@example.com")
 
