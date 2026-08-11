@@ -13,7 +13,7 @@ class User < ApplicationRecord
   # Deterministic encryption keeps this uniqueness check queryable. Without it a
   # duplicate email hits the unique index and 500s instead of re-rendering the form.
   validates :email_address, presence: true,
-    uniqueness: { message: "already has an account — please sign in instead" }
+    uniqueness: { message: "already has an account — sign in or reset your password below" }
 
   # allow_nil so updates that don't touch the password (reminder settings, the
   # reminder job's timestamp) skip this entirely.

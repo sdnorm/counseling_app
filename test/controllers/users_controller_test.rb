@@ -119,6 +119,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_match(/sign in/i, response.body,
       "the form must point an existing account holder at sign-in")
+    assert_select "a[href=?]", new_session_path, { minimum: 1 },
+      "the form must link to sign-in"
+    assert_select "a[href=?]", new_password_path, { minimum: 1 },
+      "the form must link to password reset"
     assert_not code.reload.used?,
       "a rejected duplicate signup must leave the code usable"
   end
