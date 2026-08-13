@@ -1,0 +1,6 @@
+# wt stack config (Rails) — commit this so it travels to every machine.
+# These match wt's built-in defaults; edit per-repo as needed.
+WT_DEV_CMD="bin/dev"                 # runs with PORT set
+WT_SETUP_CMD="bin/setup"             # once per fresh worktree
+WT_COPY_PATTERNS=".env .env.* config/master.key config/credentials/*.key"
+WT_PORT_BASE=3000
