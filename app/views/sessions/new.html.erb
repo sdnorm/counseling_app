@@ -14,10 +14,11 @@
     </div>
 
     <div class="field">
-      <%= form.label :password, "Password" %>
+      <%= form.label :password, "Account password" %>
       <%= form.password_field :password, required: true,
-            autocomplete: "current-password", placeholder: "Your password",
+            autocomplete: "current-password", placeholder: "Your account password",
             maxlength: 72 %>
+      <p class="field-hint">After signing in you'll be asked for your data passphrase, which is separate from this password.</p>
     </div>
 
     <div class="actions">

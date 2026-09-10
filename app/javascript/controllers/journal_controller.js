@@ -33,7 +33,7 @@ export default class extends Controller {
       content = this.longInputTarget.querySelector("textarea").value.trim();
     } else {
       const inputs = this.bulletInputTarget.querySelectorAll("input");
-      content = Array.from(inputs).map(i => i.value.trim()).filter(Boolean).join("\n• ");
+      content = Array.from(inputs).map(i => i.value.trim()).filter(Boolean).map(line => `• ${line}`).join("\n");
     }
 
     if (!content) return;
@@ -61,6 +61,16 @@ export default class extends Controller {
     }
   }
 
+  toggleEntry(event) {
+    const button = event.currentTarget;
+    const card = button.closest(".card");
+    const expanded = button.getAttribute("aria-expanded") !== "true";
+    card.querySelector("[data-entry-preview]").hidden = expanded;
+    card.querySelector("[data-entry-full]").hidden = !expanded;
+    button.setAttribute("aria-expanded", String(expanded));
+    button.textContent = expanded ? "Show less" : "Read more";
+  }
+
   async loadEntries() {
     const entries = await getAll("journalEntries");
     entries.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -68,7 +78,12 @@ export default class extends Controller {
     this.entriesTarget.innerHTML = entries.slice(0, 10).map(e => `
       <div class="card">
         <div style="font-size:11px;color:var(--lt-brown);margin-bottom:4px;">${new Date(e.date).toLocaleDateString()}</div>
-        <div style="white-space:pre-wrap;font-size:13px;">${escapeHtml(e.content.substring(0, 200))}${e.content.length > 200 ? "..." : ""}</div>
+        ${e.prompt && e.prompt !== "Free write" ? `<div style="font-size:11px;color:var(--lt-brown);margin-bottom:4px;">${escapeHtml(e.prompt)}</div>` : ""}
+        <div data-entry-preview style="white-space:pre-wrap;font-size:13px;">${escapeHtml(e.content.substring(0, 200))}${e.content.length > 200 ? "..." : ""}</div>
+        ${e.content.length > 200 ? `
+          <div data-entry-full hidden style="white-space:pre-wrap;font-size:13px;">${escapeHtml(e.content)}</div>
+          <button type="button" class="btn btn-o" aria-expanded="false" data-action="click->journal#toggleEntry">Read more</button>
+        ` : ""}
       </div>
     `).join("");
   }

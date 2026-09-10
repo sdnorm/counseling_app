@@ -3,6 +3,9 @@
   <p class="subtitle">What would you like to discuss in your next session?</p>
 
   <div class="card">
+    <label class="lbl">Next session</label>
+    <input type="date" data-agenda-target="nextSession" data-action="change->agenda#saveNextSession" />
+    <div class="agenda-next" data-agenda-target="nextSessionLabel" hidden></div>
     <div data-agenda-target="items">
       <!-- Populated by JS -->
     </div>
