@@ -142,6 +142,23 @@ export default class extends Controller {
     `;
   }
 
+  // Pre-filled so the office gets what it needs to book, and the client sees
+  // what to include. Body uses CRLF per RFC 6068; encodeURIComponent keeps the
+  // href valid inside the template string.
+  appointmentMailto() {
+    const subject = "Appointment request";
+    const body = [
+      "Hi,",
+      "",
+      "I would like to request an appointment.",
+      "",
+      "My name is: ",
+      "My availability is: ",
+      "",
+    ].join("\r\n");
+    return `mailto:logan@crossroadcounselor.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
   legalDisclaimer() {
     return `Important: This app is not monitored. If you're in a mental health crisis,
       call 911 or go to your nearest ER. You may also call/text 988.
@@ -164,7 +181,7 @@ export default class extends Controller {
           📞 Call Our Office
           <small>(225) 341-4147</small>
         </a>
-        <a href="mailto:logan@crossroadcounselor.com" class="link-btn" style="background:var(--brown)">
+        <a href="${this.appointmentMailto()}" class="link-btn" style="background:var(--brown)">
           ✉️ Email Us
           <small>logan@crossroadcounselor.com</small>
         </a>
