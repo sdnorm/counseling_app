@@ -4,25 +4,50 @@ import { escapeHtml } from "lib/html";
 import { triggerConfetti, showAffirmation } from "lib/celebration";
 
 export default class extends Controller {
-  static targets = ["score", "mode", "entries", "chart", "chartCard"];
+  static targets = ["score", "mode", "entries", "chart", "chartCard", "scoreLabel", "save"];
 
   connect() {
+    this.chosen = false;
+    this.resetScore();
     this.loadEntries();
   }
 
+  choose() {
+    this.chosen = true;
+    const n = this.scoreTarget.value;
+    this.scoreLabelTarget.textContent = `${n} / 10`;
+    this.scoreLabelTarget.classList.remove("is-unset");
+    this.scoreTarget.classList.remove("is-unset");
+    this.saveTarget.disabled = false;
+  }
+
   async save() {
+    if (!this.chosen) return;
+
+    const score = parseInt(this.scoreTarget.value, 10);
+    if (!Number.isInteger(score) || score < 1 || score > 10) return;
+
     const entry = {
       id: crypto.randomUUID(),
       date: new Date().toISOString(),
-      score: parseInt(this.scoreTarget.value),
+      score,
       mode: this.modeTarget.value,
     };
 
     await put("checkinEntries", entry);
+    this.resetScore();
     this.loadEntries();
     triggerConfetti();
     showAffirmation();
     this.dispatch("sync:save", { target: document.body, prefix: false });
+  }
+
+  resetScore() {
+    this.chosen = false;
+    this.scoreLabelTarget.textContent = "Slide to choose";
+    this.scoreLabelTarget.classList.add("is-unset");
+    this.scoreTarget.classList.add("is-unset");
+    this.saveTarget.disabled = true;
   }
 
   async loadEntries() {

@@ -4,7 +4,8 @@
 
   <div class="card">
     <label class="lbl">Mood Score (1-10)</label>
-    <input type="range" min="1" max="10" data-checkin-target="score" />
+    <div class="checkin-score is-unset" data-checkin-target="scoreLabel">Slide to choose</div>
+    <input type="range" min="1" max="10" step="1" class="is-unset" data-checkin-target="score" data-action="input->checkin#choose" />
 
     <label class="lbl">Mode</label>
     <select data-checkin-target="mode">
@@ -12,7 +13,7 @@
       <option value="post">Post-session</option>
     </select>
 
-    <button class="btn" style="margin-top:10px;" data-action="click->checkin#save">Save Check-In</button>
+    <button class="btn" style="margin-top:10px;" data-checkin-target="save" data-action="click->checkin#save" disabled>Save Check-In</button>
   </div>
 
   <div class="card" data-checkin-target="chartCard" style="display:none;">
