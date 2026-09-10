@@ -19,9 +19,9 @@ class ClientJournalContractTest < ActiveSupport::TestCase
 
   test "long entries have escaped full text and a reversible Stimulus toggle" do
     source = SOURCE.read
-    assert_includes source, 'e.content.length > 200'
-    assert_includes source, 'escapeHtml(e.content)'
-    assert_includes source, 'data-entry-full hidden'
+    assert_includes source, "e.content.length > 200"
+    assert_includes source, "escapeHtml(e.content)"
+    assert_includes source, "data-entry-full hidden"
     assert_includes source, 'data-action="click->journal#toggleEntry"'
     assert_includes source, 'card.querySelector("[data-entry-preview]").hidden = expanded'
     assert_includes source, 'card.querySelector("[data-entry-full]").hidden = !expanded'
