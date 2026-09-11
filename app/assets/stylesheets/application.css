@@ -59,7 +59,13 @@ input[type=range]{width:100%}
 .field-hint{margin-top:6px;font-size:11px;color:var(--lt-brown);line-height:1.5}
 .form-error{background:#fdecea;border:1px solid #f2c2ba;color:#8c2f22;border-radius:6px;padding:9px 12px;font-size:12px;margin-bottom:12px}
 .form-notice{background:var(--light-blue);border:1px solid rgba(50,177,195,.35);color:var(--deep);border-radius:6px;padding:9px 12px;font-size:12px;margin-bottom:12px}
-input[type=date]{width:100%;border:1.5px solid var(--light-blue);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:16px;outline:none;background:var(--white);color:var(--brown)}
+/* iOS Safari sizes date inputs from their own intrinsic width and ignores the
+   border-box width every other input gets, so padding and border spilled the
+   field past the card edge. Dropping the native appearance makes it lay out
+   like a text input; the value is left-aligned because iOS centers it. */
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;min-height:38px;border:1.5px solid var(--light-blue);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:16px;line-height:1.3;outline:none;background:var(--white);color:var(--brown);text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
+input[type=date]:focus{border-color:var(--blue)}
 .btn:disabled{opacity:.45;cursor:default}
 .btn:disabled:hover{opacity:.45}
 .checkin-score{font-family:'Lora',serif;color:var(--brown);font-size:32px;font-weight:700;text-align:center;margin:4px 0 10px;letter-spacing:.3px;line-height:1.1}
