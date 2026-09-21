@@ -182,4 +182,60 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to root_path
   end
+
+  test "JSON signup creates the account with both wrapped keys and returns the account id" do
+    code = InviteCode.generate("json@example.com")
+
+    assert_difference -> { User.count }, 1 do
+      post users_path, params: { user: {
+        email_address: "json@example.com",
+        password: NEW_AUTH_HASH,
+        invite_code: code.code,
+        password_wrapped_key: WRAPPED_KEY,
+        recovery_wrapped_key: WRAPPED_KEY
+      } }, as: :json
+    end
+
+    assert_response :created
+    user = User.find_by(email_address: "json@example.com")
+    assert_equal user.id, response.parsed_body["account"]
+    assert_equal WRAPPED_KEY, user.password_wrapped_key
+    assert_equal WRAPPED_KEY, user.recovery_wrapped_key
+    assert User.authenticate_by(email_address: "json@example.com", password: NEW_AUTH_HASH)
+  end
+
+  test "JSON signup starts a session" do
+    code = InviteCode.generate("session@example.com")
+    post users_path, params: { user: {
+      email_address: "session@example.com", password: NEW_AUTH_HASH, invite_code: code.code,
+      password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY
+    } }, as: :json
+
+    get screen_path("journal")
+    assert_response :success
+  end
+
+  test "JSON signup without wrapped keys is rejected and explains why" do
+    code = InviteCode.generate("nokeys@example.com")
+
+    assert_no_difference -> { User.count } do
+      post users_path, params: { user: {
+        email_address: "nokeys@example.com", password: NEW_AUTH_HASH, invite_code: code.code
+      } }, as: :json
+    end
+
+    assert_response :unprocessable_entity
+    assert_match(/wrapped key/i, response.parsed_body["errors"].join)
+    assert_not code.reload.used?
+  end
+
+  test "JSON signup with a bad invite code is rejected with an error list" do
+    post users_path, params: { user: {
+      email_address: "bad@example.com", password: NEW_AUTH_HASH, invite_code: "NOPE0000",
+      password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY
+    } }, as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal [ "Invalid or already used invite code." ], response.parsed_body["errors"]
+  end
 end
