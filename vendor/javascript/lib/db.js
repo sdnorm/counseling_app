@@ -1,8 +1,9 @@
 const DB_NAME = "crossroads_app";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
-// "meta" is bookkeeping, not user content: it is excluded from the synced state
-// so it never travels to the server or gets overwritten by an incoming blob.
+// "meta" and "keys" are bookkeeping, not user content: they are excluded from
+// the synced state so they never travel to the server or get overwritten by
+// an incoming blob. "keys" holds the non-extractable data key.
 const STORE_KEY_PATHS = {
   profile: "id",
   journalEntries: "id",
@@ -15,11 +16,15 @@ const STORE_KEY_PATHS = {
   agendaItems: "id",
   settings: "id",
   meta: "id",
+  keys: "id",
 };
 
-const DATA_STORES = Object.keys(STORE_KEY_PATHS).filter((name) => name !== "meta");
+const LOCAL_ONLY_STORES = ["meta", "keys"];
+const DATA_STORES = Object.keys(STORE_KEY_PATHS).filter((name) => !LOCAL_ONLY_STORES.includes(name));
 
 const ACCOUNT_STAMP = "account";
+const DATA_KEY = "dataKey";
+
 
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -28,8 +33,7 @@ function openDB() {
     request.onsuccess = () => resolve(request.result);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      // Create-if-missing so this covers both a fresh install and an upgrade
-      // from v1, which had every store except "meta".
+      // Create-if-missing so this covers a fresh install and upgrades from v1 (no "meta") and v2 (no "keys").
       for (const [name, keyPath] of Object.entries(STORE_KEY_PATHS)) {
         if (!db.objectStoreNames.contains(name)) {
           db.createObjectStore(name, { keyPath });
@@ -55,6 +59,28 @@ export async function writeAccountStamp(value) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction("meta", "readwrite");
     tx.objectStore("meta").put({ id: ACCOUNT_STAMP, value });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// The account's data key, stored as a non-extractable CryptoKey (IndexedDB
+// structured-clones CryptoKey objects). Null on a device that has never
+// signed in, or after logout wiped the database.
+export async function readDataKey() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction("keys", "readonly").objectStore("keys").get(DATA_KEY);
+    request.onsuccess = () => resolve(request.result ? request.result.key : null);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function writeDataKey(key) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("keys", "readwrite");
+    tx.objectStore("keys").put({ id: DATA_KEY, key });
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
