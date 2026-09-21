@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :users, only: [ :new, :create ]
 
   namespace :api do
+    resource :account_keys, only: [ :show, :update ], path: "account/keys"
     resource :sync, only: [ :show, :update ], controller: "sync" do
       post :reset
     end
