@@ -44,20 +44,31 @@ class UserTest < ActiveSupport::TestCase
     assert_includes user.errors[:time_zone], "is not a valid time zone"
   end
 
-  test "rejects a password shorter than the minimum" do
-    user = users(:danny)
-    user.password = "a" * (User::MINIMUM_PASSWORD_LENGTH - 1)
+  test "password must be an auth hash, never a raw password" do
+    user = User.new(email_address: "k@example.com", invite_code: invite_codes(:danny_invite),
+      password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY)
+
+    user.password = "correct horse battery staple"
     assert_not user.valid?
-    assert_includes user.errors[:password], "is too short (minimum is #{User::MINIMUM_PASSWORD_LENGTH} characters)"
+    assert_includes user.errors[:password], "requires JavaScript to be enabled"
+
+    user.password = AUTH_HASH
+    assert user.valid?, user.errors.full_messages.to_sentence
   end
 
-  test "accepts a password at the minimum length" do
-    user = users(:danny)
-    user.password = "a" * User::MINIMUM_PASSWORD_LENGTH
-    assert user.valid?
+  test "wrapped keys are required and bounded" do
+    user = User.new(email_address: "k@example.com", invite_code: invite_codes(:danny_invite), password: AUTH_HASH)
+    assert_not user.valid?
+    assert_includes user.errors[:password_wrapped_key], "can't be blank"
+    assert_includes user.errors[:recovery_wrapped_key], "can't be blank"
+
+    user.password_wrapped_key = "x" * (User::WRAPPED_KEY_MAX_BYTES + 1)
+    user.recovery_wrapped_key = WRAPPED_KEY
+    assert_not user.valid?
+    assert_includes user.errors[:password_wrapped_key], "is too long (maximum is #{User::WRAPPED_KEY_MAX_BYTES} characters)"
   end
 
-  test "password length does not apply to updates that leave the password alone" do
+  test "password format does not apply to updates that leave the password alone" do
     user = users(:danny)
     user.last_reminded_on = Date.current
     assert user.valid?, "updating unrelated attributes must not trigger password validation"
@@ -65,7 +76,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "invalid with an email address that already has an account" do
     user = User.new(email_address: "danny@example.com",
-      password: "supersecret1", password_confirmation: "supersecret1",
+      password: AUTH_HASH, password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY,
       invite_code: invite_codes(:danny_invite))
     assert_not user.valid?
     assert user.errors[:email_address].any?,
@@ -74,13 +85,13 @@ class UserTest < ActiveSupport::TestCase
 
   test "duplicate email detection survives normalization differences" do
     user = User.new(email_address: "  DANNY@example.com ",
-      password: "supersecret1", password_confirmation: "supersecret1",
+      password: AUTH_HASH, password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY,
       invite_code: invite_codes(:danny_invite))
     assert_not user.valid?
   end
 
   test "invalid without an email address" do
-    user = User.new(password: "supersecret1", password_confirmation: "supersecret1",
+    user = User.new(password: AUTH_HASH, password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY,
       invite_code: invite_codes(:danny_invite))
     assert_not user.valid?
     assert user.errors[:email_address].any?

@@ -1,5 +1,8 @@
 class User < ApplicationRecord
-  MINIMUM_PASSWORD_LENGTH = 8
+  # The client sends a 32-byte HKDF output, base64url without padding. A raw
+  # password can only arrive if the browser's JavaScript never ran.
+  AUTH_HASH_FORMAT = /\A[A-Za-z0-9_-]{43}\z/
+  WRAPPED_KEY_MAX_BYTES = 256
 
   has_secure_password
   has_many :sessions, dependent: :destroy
@@ -17,7 +20,10 @@ class User < ApplicationRecord
 
   # allow_nil so updates that don't touch the password (reminder settings, the
   # reminder job's timestamp) skip this entirely.
-  validates :password, length: { minimum: MINIMUM_PASSWORD_LENGTH }, allow_nil: true
+  validates :password, format: { with: AUTH_HASH_FORMAT, message: "requires JavaScript to be enabled" }, allow_nil: true
+
+  validates :password_wrapped_key, :recovery_wrapped_key,
+    presence: true, length: { maximum: WRAPPED_KEY_MAX_BYTES }
 
   normalizes :reminder_time, :time_zone, with: ->(value) { value.presence }
 

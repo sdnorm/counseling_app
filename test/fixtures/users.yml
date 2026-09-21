@@ -1,9 +1,13 @@
 danny:
   email_address: danny@example.com
-  password_digest: <%= BCrypt::Password.create("password") %>
+  password_digest: <%= BCrypt::Password.create("a" * 43) %>
   invite_code: danny_invite
+  password_wrapped_key: '{"nonce":"bm9uY2U=","ciphertext":"Y2lwaGVy"}'
+  recovery_wrapped_key: '{"nonce":"bm9uY2U=","ciphertext":"cmVjb3Zlcnk="}'
 
 maria:
   email_address: maria@example.com
-  password_digest: <%= BCrypt::Password.create("password") %>
+  password_digest: <%= BCrypt::Password.create("a" * 43) %>
   invite_code: maria_invite
+  password_wrapped_key: '{"nonce":"bm9uY2U=","ciphertext":"Y2lwaGVy"}'
+  recovery_wrapped_key: '{"nonce":"bm9uY2U=","ciphertext":"cmVjb3Zlcnk="}'

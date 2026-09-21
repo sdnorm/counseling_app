@@ -8,8 +8,9 @@ class EncryptedBlob < ApplicationRecord
   MAX_SALT_BYTES = 64
 
   belongs_to :user
-  validates :ciphertext, :nonce, :salt, presence: true
+  validates :ciphertext, :nonce, presence: true
   validates :ciphertext, length: { maximum: MAX_CIPHERTEXT_BYTES }
   validates :nonce, length: { maximum: MAX_NONCE_BYTES }
-  validates :salt, length: { maximum: MAX_SALT_BYTES }
+  # Legacy column: the client no longer sends it. Bounded so it can't be abused.
+  validates :salt, length: { maximum: MAX_SALT_BYTES }, allow_nil: true
 end
