@@ -77,6 +77,28 @@ The native shell wraps whatever the web app is, so it comes after the web
 app has changed shape. Every tool screen becomes a real route so native tabs
 can point at URLs.
 
+### Branding and per-practice content
+
+Today "Crossroads" is baked in as both the product brand and the counselor's
+identity, and several screens are the counselor's own content:
+
+- Product-brand surfaces: page titles, the topbar and auth-page wordmark, the
+  PWA manifest name and icons, the invite email sender name, the CSS palette.
+- Counselor content: the Resources screen (website, client portal), the
+  Schedule screen (booking link, office phone, appointment email), the
+  mailer's from-address and domain.
+- Internal identifiers (IndexedDB name, service worker cache name) also say
+  "crossroads"; these are invisible and stay as they are.
+
+Decision (default, revisit if the user prefers white-label): the product
+brand is the new name everywhere, and each practice has a profile the client
+app renders: practice name, website, booking URL, phone, appointment email,
+and a list of resource links. Clients see "Your counselor: <practice name>"
+plus the practice's own links on Resources and Schedule. The practice profile
+belongs to project 2 (multi-tenancy). Full white-label (per-practice colors,
+logo, and home-screen icon via a per-practice manifest) is deferred and could
+become a group-plan perk in project 4.
+
 ### Brand and domain
 
 The current domain names one counselor. The product needs its own name and
