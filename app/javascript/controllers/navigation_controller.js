@@ -165,7 +165,7 @@ export default class extends Controller {
       This app is not a substitute for professional mental health care and does
       not constitute a therapeutic relationship. The content you save on this app
       is encrypted and neither the server nor any user has access to your data
-      apart from your passphrase/key.`;
+      apart from your password.`;
   }
 
   renderSchedule() {

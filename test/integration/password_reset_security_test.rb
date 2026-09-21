@@ -9,7 +9,6 @@ class PasswordResetSecurityTest < ActionDispatch::IntegrationTest
   end
 
   test "edit renders the material the browser needs" do
-    skip "view is written in Lane K"
     get edit_password_path(@token)
 
     assert_response :success
