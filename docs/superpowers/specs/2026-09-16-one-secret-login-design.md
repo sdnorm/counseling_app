@@ -101,11 +101,12 @@ columns.
 
 | Route | Change |
 |---|---|
-| `POST /session` | `password` is the auth hash. Responds to JSON: on success `200 { password_wrapped_key }`, on failure `401 { errors }`. HTML form fallback keeps redirecting as today. |
-| `POST /users` | Accepts `email_address`, `password` (auth hash), `invite_code`, `password_wrapped_key`, `recovery_wrapped_key`. Responds to JSON: `201 { }` or `422 { errors }`. Starts a session. |
+| `POST /session` | `password` is the auth hash. Responds to JSON: on success `200 { account, password_wrapped_key }` (`account` is the user id the client stamps its database with), on failure `401 { errors }`. HTML form fallback keeps redirecting as today. |
+| `POST /users` | Accepts `email_address`, `password` (auth hash), `invite_code`, `password_wrapped_key`, `recovery_wrapped_key`. Responds to JSON: `201 { account }` or `422 { errors }`. Starts a session. |
+| `GET /api/account/keys` | New. Returns both wrapped keys. The settings flows unwrap the password-wrapped copy with the current password to get a re-wrappable handle, since the device's own copy is non-extractable. |
 | `PUT /api/account/keys` | New. Body: `current_password` (auth hash, required), plus any of `password` (new auth hash), `password_wrapped_key`, `recovery_wrapped_key`. Verifies `current_password` with `authenticate`, then updates the given fields in one transaction. When `password` changes, every other session for the user is destroyed. Rate limited like login (10 per 3 minutes, keyed by user). Wrong current password → 401 JSON. |
 | `GET /passwords/:token/edit` | Renders `recovery_wrapped_key` and the account id into the page as data attributes for the client reset flow. |
-| `PATCH /passwords/:token` | Body: `password` (auth hash), `password_wrapped_key`, `recovery_wrapped_key`, and at most one of `blob { ciphertext, nonce }` or `wipe: true` (the recovery-code path sends neither). In one transaction: update the user, replace the blob if given, destroy it if `wipe`, destroy all sessions, start a new session. Responds JSON `200 { }` so the client can proceed straight into the app. |
+| `PATCH /passwords/:token` | Body: `password` (auth hash), `password_wrapped_key`, `recovery_wrapped_key`, and at most one of `blob { ciphertext, nonce }` or `wipe: true` (the recovery-code path sends neither). In one transaction: update the user, replace the blob if given, destroy it if `wipe`, destroy all sessions, start a new session. Responds JSON `200 { account }` so the client can proceed straight into the app. |
 | `GET /api/sync`, `PUT /api/sync`, `POST /api/sync/reset` | `reset` is removed; the reset page replaces it. `show` and `update` are unchanged except `salt` is optional. |
 
 The unauthenticated-access list gains nothing new: `PUT /api/account/keys`
