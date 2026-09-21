@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_03_031542) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_16_000002) do
   create_table "encrypted_blobs", force: :cascade do |t|
     t.text "ciphertext", null: false
     t.datetime "created_at", null: false
     t.string "nonce", null: false
-    t.string "salt", null: false
+    t.string "salt"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_encrypted_blobs_on_user_id", unique: true
@@ -58,6 +58,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_03_031542) do
     t.integer "invite_code_id", null: false
     t.date "last_reminded_on"
     t.string "password_digest", null: false
+    t.text "password_wrapped_key", null: false
+    t.text "recovery_wrapped_key", null: false
     t.string "reminder_time"
     t.string "time_zone"
     t.datetime "updated_at", null: false
