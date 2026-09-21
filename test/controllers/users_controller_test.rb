@@ -21,8 +21,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_difference -> { User.count }, 1 do
       post users_path, params: { user: {
         email_address: "newclient@example.com",
-        password: "supersecret1",
-        password_confirmation: "supersecret1",
+        password: NEW_AUTH_HASH,
+        password_wrapped_key: WRAPPED_KEY,
+        recovery_wrapped_key: WRAPPED_KEY,
         invite_code: code.code
       } }
     end
@@ -37,8 +38,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference -> { User.count } do
       post users_path, params: { user: {
         email_address: "nobody@example.com",
-        password: "supersecret1",
-        password_confirmation: "supersecret1",
+        password: NEW_AUTH_HASH,
+        password_wrapped_key: WRAPPED_KEY,
+        recovery_wrapped_key: WRAPPED_KEY,
         invite_code: "BOGUS123"
       } }
     end
@@ -52,8 +54,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference -> { User.count } do
       post users_path, params: { user: {
         email_address: "second@example.com",
-        password: "supersecret1",
-        password_confirmation: "supersecret1",
+        password: NEW_AUTH_HASH,
+        password_wrapped_key: WRAPPED_KEY,
+        recovery_wrapped_key: WRAPPED_KEY,
         invite_code: code.code
       } }
     end
@@ -67,7 +70,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       post users_path, params: { user: {
         email_address: "retry@example.com",
         password: "short",
-        password_confirmation: "short",
+        password_wrapped_key: WRAPPED_KEY,
+        recovery_wrapped_key: WRAPPED_KEY,
         invite_code: code.code
       } }
     end
@@ -83,20 +87,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     post users_path, params: { user: {
       email_address: "why@example.com",
       password: "short",
-      password_confirmation: "short",
+      password_wrapped_key: WRAPPED_KEY,
+      recovery_wrapped_key: WRAPPED_KEY,
       invite_code: code.code
     } }
 
     assert_response :unprocessable_entity
-    assert_match(/too short/i, response.body,
+    assert_match(/requires JavaScript/i, response.body,
       "the signup form must show why the account was rejected")
   end
 
   test "an invalid invite code is explained on the form" do
     post users_path, params: { user: {
       email_address: "why2@example.com",
-      password: "supersecret1",
-      password_confirmation: "supersecret1",
+      password: NEW_AUTH_HASH,
+      password_wrapped_key: WRAPPED_KEY,
+      recovery_wrapped_key: WRAPPED_KEY,
       invite_code: "BOGUS123"
     } }
 
@@ -110,8 +116,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference -> { User.count } do
       post users_path, params: { user: {
         email_address: "DANNY@example.com",
-        password: "supersecret1",
-        password_confirmation: "supersecret1",
+        password: NEW_AUTH_HASH,
+        password_wrapped_key: WRAPPED_KEY,
+        recovery_wrapped_key: WRAPPED_KEY,
         invite_code: code.code
       } }
     end
@@ -130,7 +137,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "a duplicate email that slips past validation is still rejected cleanly" do
     code = InviteCode.generate("race@example.com")
     user = User.new(email_address: "race@example.com",
-      password: "supersecret1", password_confirmation: "supersecret1")
+      password: NEW_AUTH_HASH,
+      password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY)
     user.define_singleton_method(:save) do |**|
       raise ActiveRecord::RecordNotUnique, "UNIQUE constraint failed: users.email_address"
     end
@@ -139,8 +147,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       assert_no_difference -> { User.count } do
         post users_path, params: { user: {
           email_address: "race@example.com",
-          password: "supersecret1",
-          password_confirmation: "supersecret1",
+          password: NEW_AUTH_HASH,
+          password_wrapped_key: WRAPPED_KEY,
+          recovery_wrapped_key: WRAPPED_KEY,
           invite_code: code.code
         } }
       end
@@ -157,15 +166,17 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     post users_path, params: { user: {
       email_address: "retry2@example.com",
       password: "short",
-      password_confirmation: "short",
+      password_wrapped_key: WRAPPED_KEY,
+      recovery_wrapped_key: WRAPPED_KEY,
       invite_code: code.code
     } }
 
     assert_difference -> { User.count }, 1 do
       post users_path, params: { user: {
         email_address: "retry2@example.com",
-        password: "supersecret1",
-        password_confirmation: "supersecret1",
+        password: NEW_AUTH_HASH,
+        password_wrapped_key: WRAPPED_KEY,
+        recovery_wrapped_key: WRAPPED_KEY,
         invite_code: code.code
       } }
     end

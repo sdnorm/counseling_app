@@ -13,7 +13,7 @@ class PasswordResetSecurityTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to edit_password_path(@token)
     assert_equal digest_before, @user.reload.password_digest
-    assert User.authenticate_by(email_address: @user.email_address, password: "password"),
+    assert User.authenticate_by(email_address: @user.email_address, password: AUTH_HASH),
       "original password must still work since the reset did not happen"
   end
 
@@ -40,18 +40,18 @@ class PasswordResetSecurityTest < ActionDispatch::IntegrationTest
     @user.sessions.create!(user_agent: "test", ip_address: "127.0.0.1")
     digest_before = @user.password_digest
 
-    patch password_path(@token), params: { password: "newpassword123", password_confirmation: "newpassword123" }
+    patch password_path(@token), params: { password: NEW_AUTH_HASH, password_confirmation: NEW_AUTH_HASH }
 
     assert_redirected_to new_session_path
     assert_not_equal digest_before, @user.reload.password_digest
     assert_equal 0, @user.sessions.count
-    assert User.authenticate_by(email_address: @user.email_address, password: "newpassword123")
+    assert User.authenticate_by(email_address: @user.email_address, password: NEW_AUTH_HASH)
   end
 
   test "mismatched confirmation is still rejected" do
     digest_before = @user.password_digest
 
-    patch password_path(@token), params: { password: "newpassword123", password_confirmation: "different123" }
+    patch password_path(@token), params: { password: NEW_AUTH_HASH, password_confirmation: AUTH_HASH }
 
     assert_redirected_to edit_password_path(@token)
     assert_equal digest_before, @user.reload.password_digest

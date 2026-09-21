@@ -50,6 +50,7 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email_address, :password, :password_confirmation, :invite_code)
+    params.require(:user).permit(:email_address, :password, :invite_code,
+      :password_wrapped_key, :recovery_wrapped_key)
   end
 end

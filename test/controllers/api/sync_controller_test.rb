@@ -58,7 +58,7 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     post reset_api_sync_path, params: {
-      password: "password",
+      password: AUTH_HASH,
       blob: { ciphertext: "new", nonce: "n2", salt: "s2" }
     }, as: :json
 
@@ -73,7 +73,7 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     post reset_api_sync_path, params: {
-      password: "password",
+      password: AUTH_HASH,
       blob: { ciphertext: "new", nonce: "n2", salt: "s2" }
     }, as: :json
 
@@ -86,7 +86,7 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
     sign_in_as user
 
-    post reset_api_sync_path, params: { password: "password" }, as: :json
+    post reset_api_sync_path, params: { password: AUTH_HASH }, as: :json
 
     assert_response :success
     assert_nil user.reload.encrypted_blob
@@ -95,7 +95,7 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
   test "reset without a blob succeeds even when there is nothing to delete" do
     sign_in_as users(:maria)
 
-    post reset_api_sync_path, params: { password: "password" }, as: :json
+    post reset_api_sync_path, params: { password: AUTH_HASH }, as: :json
 
     assert_response :success
     assert response.parsed_body["success"]
@@ -106,7 +106,7 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     user.create_encrypted_blob!(ciphertext: "old", nonce: "n", salt: "s")
     sign_in_as user
 
-    post reset_api_sync_path, params: { password: "password", blob: {} }, as: :json
+    post reset_api_sync_path, params: { password: AUTH_HASH, blob: {} }, as: :json
 
     assert_operator response.status, :>=, 400
     assert_not_nil user.reload.encrypted_blob
@@ -144,7 +144,7 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     post reset_api_sync_path, params: {
-      password: "password",
+      password: AUTH_HASH,
       blob: { ciphertext: "", nonce: "n2", salt: "s2" }
     }, as: :json
 
