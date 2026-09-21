@@ -1,0 +1,16 @@
+<%# app/views/shared/_recovery_code.html.erb
+    Shown once after a recovery code is made. The code exists only in the
+    browser: whichever controller generated it dispatches recovery-code:show. %>
+<div class="auth-screen" data-controller="recovery-code" hidden>
+  <h2>Save your recovery code</h2>
+  <p class="subtitle">If you forget your password, this code is the only way to get your entries back on a new phone. Save it somewhere safe.</p>
+  <div class="card" data-controller="clipboard">
+    <input type="text" readonly class="recovery-code" aria-label="Recovery code"
+           data-clipboard-target="source" data-recovery-code-target="code">
+    <button type="button" class="btn btn-o" style="width:100%;margin-top:8px;"
+            data-clipboard-target="button" data-action="click->clipboard#copy">Copy code</button>
+  </div>
+  <div class="actions">
+    <button type="button" class="btn" data-action="click->recovery-code#done">I've saved it</button>
+  </div>
+</div>

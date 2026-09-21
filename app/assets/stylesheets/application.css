@@ -78,3 +78,6 @@ input[type=range].is-unset{opacity:.45}
 .agenda-discussed{margin:8px 0 10px;border-top:1px solid var(--light-blue);padding-top:8px}
 .agenda-discussed summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--brown);margin-bottom:8px}
 .agenda-next{font-size:13px;color:var(--brown);font-weight:600;margin:8px 0 10px}
+
+.recovery-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;letter-spacing:1px;text-align:center}
+.auth-screen .show-password,.card .show-password{display:flex;align-items:center;gap:6px;font-weight:400;margin-top:6px;font-size:11px;color:var(--lt-brown)}
