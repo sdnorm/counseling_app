@@ -20,10 +20,15 @@ class AuthenticationLockdownTest < ActionDispatch::IntegrationTest
     get api_sync_path, headers: { "Accept" => "application/json" }
     assert_response :unauthorized
 
-    put api_sync_path, params: { blob: { ciphertext: "x", nonce: "n", salt: "s" } }, as: :json
+    put api_sync_path, params: { blob: { ciphertext: "x", nonce: "n" } }, as: :json
+    assert_response :unauthorized
+  end
+
+  test "account keys api requires authentication" do
+    get api_account_keys_path, headers: { "Accept" => "application/json" }
     assert_response :unauthorized
 
-    post reset_api_sync_path, params: { password: "password" }, as: :json
+    put api_account_keys_path, params: { current_password: AUTH_HASH, recovery_wrapped_key: WRAPPED_KEY }, as: :json
     assert_response :unauthorized
   end
 
