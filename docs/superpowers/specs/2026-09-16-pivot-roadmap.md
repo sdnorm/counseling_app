@@ -104,6 +104,13 @@ dashboard:
 - Profile content: website, booking URL, office phone, appointment email,
   resource links. Rendered on the Resources and Schedule screens.
 
+Every brand and profile field is optional and set by the counselor from the
+dashboard. Whatever is left blank falls back to the generic product brand, so
+a practice that never touches branding still works and one that fills in
+only its name and booking link gets exactly that. Inside the app, including
+the native shell after login, clients see their counselor's brand and
+content wherever it has been set.
+
 How it is served on the web: the practice is resolved from the request host.
 A practice with a custom domain (Crossroads) is matched on that host; others
 live at `<slug>.<product-domain>`; the bare product domain shows the generic
