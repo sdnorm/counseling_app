@@ -90,14 +90,40 @@ identity, and several screens are the counselor's own content:
 - Internal identifiers (IndexedDB name, service worker cache name) also say
   "crossroads"; these are invisible and stay as they are.
 
-Decision (default, revisit if the user prefers white-label): the product
-brand is the new name everywhere, and each practice has a profile the client
-app renders: practice name, website, booking URL, phone, appointment email,
-and a list of resource links. Clients see "Your counselor: <practice name>"
-plus the practice's own links on Resources and Schedule. The practice profile
-belongs to project 2 (multi-tenancy). Full white-label (per-practice colors,
-logo, and home-screen icon via a per-practice manifest) is deferred and could
-become a group-plan perk in project 4.
+Decision (2026-09-22): **white-label per practice, with a generic product
+brand as the default.** Crossroads keeps its branding and its current domain
+(`app.crossroadcounselor.com`) as the first white-labeled practice; nothing
+their clients see changes because of the pivot.
+
+Each practice gets a brand and a profile, edited from the counselor
+dashboard:
+
+- Brand: display name, logo, home-screen icon (one uploaded PNG, resized
+  into the manifest sizes with the `image_processing` gem already in the
+  Gemfile), primary and accent colors, optional custom domain.
+- Profile content: website, booking URL, office phone, appointment email,
+  resource links. Rendered on the Resources and Schedule screens.
+
+How it is served on the web: the practice is resolved from the request host.
+A practice with a custom domain (Crossroads) is matched on that host; others
+live at `<slug>.<product-domain>`; the bare product domain shows the generic
+brand and the counselor signup entry point. The layout emits the practice's
+colors as CSS variables, `/manifest.json` becomes a per-practice route so
+"Add to Home Screen" installs the practice's name and icon, and the mailer
+sends invites from the product domain with the practice's name in the sender
+and subject. Wildcard DNS and SSL for `*.<product-domain>` plus one manual
+domain per custom-domain practice on Hatchbox.
+
+**Native app limits.** iOS and Android fix the store listing's icon and name
+per binary, and alternate icons must be bundled at build time, so a practice
+cannot upload its own icon into the shared native app. The single product
+app therefore carries the product icon and name in the stores, and applies
+the practice's full brand inside the app after login (name, logo, colors,
+content). Apple's review guideline 4.2.6 also blocks publishing one
+white-label app per practice from our developer account; a practice that
+wants its own store listing needs its own Apple and Google developer
+accounts, which we could offer as a premium build service later. The native
+app talks to the product domain only; custom domains are a web feature.
 
 ### Brand and domain
 
