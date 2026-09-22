@@ -46,9 +46,19 @@ counselor must keep exactly what they have today on their own domain.
 
 Attachments: `logo` (shown in the wordmark) and `icon` (square PNG, at
 least 512 px; variants at 192 and 512 for the manifest, 180 for
-apple-touch-icon). Active Storage tables are installed by this project; the
-service stays `:local`, and the `storage/` directory must persist across
-Hatchbox deploys.
+apple-touch-icon). Active Storage tables are installed by this project.
+
+**Storage on Wasabi.** Production and development use an S3-compatible
+`wasabi` service in `config/storage.yml` (`service: S3`, `endpoint:
+https://s3.<region>.wasabisys.com`, `region`, `bucket`, keys from
+`Rails.application.credentials.wasabi`), which needs the `aws-sdk-s3` gem.
+Test keeps the Disk service. The bucket stays private. Because Wasabi
+signed URLs expire and a manifest needs stable icon URLs, Active Storage
+runs in proxy mode (`config.active_storage.resolve_model_to_route =
+:rails_storage_proxy`): icon and logo URLs are same-origin
+`/rails/active_storage/...` paths served through the app with long public
+cache headers, which also keeps the CSP `img_src :self` rule unchanged.
+Adding the Wasabi keys to credentials is the user's step.
 
 **resource_links**: `practice_id`, `title`, `url`, `description`,
 `position`. Rendered on the client Resources screen in position order.
@@ -222,7 +232,8 @@ used.
   resource links currently hardcoded. Seeds also create the platform admin
   counselor from `PLATFORM_ADMIN_EMAIL` with a random password and print a
   reset link, so no password lives in the repo.
-- Cutover order in production: deploy, run seeds, set `PRODUCT_HOST`, add
+- Cutover order in production: add the Wasabi bucket and keys to
+  credentials, deploy, run seeds, set `PRODUCT_HOST`, add
   the wildcard DNS and Hatchbox domain entry, log in as platform admin via
   the printed reset link, invite the Crossroads owner, who then re-invites
   clients (the login launch already cleared them).
