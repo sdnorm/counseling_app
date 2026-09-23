@@ -12,7 +12,7 @@ class Dashboard::SetupsController < Dashboard::BaseController
   def create
     counselor = @invite.accept!(name: params[:name].to_s, password: params[:password].to_s)
     start_new_counselor_session_for counselor
-    redirect_to counselor_root_url(host: counselor.practice.host, protocol: "https"), allow_other_host: true
+    redirect_to counselor_root_url(host: counselor.practice.host, protocol: "https", port: nil), allow_other_host: true
   rescue ActiveRecord::RecordInvalid => e
     @errors = e.record.errors.full_messages
     render :show, status: :unprocessable_entity

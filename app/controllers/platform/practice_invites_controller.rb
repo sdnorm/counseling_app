@@ -21,6 +21,6 @@ class Platform::PracticeInvitesController < Platform::BaseController
 
   def show
     @invite = CounselorInvite.find(params[:id])
-    @setup_url = counselor_setup_url(@invite.token, host: Brand.new(@invite.practice).host, protocol: "https")
+    @setup_url = counselor_setup_url(@invite.token, host: Brand.new(@invite.practice).host, protocol: "https", port: nil)
   end
 end

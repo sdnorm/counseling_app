@@ -1,5 +1,5 @@
 /* app/assets/stylesheets/counselor.css */
-body.counselor{background:var(--bg);color:var(--brown);max-width:none}
+body.counselor{display:block;background:var(--bg);color:var(--brown);max-width:none;width:auto;height:auto;min-height:100vh;overflow:auto}
 .c-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;background:var(--white);border-bottom:1px solid var(--light-blue);flex-wrap:wrap}
 .c-brand{display:flex;align-items:baseline;gap:10px}
 .c-mark{font-family:'Lora',serif;font-size:18px;letter-spacing:1px;color:var(--brown)}

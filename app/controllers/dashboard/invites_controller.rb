@@ -34,6 +34,6 @@ class Dashboard::InvitesController < Dashboard::BaseController
   end
 
   helper_method def signup_link(code)
-    new_user_url(code: code.code, host: current_counselor.practice.host, protocol: "https")
+    new_user_url(code: code.code, host: current_counselor.practice.host, protocol: "https", port: nil)
   end
 end
