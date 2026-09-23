@@ -11,7 +11,7 @@ class Dashboard::InvitesController < Dashboard::BaseController
     practice = current_counselor.practice
     if practice.at_client_limit?
       load_index
-      flash.now[:alert] = "Your practice has #{practice.active_client_count} active clients this month, which is your limit. " \
+      flash.now[:alert] = "Your practice has #{helpers.pluralize(practice.active_client_count, "active client")} this month, which is your limit. " \
                           "Wait for clients to go quiet or add a counselor seat."
       return render :index, status: :unprocessable_entity
     end
