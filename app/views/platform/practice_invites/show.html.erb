@@ -1,0 +1,9 @@
+<%# app/views/platform/practice_invites/show.html.erb %>
+<% content_for :title, "Invite sent" %>
+<h2>Invite sent to <%= @invite.email_address %></h2>
+<div class="card" data-controller="clipboard">
+  <p class="subtitle">Emailed, and here it is to text as well:</p>
+  <input type="text" readonly value="<%= @setup_url %>" data-clipboard-target="source">
+  <button type="button" class="btn btn-o" style="margin-top:8px;" data-clipboard-target="button" data-action="click->clipboard#copy">Copy link</button>
+</div>
+<p><%= link_to "Back to practices", platform_root_path %></p>

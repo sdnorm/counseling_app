@@ -1,8 +1,7 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: [ :new, :create ]
   layout "session"
-  rate_limit to: 10, within: 10.minutes, only: :create,
-    with: -> { redirect_to new_user_path, alert: "Too many sign-up attempts. Try again later." }
+  rate_limit to: 10, within: 10.minutes, only: :create, with: -> { too_many_attempts }
 
   def new
     @user = User.new
@@ -13,10 +12,18 @@ class UsersController < ApplicationController
 
     if claim_code_and_save
       start_new_session_for @user
-      redirect_to root_path, notice: "Account created successfully."
+      respond_to do |format|
+        format.html { redirect_to root_path, notice: "Account created successfully." }
+        format.json { render json: { account: @user.id }, status: :created }
+      end
     else
-      flash.now[:alert] = @error
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.html do
+          flash.now[:alert] = @error
+          render :new, status: :unprocessable_entity
+        end
+        format.json { render json: { errors: [ @error ] }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -34,6 +41,7 @@ class UsersController < ApplicationController
       end
 
       @user.invite_code = invite_code
+      @user.counselor = invite_code.counselor
       unless @user.save
         @error = @user.errors.full_messages.join(", ")
         raise ActiveRecord::Rollback
@@ -50,6 +58,14 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email_address, :password, :password_confirmation, :invite_code)
+    params.require(:user).permit(:email_address, :password, :invite_code,
+      :password_wrapped_key, :recovery_wrapped_key)
+  end
+
+  def too_many_attempts
+    respond_to do |format|
+      format.html { redirect_to new_user_path, alert: "Too many sign-up attempts. Try again later." }
+      format.json { render json: { errors: [ "Too many sign-up attempts. Try again later." ] }, status: :too_many_requests }
+    end
   end
 end

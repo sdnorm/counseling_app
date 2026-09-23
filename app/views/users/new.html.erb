@@ -1,35 +1,34 @@
-<div class="auth-screen">
+<div class="auth-screen" data-controller="signup">
   <h2>Create Account</h2>
   <p class="subtitle">You'll need an invite code from your counselor.</p>
 
+  <noscript><div class="form-error">This app needs JavaScript to keep your entries private. Please enable it and reload.</div></noscript>
+  <div class="form-error" data-signup-target="error" hidden></div>
   <%= tag.div(flash[:alert], class: "form-error") if flash[:alert] %>
 
-  <%= form_with model: @user, url: users_path do |f| %>
+  <%= form_with model: @user, url: users_path, data: { action: "submit->signup#submit" } do |f| %>
     <div class="field">
       <%= f.label :email_address, "Email" %>
-      <%= f.email_field :email_address, autofocus: true, autocomplete: "email",
-            placeholder: "you@example.com" %>
+      <%= f.email_field :email_address, autofocus: true, autocomplete: "email", required: true,
+            placeholder: "you@example.com", data: { signup_target: "email" } %>
     </div>
 
     <div class="field">
       <%= f.label :password %>
-      <%= f.password_field :password, autocomplete: "new-password",
-            placeholder: "At least #{User::MINIMUM_PASSWORD_LENGTH} characters", maxlength: 72 %>
-    </div>
-
-    <div class="field">
-      <%= f.label :password_confirmation, "Confirm password" %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password",
-            placeholder: "Repeat your password", maxlength: 72 %>
+      <%= f.password_field :password, autocomplete: "new-password", required: true, minlength: 12,
+            placeholder: "At least 12 characters", data: { signup_target: "password" } %>
+      <label class="show-password"><input type="checkbox" data-action="change->signup#toggleVisibility"> Show password</label>
+      <p class="field-hint">Your password also locks your entries. Nobody, including us, can read them or reset it for you.</p>
     </div>
 
     <div class="field">
       <%= f.label :invite_code, "Invite Code" %>
-      <%= text_field_tag :"user[invite_code]", params[:code].presence, placeholder: "8-character code" %>
+      <%= text_field_tag :"user[invite_code]", params[:code].presence, required: true,
+            placeholder: "8-character code", data: { signup_target: "invite" } %>
     </div>
 
     <div class="actions">
-      <%= f.submit "Sign Up", class: "btn" %>
+      <%= f.submit "Sign Up", class: "btn", data: { signup_target: "submit" } %>
     </div>
   <% end %>
 
@@ -38,3 +37,4 @@
     or <%= link_to "reset your password", new_password_path %>
   </p>
 </div>
+<%= render "shared/recovery_code" %>

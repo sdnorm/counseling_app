@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <meta name="theme-color" content="#32b1c3">
-    <title>Sign In · Crossroads Professional Counseling</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "application" %>
+    <%= render "shared/brand_head", page: "Sign in" %>
     <%= javascript_importmap_tags %>
   </head>
   <body>
     <div id="app-root" style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;">
       <div style="width:100%;max-width:320px;">
         <div class="auth-brand">
-          <span class="mark">CROSSROADS</span>
-          <span class="sub">PROFESSIONAL COUNSELING</span>
+          <% if brand.logo %>
+            <%= image_tag url_for(brand.logo.variant(resize_to_limit: [ 240, 80 ])), alt: brand.name, style: "max-width:240px;max-height:80px;" %>
+          <% else %>
+            <span class="mark"><%= brand.name.upcase %></span>
+            <% unless brand.generic? %><span class="sub"><%= brand.product_name.upcase %></span><% end %>
+          <% end %>
         </div>
         <%= yield %>
       </div>

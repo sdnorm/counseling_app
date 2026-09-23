@@ -1,0 +1,18 @@
+<% content_for :title, "Set up your account" %>
+<div class="auth-screen" style="max-width:420px;margin:40px auto;">
+  <h2><%= @invite.practice ? "Join #{@invite.practice_display_name}" : "Set up #{@invite.practice_display_name}" %></h2>
+  <p class="subtitle">You're joining as <%= @invite.role %>. Your email is <%= @invite.email_address %>.</p>
+  <% if @errors %><div class="form-error"><%= @errors.to_sentence %></div><% end %>
+
+  <%= form_with url: counselor_setup_path(@invite.token), method: :post do |form| %>
+    <div class="field">
+      <%= form.label :name, "Your name" %>
+      <%= form.text_field :name, required: true, autofocus: true, value: params[:name] %>
+    </div>
+    <div class="field">
+      <%= form.label :password, "Password (at least #{Counselor::MINIMUM_PASSWORD_LENGTH} characters)" %>
+      <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: Counselor::MINIMUM_PASSWORD_LENGTH %>
+    </div>
+    <div class="actions"><%= form.submit "Create my account", class: "btn" %></div>
+  <% end %>
+</div>

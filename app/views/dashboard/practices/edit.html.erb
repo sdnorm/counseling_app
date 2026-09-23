@@ -1,0 +1,76 @@
+<%# app/views/dashboard/practices/edit.html.erb %>
+<% content_for :title, "Practice" %>
+<h2>Practice</h2>
+<p class="subtitle">Anything you leave blank falls back to the <%= brand.product_name %> default.</p>
+<% if @practice.errors.any? %><div class="form-error"><%= @practice.errors.full_messages.to_sentence %></div><% end %>
+
+<%= form_with model: @practice, url: counselor_practice_path, method: :patch, data: { controller: "brand-preview" } do |f| %>
+  <div class="card">
+    <h3>Brand</h3>
+    <div class="field">
+      <%= f.label :name %>
+      <%= f.text_field :name, required: true, data: { brand_preview_target: "name", action: "input->brand-preview#update" } %>
+    </div>
+    <div class="field">
+      <%= f.label :slug, "Web address" %>
+      <%= f.text_field :slug, required: true, pattern: "[a-z0-9]+(-[a-z0-9]+)*" %>
+      <p class="field-hint">Your clients use <code><%= @practice.host %></code>. Changing this changes the address for everyone.</p>
+    </div>
+    <div class="c-row">
+      <div class="field">
+        <%= f.label :primary_color, "Primary color" %>
+        <%= f.text_field :primary_color, placeholder: Brand::DEFAULT_PRIMARY, data: { brand_preview_target: "primary", action: "input->brand-preview#update" } %>
+      </div>
+      <div class="field">
+        <%= f.label :accent_color, "Accent color" %>
+        <%= f.text_field :accent_color, placeholder: Brand::DEFAULT_ACCENT, data: { brand_preview_target: "accent", action: "input->brand-preview#update" } %>
+      </div>
+    </div>
+    <div class="c-row">
+      <div class="field">
+        <%= f.label :logo, "Logo (PNG or JPEG, optional)" %>
+        <%= f.file_field :logo, accept: "image/png,image/jpeg", data: { brand_preview_target: "logo", action: "change->brand-preview#update" } %>
+        <% if @practice.logo.attached? %><p class="field-hint">Current: <%= image_tag url_for(@practice.logo.variant(resize_to_limit: [ 120, 40 ])), alt: "logo" %></p><% end %>
+      </div>
+      <div class="field">
+        <%= f.label :icon, "App icon (square PNG, at least 512 px)" %>
+        <%= f.file_field :icon, accept: "image/png,image/jpeg" %>
+        <% if @practice.icon.attached? %><p class="field-hint">Current: <%= image_tag url_for(@practice.icon.variant(resize_to_fill: [ 48, 48 ])), alt: "icon" %></p><% end %>
+      </div>
+    </div>
+    <div class="c-preview">
+      <p class="c-muted">Preview</p>
+      <div class="topbar" data-brand-preview-target="bar" style="background:<%= brand.primary_color %>;padding:10px;color:#fff;">
+        <img data-brand-preview-target="logoPreview" alt="" style="max-height:32px;<%= 'display:none;' unless @practice.logo.attached? %>" src="<%= @practice.logo.attached? ? url_for(@practice.logo.variant(resize_to_limit: [ 160, 32 ])) : '' %>">
+        <span data-brand-preview-target="namePreview" style="<%= 'display:none;' if @practice.logo.attached? %>"><%= @practice.name.upcase %></span>
+      </div>
+      <button type="button" class="btn" data-brand-preview-target="button" style="margin-top:10px;background:<%= brand.accent_color %>;">Sample button</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How clients reach you</h3>
+    <div class="field"><%= f.label :website_url, "Website" %><%= f.url_field :website_url, placeholder: "https://" %></div>
+    <div class="field"><%= f.label :booking_url, "Online booking link" %><%= f.url_field :booking_url, placeholder: "https://" %></div>
+    <div class="field"><%= f.label :phone, "Office phone" %><%= f.telephone_field :phone %></div>
+    <div class="field"><%= f.label :appointment_email, "Appointment request email" %><%= f.email_field :appointment_email %></div>
+  </div>
+
+  <div class="card">
+    <h3>Resource links</h3>
+    <p class="subtitle">Shown on your clients' Resources screen, in order.</p>
+    <% links = @practice.resource_links.to_a + [ @practice.resource_links.build, @practice.resource_links.build ] %>
+    <%= f.fields_for :resource_links, links do |lf| %>
+      <div class="c-links-row">
+        <%= lf.text_field :title, placeholder: "Title" %>
+        <%= lf.url_field :url, placeholder: "https://" %>
+        <%= lf.text_field :description, placeholder: "One line description" %>
+        <%= lf.number_field :position, placeholder: "#", style: "width:60px;" %>
+        <% if lf.object.persisted? %><label class="c-muted"><%= lf.check_box :_destroy %> remove</label><% else %><span></span><% end %>
+      </div>
+    <% end %>
+    <p class="field-hint">Blank rows are ignored.</p>
+  </div>
+
+  <div class="actions"><%= f.submit "Save practice", class: "btn" %></div>
+<% end %>

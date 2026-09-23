@@ -1,0 +1,34 @@
+<%# app/views/dashboard/members/index.html.erb %>
+<% content_for :title, "Members" %>
+<h2>Members</h2>
+<table class="c-table">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+    <% @members.each do |m| %>
+      <tr>
+        <td><%= m.name %></td>
+        <td><%= m.email_address %></td>
+        <td><%= m.role %></td>
+        <td><%= m.removed? ? "removed" : "active" %></td>
+        <td><% if m != current_counselor && !m.removed? %><%= button_to "Remove", counselor_member_path(m), method: :delete, class: "c-linkbtn", form_class: "c-inline" %><% end %></td>
+      </tr>
+    <% end %>
+    <% @pending.each do |i| %>
+      <tr class="c-muted"><td>—</td><td><%= i.email_address %></td><td>member</td><td>invited, expires <%= i.expires_at.to_date %></td><td></td></tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div class="card" style="margin-top:16px;">
+  <h3>Invite a counselor</h3>
+  <% unless current_counselor.practice.complimentary? %>
+    <p class="c-muted">Adding a counselor adds $<%= current_counselor.practice.next_seat_cost_cents(current_counselor.practice.billing_interval || "month") / 100 %>/<%= current_counselor.practice.billing_interval || "month" %> to your plan.</p>
+  <% end %>
+  <%= form_with url: counselor_members_path, scope: :member, class: "c-row" do |form| %>
+    <div class="field">
+      <%= form.label :email_address, "Email" %>
+      <%= form.email_field :email_address, required: true %>
+    </div>
+    <div><%= form.submit "Send invite", class: "btn" %></div>
+  <% end %>
+</div>

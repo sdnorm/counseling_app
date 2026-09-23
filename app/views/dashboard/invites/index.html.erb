@@ -1,0 +1,37 @@
+<%# app/views/dashboard/invites/index.html.erb %>
+<% content_for :title, "Invites" %>
+<h2>Invites</h2>
+<p class="c-count"><%= @practice.active_client_count %> of <%= @practice.client_limit %> active this month.</p>
+
+<% if @highlight %>
+  <div class="card" data-controller="clipboard">
+    <p class="subtitle">Send this link to your client. Text works best.</p>
+    <input type="text" readonly value="<%= signup_link(@highlight) %>" data-clipboard-target="source">
+    <button type="button" class="btn btn-o" style="margin-top:8px;" data-clipboard-target="button" data-action="click->clipboard#copy">Copy link</button>
+    <p class="subtitle" style="margin-top:12px;">Or give them the code: <span class="c-code"><%= @highlight.code %></span></p>
+  </div>
+<% end %>
+
+<div class="card">
+  <%= form_with url: counselor_invites_path, scope: :invite, class: "c-row" do |form| %>
+    <div class="field">
+      <%= form.label :email_address, "Client email (optional, to send the invite by email)" %>
+      <%= form.email_field :email_address, placeholder: "client@example.com" %>
+    </div>
+    <div><%= form.submit "New invite", class: "btn" %></div>
+  <% end %>
+</div>
+
+<table class="c-table">
+  <thead><tr><th>Code</th><th>Email</th><th>Status</th><th>Created</th></tr></thead>
+  <tbody>
+    <% @codes.each do |code| %>
+      <tr>
+        <td><%= code.code %></td>
+        <td><%= code.email_address.presence || "—" %></td>
+        <td><%= code.used? ? "used by #{code.user&.email_address || 'a client'}" : "pending" %></td>
+        <td class="c-muted"><%= code.created_at.to_date %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

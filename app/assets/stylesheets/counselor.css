@@ -1,0 +1,31 @@
+/* app/assets/stylesheets/counselor.css */
+body.counselor{display:block;background:var(--bg);color:var(--brown);max-width:none;width:auto;height:auto;min-height:100vh;overflow:auto}
+.c-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;background:var(--white);border-bottom:1px solid var(--light-blue);flex-wrap:wrap}
+.c-brand{display:flex;align-items:baseline;gap:10px}
+.c-mark{font-family:'Lora',serif;font-size:18px;letter-spacing:1px;color:var(--brown)}
+.c-logo{max-height:48px}
+.c-sub{font-size:11px;letter-spacing:1.5px;color:var(--lt-brown);text-transform:uppercase}
+.c-nav{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:14px}
+.c-nav a{color:var(--deep);font-weight:600;text-decoration:none}
+.c-nav a:hover{text-decoration:underline}
+.c-linkbtn{background:none;border:none;color:var(--lt-brown);font:inherit;font-weight:600;cursor:pointer;padding:0}
+.c-main{max-width:900px;margin:0 auto;padding:20px}
+.c-main h2{font-family:'Lora',serif;margin-bottom:6px}
+.c-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:8px;overflow:hidden;font-size:14px}
+.c-table th,.c-table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--light-blue);vertical-align:middle}
+.c-table th{font-size:12px;color:var(--lt-brown);text-transform:uppercase;letter-spacing:.5px}
+.c-muted{color:var(--lt-brown);font-size:12px}
+.c-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.c-row .field{flex:1;min-width:200px}
+.c-inline{display:inline}
+.c-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:18px;letter-spacing:2px}
+.c-swatch{display:inline-block;width:18px;height:18px;border-radius:4px;vertical-align:middle;border:1px solid rgba(0,0,0,.1)}
+.c-preview{border:1px solid var(--light-blue);border-radius:8px;padding:14px;background:var(--white);margin-top:12px}
+.c-preview .topbar{border-radius:6px}
+.c-count{font-size:13px;color:var(--deep);margin-bottom:12px}
+.c-links-row{display:grid;grid-template-columns:1fr 1fr 1fr auto auto;gap:8px;align-items:center;margin-bottom:8px}
+details.c-archived summary{cursor:pointer;color:var(--lt-brown);margin:16px 0 8px}
+
+.c-strip{display:inline-flex;gap:3px}
+.c-day{width:18px;height:18px;line-height:18px;text-align:center;font-size:10px;border-radius:4px;background:var(--light-blue);color:var(--lt-brown)}
+.c-day.active{background:var(--blue);color:#fff;font-weight:600}

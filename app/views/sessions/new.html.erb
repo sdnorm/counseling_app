@@ -1,28 +1,32 @@
-<div class="auth-screen">
+<div class="auth-screen" data-controller="login">
   <h2>Welcome back</h2>
   <p class="subtitle">Sign in to reach your journal and check-ins.</p>
 
+  <noscript><div class="form-error">This app needs JavaScript to keep your entries private. Please enable it and reload.</div></noscript>
+  <% if params[:reason] == "changed" %>
+    <div class="form-notice">Your password was changed on another device. Sign in again.</div>
+  <% end %>
+  <div class="form-error" data-login-target="error" hidden></div>
   <%= tag.div(flash[:alert], class: "form-error") if flash[:alert] %>
   <%= tag.div(flash[:notice], class: "form-notice") if flash[:notice] %>
 
-  <%= form_with url: session_path do |form| %>
+  <%= form_with url: session_path, data: { action: "submit->login#submit" } do |form| %>
     <div class="field">
       <%= form.label :email_address, "Email" %>
       <%= form.email_field :email_address, required: true, autofocus: true,
             autocomplete: "username", placeholder: "you@example.com",
-            value: params[:email_address] %>
+            value: params[:email_address], data: { login_target: "email" } %>
     </div>
 
     <div class="field">
-      <%= form.label :password, "Account password" %>
+      <%= form.label :password, "Password" %>
       <%= form.password_field :password, required: true,
-            autocomplete: "current-password", placeholder: "Your account password",
-            maxlength: 72 %>
-      <p class="field-hint">After signing in you'll be asked for your data passphrase, which is separate from this password.</p>
+            autocomplete: "current-password", placeholder: "Your password",
+            data: { login_target: "password" } %>
     </div>
 
     <div class="actions">
-      <%= form.submit "Sign in", class: "btn" %>
+      <%= form.submit "Sign in", class: "btn", data: { login_target: "submit" } %>
     </div>
   <% end %>
 

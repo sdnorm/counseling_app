@@ -17,3 +17,7 @@ production:
     class: SendGratitudeRemindersJob
     queue: default
     schedule: every minute
+  prune_activity_days:
+    class: PruneActivityDaysJob
+    queue: default
+    schedule: at 4am every day

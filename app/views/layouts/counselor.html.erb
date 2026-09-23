@@ -1,0 +1,47 @@
+<%# app/views/layouts/counselor.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "application", "counselor" %>
+    <%= render "shared/brand_head", page: content_for(:title) || "Counselor" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="counselor">
+    <header class="c-header">
+      <div class="c-brand">
+        <% if brand.logo %>
+          <%= image_tag url_for(brand.logo.variant(resize_to_limit: [ 160, 48 ])), alt: brand.name, class: "c-logo" %>
+        <% else %>
+          <span class="c-mark"><%= brand.name %></span>
+        <% end %>
+        <span class="c-sub">Counselor</span>
+      </div>
+      <% if counselor_signed_in? %>
+        <nav class="c-nav">
+          <%= link_to "Clients", counselor_root_path %>
+          <%= link_to "Invites", counselor_invites_path %>
+          <% if current_counselor.owner? %>
+            <%= link_to "Practice", edit_counselor_practice_path %>
+            <%= link_to "Members", counselor_members_path %>
+            <%= link_to "Billing", counselor_billing_path %>
+          <% end %>
+          <% if current_counselor.platform_admin? %>
+            <%= link_to "Platform", platform_root_path %>
+          <% end %>
+          <%= link_to "Account", edit_counselor_account_path %>
+          <%= button_to "Log out", counselor_session_path, method: :delete, class: "c-linkbtn" %>
+        </nav>
+      <% end %>
+    </header>
+    <main class="c-main">
+      <%= tag.div(flash[:alert], class: "form-error") if flash[:alert] %>
+      <%= tag.div(flash[:notice], class: "form-notice") if flash[:notice] %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

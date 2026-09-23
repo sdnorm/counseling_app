@@ -25,8 +25,7 @@ Rails.application.configure do
     policy.manifest_src :self
     policy.worker_src  :self
 
-    # The resources screen fetches the counseling practice's public feed.
-    policy.connect_src :self, "https://crossroadcounselor.com"
+    policy.connect_src :self
   end
 
   config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }

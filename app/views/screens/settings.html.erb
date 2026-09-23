@@ -27,6 +27,26 @@
     <p class="subtitle" data-push-target="hint" hidden>Notifications are blocked in your browser settings.</p>
   </div>
 
+  <div class="card" data-controller="account" data-account-email-value="<%= current_user.email_address %>">
+    <label class="lbl">Change password</label>
+    <input type="password" placeholder="Current password" autocomplete="current-password"
+           data-account-target="currentPassword" />
+    <input type="password" placeholder="New password (at least 12 characters)" autocomplete="new-password"
+           style="margin-top:8px;" data-account-target="newPassword" />
+    <button class="btn" style="margin-top:10px;" data-account-target="changeButton"
+            data-action="click->account#changePassword">Change Password</button>
+
+    <label class="lbl" style="margin-top:18px;">Recovery code</label>
+    <p class="subtitle">Lost it? Make a new one. The old code stops working.</p>
+    <input type="password" placeholder="Current password" autocomplete="current-password"
+           data-account-target="rotatePassword" />
+    <button class="btn btn-o" style="margin-top:10px;" data-account-target="rotateButton"
+            data-action="click->account#rotateRecoveryCode">New Recovery Code</button>
+
+    <p class="form-error" style="margin-top:10px;" data-account-target="error" hidden></p>
+  </div>
+  <%= render "shared/recovery_code" %>
+
   <div class="card">
     <%= button_to "Log Out", session_path, method: :delete, class: "btn btn-o",
           form: { data: { controller: "logout", action: "submit->logout#submit" } } %>

@@ -1,0 +1,20 @@
+<%# app/views/platform/practices/index.html.erb %>
+<% content_for :title, "Platform" %>
+<h2>Practices</h2>
+<p><%= link_to "Invite a practice owner", new_platform_practice_invite_path, class: "btn" %></p>
+<table class="c-table">
+  <thead><tr><th>Practice</th><th>Host</th><th>Owner</th><th>Counselors</th><th>Active clients</th><th>Trial ends</th><th>Billing</th></tr></thead>
+  <tbody>
+    <% @practices.each do |p| %>
+      <tr>
+        <td><%= link_to p.name, platform_practice_path(p) %></td>
+        <td><%= p.host %></td>
+        <td><%= p.counselors.find(&:owner?)&.email_address || "—" %></td>
+        <td><%= p.active_counselors.count %></td>
+        <td><%= p.active_client_count %> / <%= p.client_limit %></td>
+        <td><%= p.trial_ends_at&.to_date || "—" %></td>
+        <td><%= p.complimentary? ? "Complimentary" : "#{p.billing_status.humanize} · #{p.billing_interval || '—'}" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

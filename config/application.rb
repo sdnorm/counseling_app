@@ -41,5 +41,9 @@ module CounselingApp
 
     # Allow reading unencrypted data while migrating existing records
     config.active_record.encryption.support_unencrypted_data = true
+
+    # Brand icons are served through the app so manifest URLs are stable and
+    # same-origin; Wasabi's signed URLs would expire.
+    config.active_storage.resolve_model_to_route = :rails_storage_proxy
   end
 end

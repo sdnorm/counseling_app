@@ -6,9 +6,9 @@ class PushSubscription < ApplicationRecord
 
   after_destroy :clear_reminder_settings, unless: :destroyed_by_association
 
-  def deliver(title:, body:)
+  def deliver(title:, body:, icon: nil)
     WebPush.payload_send(
-      message: { title: title, body: body }.to_json,
+      message: { title: title, body: body, icon: icon }.compact.to_json,
       endpoint: endpoint,
       p256dh: p256dh,
       auth: auth,

@@ -5,54 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="theme-color" content="#32b1c3">
-    <title>Crossroads Professional Counseling</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "application" %>
+    <%= render "shared/brand_head", page: nil %>
     <%= javascript_importmap_tags %>
   </head>
   <body data-controller="sync navigation">
     <div id="app-root">
       <div class="topbar">
-        <span class="topbar-title" id="topbar-title">CROSSROADS</span>
+        <span class="topbar-title" id="topbar-title"><%= brand.name.upcase %></span>
       </div>
       <div id="flash-container"></div>
-
-      <% if authenticated? %>
-      <!-- Passphrase unlock overlay -->
-      <!-- Top-anchored (not centered) so the input stays above the iOS keyboard;
-           centering it makes Safari pan the whole page up and it can stick there. -->
-      <div id="unlock-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:100;padding:calc(10vh + env(safe-area-inset-top)) 20px 20px;display:flex;flex-direction:column;align-items:center;overflow-y:auto;">
-        <div style="max-width:320px;width:100%;">
-          <h2 style="text-align:center;margin-bottom:8px;">Unlock Your Data</h2>
-          <p class="subtitle" style="text-align:center;margin-bottom:20px;">Your data passphrase is separate from your account password. It decrypts your journal, emotions, and gratitude entries on this device and is never sent to us, so no one else can read your entries.</p>
-          <div class="card" id="unlock-card">
-            <label class="lbl">Data Passphrase</label>
-            <input type="password" id="unlock-passphrase" placeholder="Enter your data passphrase" style="margin-bottom:12px;" />
-            <button class="btn" id="unlock-btn" style="width:100%;">Unlock</button>
-            <p id="unlock-first-time" style="color:var(--deep);font-size:12px;margin-top:8px;display:none;">First time? Choose any passphrase now. It can be the same as your account password if that is easier to remember. Write it down — it cannot be recovered.</p>
-            <p id="unlock-error" style="color:#c0392b;font-size:12px;margin-top:8px;display:none;">Incorrect data passphrase. This is the passphrase you chose the first time you unlocked, not your account password.</p>
-          </div>
-          <div class="card" id="reset-card" style="display:none;">
-            <label class="lbl">Account Password</label>
-            <input type="password" id="reset-password" placeholder="Your login password" style="margin-bottom:12px;" />
-            <label class="lbl">New Data Passphrase</label>
-            <input type="password" id="reset-passphrase" placeholder="Choose a new data passphrase" style="margin-bottom:12px;" />
-            <p id="reset-warning-keep" style="color:var(--deep);font-size:12px;margin-bottom:12px;display:none;">Your entries on this device will be kept. Entries made on other devices since this one last synced won't be included.</p>
-            <p id="reset-warning-wipe" style="color:#c0392b;font-size:12px;margin-bottom:12px;display:none;">This permanently erases your encrypted backup. Your entries cannot be recovered.</p>
-            <button class="btn" id="reset-btn" style="width:100%;">Reset Passphrase</button>
-            <p id="reset-error" style="color:#c0392b;font-size:12px;margin-top:8px;display:none;"></p>
-            <p style="color:var(--deep);font-size:12px;margin-top:8px;">Write your new passphrase down — it cannot be recovered.</p>
-            <p style="text-align:center;font-size:12px;margin-top:12px;"><a href="#" id="reset-back" style="color:var(--blue);text-decoration:underline;">Back</a></p>
-          </div>
-          <p style="text-align:center;font-size:11px;margin-top:16px;">
-            <a href="#" id="unlock-forgot" style="color:var(--lt-brown);text-decoration:underline;">Forgot your data passphrase?</a>
-          </p>
-        </div>
-      </div>
-      <% end %>
+      <%= render "shared/practice_content" %>
+      <% if authenticated? %><%= render "shared/activity_summary" %><% end %>
 
       <div class="content" id="main-content">
         <%= yield %>

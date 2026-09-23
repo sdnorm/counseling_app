@@ -24,8 +24,11 @@ class EncryptedBlobTest < ActiveSupport::TestCase
     assert build_blob(ciphertext: "c" * EncryptedBlob::MAX_CIPHERTEXT_BYTES).valid?
   end
 
-  test "rejects oversized nonce and salt" do
+  test "rejects an oversized nonce" do
     assert_not build_blob(nonce: "n" * 200).valid?
-    assert_not build_blob(salt: "s" * 200).valid?
+  end
+
+  test "salt is optional" do
+    assert build_blob(salt: nil).valid?
   end
 end

@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-import { wipeAll } from "lib/db";
+import { wipeDevice } from "lib/session";
 
 // Logging out wipes all client-side data (IndexedDB + service worker caches),
 // so the encrypted blob on the server must be current first. The flow is:
@@ -18,11 +18,7 @@ export default class extends Controller {
       return;
     }
 
-    try {
-      await Promise.all([wipeAll(), this.clearServiceWorkerCaches()]);
-    } catch (e) {
-      console.error("Logout cleanup failed:", e);
-    }
+    await wipeDevice();
     this.element.submit();
   }
 
@@ -63,20 +59,6 @@ export default class extends Controller {
         if (e.target.closest("[data-discard]")) { box.remove(); resolve(true); }
       });
       this.element.after(box);
-    });
-  }
-
-  clearServiceWorkerCaches() {
-    return new Promise((resolve) => {
-      const worker = navigator.serviceWorker?.controller;
-      if (!worker) return resolve();
-      const channel = new MessageChannel();
-      const timer = setTimeout(resolve, 1000);
-      channel.port1.onmessage = () => {
-        clearTimeout(timer);
-        resolve();
-      };
-      worker.postMessage({ type: "logout" }, [channel.port2]);
     });
   }
 }
