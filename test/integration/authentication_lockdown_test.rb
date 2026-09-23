@@ -55,6 +55,11 @@ class AuthenticationLockdownTest < ActionDispatch::IntegrationTest
 
     get "/api/push/vapid_public_key"
     assert_response :success
+
+    # The webhook endpoint is public by design, but unsigned requests die fast.
+    post stripe_webhooks_path, params: "{}", headers: { "Content-Type" => "application/json" }
+    assert_response :bad_request,
+      "an unsigned webhook post must be rejected, not redirected to login"
   end
 
   test "authenticated user can access screens and sync" do
