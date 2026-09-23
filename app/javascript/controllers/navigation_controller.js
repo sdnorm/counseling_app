@@ -125,10 +125,35 @@ export default class extends Controller {
     }
   }
 
+  activitySummary() {
+    try {
+      return JSON.parse(document.getElementById("activity-summary")?.textContent || "null");
+    } catch {
+      return null;
+    }
+  }
+
+  renderActivity() {
+    const summary = this.activitySummary();
+    if (!summary) return "";
+    const dots = summary.week.map(({ date, active }) => {
+      const initial = "SMTWTFS"[new Date(date + "T00:00:00").getDay()];
+      return `<span class="act-day${active ? " active" : ""}" title="${date}">${initial}</span>`;
+    }).join("");
+    const streak = summary.streak ? ` · ${summary.streak} day streak` : "";
+    return `
+      <div class="card act-card">
+        <div class="act-strip">${dots}</div>
+        <p class="act-line">${summary.active_last_30} of the last 30 days${streak}</p>
+        <p class="act-note">Your counselor sees this too: which days you used the app, never what you wrote.</p>
+      </div>`;
+  }
+
   renderHome() {
     return `
       <h2>Welcome${this.userName ? `, ${this.userName}` : ""}!</h2>
       <p class="subtitle">What would you like to work on today?</p>
+      ${this.renderActivity()}
       <div class="card card-blue" data-action="click->navigation#go" data-id="journal">
         <strong>📓 My Journal</strong>
       </div>

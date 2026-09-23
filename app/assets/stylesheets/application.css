@@ -81,3 +81,9 @@ input[type=range].is-unset{opacity:.45}
 
 .recovery-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;letter-spacing:1px;text-align:center}
 .auth-screen .show-password,.card .show-password{display:flex;align-items:center;gap:6px;font-weight:400;margin-top:6px;font-size:11px;color:var(--lt-brown)}
+.act-card{padding:12px 14px}
+.act-strip{display:flex;gap:8px;justify-content:space-between;margin-bottom:8px}
+.act-day{flex:1;text-align:center;font-size:11px;color:var(--lt-brown);padding:6px 0;border-radius:6px;background:var(--light-blue)}
+.act-day.active{background:var(--blue);color:#fff;font-weight:600}
+.act-line{font-size:13px;color:var(--deep);font-weight:600}
+.act-note{font-size:11px;color:var(--lt-brown);margin-top:4px;line-height:1.4}

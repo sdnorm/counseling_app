@@ -1,0 +1,4 @@
+<%# app/views/shared/_activity_summary.html.erb
+    The client's own days-active summary for the Home screen. Same data the
+    counselor sees, and nothing more. %>
+<script type="application/json" id="activity-summary"><%= raw Engagement.for(current_user).to_h.to_json.gsub("</", "<\\/") %></script>

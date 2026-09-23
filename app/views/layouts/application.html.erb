@@ -17,6 +17,7 @@
       </div>
       <div id="flash-container"></div>
       <%= render "shared/practice_content" %>
+      <% if authenticated? %><%= render "shared/activity_summary" %><% end %>
 
       <div class="content" id="main-content">
         <%= yield %>
