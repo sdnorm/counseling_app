@@ -1,0 +1,22 @@
+<%# app/views/dashboard/sessions/new.html.erb %>
+<% content_for :title, "Counselor sign in" %>
+<div class="auth-screen" style="max-width:360px;margin:40px auto;">
+  <h2>Counselor sign in</h2>
+  <p class="subtitle">Manage your clients, invites, and practice.</p>
+
+  <%= form_with url: counselor_session_path do |form| %>
+    <div class="field">
+      <%= form.label :email_address, "Email" %>
+      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@practice.com" %>
+    </div>
+    <div class="field">
+      <%= form.label :password, "Password" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Your password" %>
+    </div>
+    <div class="actions">
+      <%= form.submit "Sign in", class: "btn" %>
+    </div>
+  <% end %>
+
+  <p class="auth-alt"><%= link_to "Forgot your password?", new_counselor_password_path %></p>
+</div>
