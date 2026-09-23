@@ -60,6 +60,22 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     assert_nil user.encrypted_blob.salt
   end
 
+  test "a successful save records that the client synced" do
+    user = users(:danny)
+    sign_in_as user
+    put api_sync_path, params: { blob: { ciphertext: "cipher", nonce: "nonce" } }, as: :json
+    assert_response :success
+    assert_in_delta Time.current, user.reload.last_synced_at, 5.seconds
+  end
+
+  test "a rejected save does not record a sync" do
+    user = users(:danny)
+    sign_in_as user
+    put api_sync_path, params: { blob: { ciphertext: "", nonce: "nonce" } }, as: :json
+    assert_response :unprocessable_entity
+    assert_nil user.reload.last_synced_at
+  end
+
   test "api responses are never cacheable" do
     sign_in_as users(:danny)
 

@@ -1,8 +1,8 @@
-Here is your invite code for Crossroads:
+Here is your invite code for <%= @brand.name %>:
 
 <%= @code.code %>
 
-Use it to create your account on the sign-up page:
-<%= new_user_url(code: @code.code) %>
+Use it to create your account:
+<%= @signup_url %>
 
 This code can only be used once. If you did not request it, you can safely ignore this email.

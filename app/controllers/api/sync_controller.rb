@@ -31,6 +31,7 @@ class Api::SyncController < Api::BaseController
   def save_blob
     blob = current_user.encrypted_blob || current_user.build_encrypted_blob
     if blob.update(blob_params)
+      current_user.touch_last_synced!
       render json: { success: true }
     else
       render json: { errors: blob.errors.full_messages }, status: :unprocessable_entity
