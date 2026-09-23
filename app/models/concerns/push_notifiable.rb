@@ -17,7 +17,7 @@ module PushNotifiable
   def push_icon_path
     variant = Brand.new(counselor&.practice).icon_variant(192)
     if variant
-      Rails.application.routes.url_helpers.rails_storage_proxy_path(variant)
+      Rails.application.routes.url_helpers.rails_storage_proxy_path(variant, only_path: true)
     else
       ActionController::Base.helpers.image_path("generic/icon-192.png")
     end
