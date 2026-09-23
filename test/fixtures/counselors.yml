@@ -19,3 +19,10 @@ sam:
   password_digest: <%= BCrypt::Password.create("counselor-secret-123") %>
   name: Sam
   role: owner
+
+lee:
+  practice: lakeside
+  email_address: lee@lakeside.example
+  password_digest: <%= BCrypt::Password.create("counselor-secret-123") %>
+  name: Lee
+  role: owner

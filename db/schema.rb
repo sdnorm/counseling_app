@@ -56,11 +56,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_135713) do
     t.integer "invited_by_id"
     t.integer "practice_id"
     t.string "practice_name"
+    t.integer "referred_by_practice_id"
     t.string "role", default: "member", null: false
     t.string "token", null: false
     t.datetime "updated_at", null: false
     t.index ["invited_by_id"], name: "index_counselor_invites_on_invited_by_id"
     t.index ["practice_id"], name: "index_counselor_invites_on_practice_id"
+    t.index ["referred_by_practice_id"], name: "index_counselor_invites_on_referred_by_practice_id"
     t.index ["token"], name: "index_counselor_invites_on_token", unique: true
   end
 
@@ -113,19 +115,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_135713) do
   create_table "practices", force: :cascade do |t|
     t.string "accent_color"
     t.string "appointment_email"
+    t.string "billing_interval"
+    t.string "billing_status", default: "none", null: false
     t.string "booking_url"
     t.integer "client_limit_per_counselor", default: 30, null: false
+    t.boolean "complimentary", default: false, null: false
     t.datetime "created_at", null: false
+    t.datetime "current_period_end"
     t.string "custom_domain"
+    t.datetime "first_paid_at"
     t.string "name", null: false
     t.string "phone"
     t.string "primary_color"
+    t.integer "referral_rewards_granted", default: 0, null: false
+    t.integer "referred_by_practice_id"
     t.string "slug", null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
     t.datetime "trial_ends_at"
     t.datetime "updated_at", null: false
     t.string "website_url"
     t.index ["custom_domain"], name: "index_practices_on_custom_domain", unique: true
+    t.index ["referred_by_practice_id"], name: "index_practices_on_referred_by_practice_id"
     t.index ["slug"], name: "index_practices_on_slug", unique: true
+    t.index ["stripe_customer_id"], name: "index_practices_on_stripe_customer_id", unique: true
+    t.index ["stripe_subscription_id"], name: "index_practices_on_stripe_subscription_id", unique: true
   end
 
   create_table "push_subscriptions", force: :cascade do |t|
@@ -159,6 +173,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_135713) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "stripe_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "event_id", null: false
+    t.string "event_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_stripe_events_on_event_id", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "archived_at"
     t.integer "counselor_id", null: false
@@ -183,11 +205,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_135713) do
   add_foreign_key "activity_days", "users"
   add_foreign_key "counselor_invites", "counselors", column: "invited_by_id"
   add_foreign_key "counselor_invites", "practices"
+  add_foreign_key "counselor_invites", "practices", column: "referred_by_practice_id"
   add_foreign_key "counselor_sessions", "counselors"
   add_foreign_key "counselors", "practices"
   add_foreign_key "encrypted_blobs", "users"
   add_foreign_key "invite_codes", "counselors"
   add_foreign_key "invite_codes", "users"
+  add_foreign_key "practices", "practices", column: "referred_by_practice_id"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "resource_links", "practices"
   add_foreign_key "sessions", "users"

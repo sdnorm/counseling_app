@@ -6,6 +6,8 @@ class Practice < ApplicationRecord
   IMAGE_MAX_BYTES = 2.megabytes
   ICON_MIN_PX = 512
 
+  include PracticeBilling
+
   has_many :counselors, dependent: :restrict_with_error
   has_many :clients, through: :counselors
   has_many :resource_links, -> { order(:position, :id) }, dependent: :destroy, inverse_of: :practice

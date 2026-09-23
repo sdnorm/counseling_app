@@ -46,4 +46,10 @@ class CounselorInviteTest < ActiveSupport::TestCase
       assert_raises(ActiveRecord::RecordInvalid) { dup.accept!(name: "X", password: "long enough password") }
     end
   end
+
+  test "an owner invite carries the referrer to the new practice" do
+    invite = CounselorInvite.create!(email_address: "r@example.com", role: "owner", practice_name: "Referred", referred_by_practice: practices(:lakeside))
+    counselor = invite.accept!(name: "R", password: "long enough password")
+    assert_equal practices(:lakeside), counselor.practice.referrer
+  end
 end

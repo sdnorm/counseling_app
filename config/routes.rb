@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :users, only: [ :new, :create ]
   get "/manifest.json", to: "manifests#show", as: :manifest
+  post "/stripe/webhooks", to: "stripe/webhooks#create", as: :stripe_webhooks
 
   namespace :api do
     resource :account_keys, only: [ :show, :update ], path: "account/keys"
@@ -28,6 +29,10 @@ Rails.application.routes.draw do
     resource :practice, only: [ :edit, :update ]
     resources :members, only: [ :index, :create, :destroy ]
     resource :account, only: [ :edit, :update ]
+    resource :billing, only: [ :show ] do
+      post :checkout
+      post :portal
+    end
   end
 
   namespace :platform do

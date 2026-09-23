@@ -2,6 +2,7 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"
+require "ostruct"
 
 # What the browser sends as the "password": a 43-char base64url auth hash.
 AUTH_HASH = "a" * 43
@@ -28,6 +29,40 @@ module WebPushTestHelpers
   end
 end
 
+module StripeTestHelpers
+  def stripe_signature(payload, secret: Rails.application.config.x.stripe.webhook_secret)
+    timestamp = Time.now
+    signature = Stripe::Webhook::Signature.compute_signature(timestamp, payload, secret)
+    Stripe::Webhook::Signature.generate_header(timestamp, signature)
+  end
+
+  # stub_stripe(customer_create: ->(**) { OpenStruct.new(id: "cus_1") }) { ... }
+  STRIPE_STUBS = {
+    customer_create: [ Stripe::Customer, :create ],
+    balance_transaction: [ Stripe::Customer, :create_balance_transaction ],
+    checkout_create: [ Stripe::Checkout::Session, :create ],
+    portal_create: [ Stripe::BillingPortal::Session, :create ],
+    subscription_retrieve: [ Stripe::Subscription, :retrieve ],
+    item_update: [ Stripe::SubscriptionItem, :update ]
+  }.freeze
+
+  # Minitest's stub yields the stubbed object, so every layer is a proc
+  # (arity-tolerant) that just calls the next one.
+  def stub_stripe(**stubs, &block)
+    stubs.to_a.reverse.reduce(block) do |inner, (name, impl)|
+      klass, method = STRIPE_STUBS.fetch(name)
+      proc { klass.stub(method, impl) { inner.call } }
+    end.call
+  end
+
+  def fake_subscription(id: "sub_1", status: "trialing", interval: "month", quantity: 1, period_end: 30.days.from_now, trial_end: 30.days.from_now, item_id: "si_1")
+    price = OpenStruct.new(recurring: OpenStruct.new(interval: interval))
+    item = OpenStruct.new(id: item_id, quantity: quantity, price: price, current_period_end: period_end.to_i)
+    OpenStruct.new(id: id, status: status, current_period_end: period_end.to_i, trial_end: trial_end&.to_i,
+      items: OpenStruct.new(data: [ item ]), metadata: {})
+  end
+end
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
@@ -38,6 +73,7 @@ module ActiveSupport
 
     include WebPushTestHelpers
     include ImageFixtures
+    include StripeTestHelpers
   end
 end
 

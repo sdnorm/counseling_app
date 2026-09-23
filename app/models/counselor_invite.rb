@@ -4,6 +4,7 @@ class CounselorInvite < ApplicationRecord
   has_secure_token :token
   belongs_to :practice, optional: true
   belongs_to :invited_by, class_name: "Counselor", optional: true, inverse_of: :sent_invites
+  belongs_to :referred_by_practice, class_name: "Practice", optional: true
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :practice_name, with: ->(v) { v.presence&.strip }
@@ -40,7 +41,7 @@ class CounselorInvite < ApplicationRecord
     raise ActiveRecord::RecordInvalid.new(self) unless usable?
 
     transaction do
-      target = practice || Practice.create!(name: practice_name, trial_ends_at: 30.days.from_now)
+      target = practice || Practice.create!(name: practice_name, trial_ends_at: 30.days.from_now, referred_by_practice_id: referred_by_practice_id)
       counselor = target.counselors.create!(email_address: email_address, name: name, password: password, role: role)
       update!(accepted_at: Time.current)
       counselor

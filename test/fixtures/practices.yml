@@ -9,8 +9,18 @@ crossroads:
   booking_url: https://www.therapyportal.com/p/crossroadspc/
   phone: "(225) 341-4147"
   appointment_email: logan@crossroadcounselor.com
+  complimentary: true
 
 riverbend:
   name: Riverbend Therapy
   slug: riverbend
   trial_ends_at: <%= 20.days.from_now %>
+
+lakeside:
+  name: Lakeside Counseling
+  slug: lakeside
+  trial_ends_at: <%= 20.days.from_now %>
+  stripe_customer_id: cus_lakeside
+  stripe_subscription_id: sub_lakeside
+  billing_status: active
+  billing_interval: month
