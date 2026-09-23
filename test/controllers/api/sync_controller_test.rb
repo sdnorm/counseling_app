@@ -76,6 +76,21 @@ class Api::SyncControllerTest < ActionDispatch::IntegrationTest
     assert_nil user.reload.last_synced_at
   end
 
+  test "a successful save records today as an active day" do
+    user = users(:danny)
+    sign_in_as user
+    put api_sync_path, params: { blob: { ciphertext: "cipher", nonce: "nonce" } }, as: :json
+    assert_response :success
+    assert_equal [ user.local_today ], user.activity_days.pluck(:day)
+  end
+
+  test "a rejected save records no activity" do
+    user = users(:danny)
+    sign_in_as user
+    put api_sync_path, params: { blob: { ciphertext: "", nonce: "nonce" } }, as: :json
+    assert_equal 0, user.activity_days.count
+  end
+
   test "api responses are never cacheable" do
     sign_in_as users(:danny)
 
