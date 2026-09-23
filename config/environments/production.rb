@@ -22,7 +22,7 @@ Rails.application.configure do
   # config.asset_host = "http://assets.example.com"
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :wasabi
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -78,8 +78,17 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
+  product_host = ENV.fetch("PRODUCT_HOST", "app.crossroadcounselor.com")
+  custom_domain_host = Object.new
+  def custom_domain_host.===(host)
+    Rails.cache.fetch("custom_domain_host/#{host}", expires_in: 1.minute) do
+      Practice.exists?(custom_domain: host.to_s.downcase)
+    end
+  end
   config.hosts = [
-    "app.crossroadcounselor.com"
+    product_host,
+    /\A[a-z0-9-]+\.#{Regexp.escape(product_host)}\z/,
+    custom_domain_host
   ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
