@@ -1,0 +1,16 @@
+<%# app/views/platform/practice_invites/new.html.erb %>
+<% content_for :title, "Invite a practice owner" %>
+<h2>Invite a practice owner</h2>
+<% if @invite.errors.any? %><div class="form-error"><%= @invite.errors.full_messages.to_sentence %></div><% end %>
+<%= form_with model: @invite, scope: :practice_invite, url: platform_practice_invites_path do |f| %>
+  <div class="card">
+    <div class="field"><%= f.label :email_address, "Owner's email" %><%= f.email_field :email_address, required: true %></div>
+    <div class="field"><%= f.label :practice_name, "New practice name" %><%= f.text_field :practice_name %></div>
+    <div class="field">
+      <%= f.label :practice_id, "…or an existing practice" %>
+      <%= f.collection_select :practice_id, @practices, :id, :name, include_blank: "—" %>
+    </div>
+    <p class="field-hint">Fill in one or the other.</p>
+  </div>
+  <div class="actions"><%= f.submit "Send invite", class: "btn" %></div>
+<% end %>
