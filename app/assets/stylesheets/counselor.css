@@ -25,3 +25,7 @@ body.counselor{display:block;background:var(--bg);color:var(--brown);max-width:n
 .c-count{font-size:13px;color:var(--deep);margin-bottom:12px}
 .c-links-row{display:grid;grid-template-columns:1fr 1fr 1fr auto auto;gap:8px;align-items:center;margin-bottom:8px}
 details.c-archived summary{cursor:pointer;color:var(--lt-brown);margin:16px 0 8px}
+
+.c-strip{display:inline-flex;gap:3px}
+.c-day{width:18px;height:18px;line-height:18px;text-align:center;font-size:10px;border-radius:4px;background:var(--light-blue);color:var(--lt-brown)}
+.c-day.active{background:var(--blue);color:#fff;font-weight:600}

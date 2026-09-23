@@ -2,17 +2,27 @@
 <% content_for :title, "Clients" %>
 <h2>Clients</h2>
 <p class="c-count"><%= @practice.active_client_count %> of <%= @practice.client_limit %> active this month across the practice.</p>
+<p class="c-muted">You see which days each client used the app, never what they wrote.</p>
 
 <% if @active.empty? %>
   <p class="subtitle">No clients yet. <%= link_to "Create an invite", counselor_invites_path %> to get started.</p>
 <% else %>
   <table class="c-table">
-    <thead><tr><th>Email</th><th>Joined</th><th>Last active</th><th></th></tr></thead>
+    <thead><tr><th>Email</th><th>Last 7 days</th><th>Last 30</th><th>Streak</th><th>Last active</th><th></th></tr></thead>
     <tbody>
       <% @active.each do |client| %>
+        <% e = @engagement[client] %>
         <tr>
-          <td><%= client.email_address %></td>
-          <td><%= client.created_at.to_date %></td>
+          <td><%= client.email_address %><br><span class="c-muted">joined <%= client.created_at.to_date %></span></td>
+          <td>
+            <span class="c-strip">
+              <% e.week.each do |date, active| %>
+                <span class="c-day<%= ' active' if active %>" title="<%= date %>"><%= date.strftime("%a")[0] %></span>
+              <% end %>
+            </span>
+          </td>
+          <td><%= e.active_last_30 %> of 30</td>
+          <td><%= e.streak %></td>
           <td><%= client.last_synced_at ? "#{time_ago_in_words(client.last_synced_at)} ago" : "never" %></td>
           <td><%= button_to "Archive", archive_counselor_client_path(client), method: :patch, class: "c-linkbtn", form_class: "c-inline" %></td>
         </tr>

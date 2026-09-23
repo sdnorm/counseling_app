@@ -9,6 +9,11 @@ class Dashboard::ClientsController < Dashboard::BaseController
     @active = clients.unarchived
     @archived = clients.archived
     @practice = current_counselor.practice
+    # One query for every listed client's activity; Engagement does the rest
+    # in memory. Only the active list gets a strip.
+    since = Date.current - Engagement::WINDOW
+    days_by_client = ActivityDay.where(user_id: @active.map(&:id), day: since..).group_by(&:user_id)
+    @engagement = @active.index_with { |client| Engagement.for(client, days: (days_by_client[client.id] || []).map(&:day)) }
   end
 
   def archive
