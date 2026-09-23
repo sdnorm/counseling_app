@@ -1,0 +1,11 @@
+<%# app/views/shared/_brand_head.html.erb
+    Everything in <head> that depends on whose brand the page wears.
+    `page` is the page-specific title prefix, or nil. %>
+<link rel="manifest" href="<%= manifest_path %>">
+<% touch = brand.icon_variant(180) %>
+<link rel="apple-touch-icon" href="<%= touch ? url_for(touch) : image_path("generic/apple-touch-icon.png") %>">
+<meta name="theme-color" content="<%= brand.primary_color %>">
+<title><%= brand.title(page) %></title>
+<% if brand.custom_colors? %>
+  <style nonce="<%= content_security_policy_nonce %>">:root{--blue:<%= brand.primary_color %>;--orange:<%= brand.accent_color %>;}</style>
+<% end %>
