@@ -1,0 +1,6 @@
+<p><% if @invite.practice %>You've been invited to join <%= @brand.name %> as a counselor.<% else %>You've been invited to set up <%= @invite.practice_name %> on <%= @brand.product_name %>.<% end %></p>
+
+<p>Finish setting up your account here:<br>
+<%= link_to @setup_url, @setup_url %></p>
+
+<p>This link expires in 7 days.</p>
