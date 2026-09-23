@@ -11,6 +11,7 @@ class User < ApplicationRecord
   belongs_to :invite_code
   belongs_to :counselor
   has_one :practice, through: :counselor
+  has_many :activity_days, dependent: :destroy
 
   # "Active" for billing means used the app recently, or just joined. The
   # archive flag is deliberately absent: it is a list-tidying tool.
@@ -54,11 +55,24 @@ class User < ApplicationRecord
     update!(archived_at: nil)
   end
 
+  def local_time_zone
+    ActiveSupport::TimeZone[time_zone.to_s] || Time.zone
+  end
+
+  def local_today
+    Time.current.in_time_zone(local_time_zone).to_date
+  end
+
   # Called on every successful sync. One write per ten minutes is plenty for
-  # a 30-day window and keeps save-on-every-entry usage cheap.
+  # a 30-day window, but a new local day always records, so a streak can't
+  # miss midnight. Days active is the only engagement signal ever stored.
   def touch_last_synced!
-    return if last_synced_at && last_synced_at > 10.minutes.ago
+    today = local_today
+    if last_synced_at && last_synced_at > 10.minutes.ago && last_synced_at.in_time_zone(local_time_zone).to_date == today
+      return
+    end
     update_column(:last_synced_at, Time.current)
+    ActivityDay.upsert({ user_id: id, day: today }, unique_by: %i[user_id day])
   end
 
   private

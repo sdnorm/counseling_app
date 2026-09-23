@@ -230,7 +230,7 @@ class EngagementTest < ActiveSupport::TestCase
   end
 
   test "active_last_30 counts only the window" do
-    assert_equal 3, engagement(0, 29, 30, 45).active_last_30
+    assert_equal 2, engagement(0, 29, 30, 45).active_last_30, "today minus 29 is the oldest day inside a 30-day window"
   end
 
   test "streak ends today or yesterday" do

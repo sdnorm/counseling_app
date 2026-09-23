@@ -39,6 +39,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_135713) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "activity_days", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "day", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "day"], name: "index_activity_days_on_user_id_and_day", unique: true
+    t.index ["user_id"], name: "index_activity_days_on_user_id"
+  end
+
   create_table "counselor_invites", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -171,6 +180,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_135713) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activity_days", "users"
   add_foreign_key "counselor_invites", "counselors", column: "invited_by_id"
   add_foreign_key "counselor_invites", "practices"
   add_foreign_key "counselor_sessions", "counselors"
