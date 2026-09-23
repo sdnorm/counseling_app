@@ -62,7 +62,9 @@ class Dashboard::ClientsControllerTest < ActionDispatch::IntegrationTest
     sign_in_counselor_as logan
 
     queries = []
-    counter = ->(_name, _start, _finish, _id, payload) { queries << payload[:sql] if payload[:sql] =~ /activity_days/ }
+    counter = ->(_name, _start, _finish, _id, payload) do
+      queries << payload[:sql] if payload[:name] != "SCHEMA" && payload[:sql] =~ /activity_days/
+    end
     ActiveSupport::Notifications.subscribed(counter, "sql.active_record") { get counselor_root_path }
 
     assert_response :success
