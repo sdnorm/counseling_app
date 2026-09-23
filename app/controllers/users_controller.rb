@@ -41,6 +41,7 @@ class UsersController < ApplicationController
       end
 
       @user.invite_code = invite_code
+      @user.counselor = invite_code.counselor
       unless @user.save
         @error = @user.errors.full_messages.join(", ")
         raise ActiveRecord::Rollback

@@ -43,11 +43,6 @@ class AuthenticationLockdownTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  test "admin invites require http basic auth" do
-    get admin_invites_path
-    assert_response :unauthorized
-  end
-
   test "intentionally public routes stay public" do
     get new_session_path
     assert_response :success

@@ -16,7 +16,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "signup with a valid invite code creates the account and consumes the code" do
-    code = InviteCode.generate("newclient@example.com")
+    code = InviteCode.generate("newclient@example.com", counselor: counselors(:logan))
 
     assert_difference -> { User.count }, 1 do
       post users_path, params: { user: {
@@ -48,7 +48,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "signup with an already used invite code is rejected" do
-    code = InviteCode.generate("taken@example.com")
+    code = InviteCode.generate("taken@example.com", counselor: counselors(:logan))
     InviteCode.claim(code.code)
 
     assert_no_difference -> { User.count } do
@@ -64,7 +64,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a rejected signup releases the invite code instead of burning it" do
-    code = InviteCode.generate("retry@example.com")
+    code = InviteCode.generate("retry@example.com", counselor: counselors(:logan))
 
     assert_no_difference -> { User.count } do
       post users_path, params: { user: {
@@ -82,7 +82,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a rejected signup tells the user why" do
-    code = InviteCode.generate("why@example.com")
+    code = InviteCode.generate("why@example.com", counselor: counselors(:logan))
 
     post users_path, params: { user: {
       email_address: "why@example.com",
@@ -111,7 +111,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "signup with an email that already has an account is rejected with sign-in guidance" do
-    code = InviteCode.generate("danny@example.com")
+    code = InviteCode.generate("danny@example.com", counselor: counselors(:logan))
 
     assert_no_difference -> { User.count } do
       post users_path, params: { user: {
@@ -135,7 +135,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a duplicate email that slips past validation is still rejected cleanly" do
-    code = InviteCode.generate("race@example.com")
+    code = InviteCode.generate("race@example.com", counselor: counselors(:logan))
     user = User.new(email_address: "race@example.com",
       password: NEW_AUTH_HASH,
       password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY)
@@ -161,7 +161,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "the invite code is still usable after a failed attempt" do
-    code = InviteCode.generate("retry2@example.com")
+    code = InviteCode.generate("retry2@example.com", counselor: counselors(:logan))
 
     post users_path, params: { user: {
       email_address: "retry2@example.com",
@@ -184,7 +184,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "JSON signup creates the account with both wrapped keys and returns the account id" do
-    code = InviteCode.generate("json@example.com")
+    code = InviteCode.generate("json@example.com", counselor: counselors(:logan))
 
     assert_difference -> { User.count }, 1 do
       post users_path, params: { user: {
@@ -205,7 +205,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "JSON signup starts a session" do
-    code = InviteCode.generate("session@example.com")
+    code = InviteCode.generate("session@example.com", counselor: counselors(:logan))
     post users_path, params: { user: {
       email_address: "session@example.com", password: NEW_AUTH_HASH, invite_code: code.code,
       password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY
@@ -216,7 +216,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "JSON signup without wrapped keys is rejected and explains why" do
-    code = InviteCode.generate("nokeys@example.com")
+    code = InviteCode.generate("nokeys@example.com", counselor: counselors(:logan))
 
     assert_no_difference -> { User.count } do
       post users_path, params: { user: {
@@ -237,5 +237,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_equal [ "Invalid or already used invite code." ], response.parsed_body["errors"]
+  end
+
+  test "signup attaches the client to the inviting counselor" do
+    code = InviteCode.generate("attach@example.com", counselor: counselors(:jo))
+    post users_path, params: { user: {
+      email_address: "attach@example.com", password: NEW_AUTH_HASH, invite_code: code.code,
+      password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY
+    } }, as: :json
+    assert_response :created
+    assert_equal counselors(:jo), User.find_by(email_address: "attach@example.com").counselor
   end
 end
