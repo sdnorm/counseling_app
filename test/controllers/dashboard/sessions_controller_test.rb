@@ -10,7 +10,6 @@ class Dashboard::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "valid login starts a counselor session and lands on the dashboard" do
-    skip "needs C4"
     sign_in_counselor_as counselors(:logan)
     assert_redirected_to counselor_root_path
     get counselor_root_path
@@ -20,7 +19,6 @@ class Dashboard::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "wrong password is rejected" do
-    skip "needs C4"
     sign_in_counselor_as counselors(:logan), password: "nope nope nope"
     assert_redirected_to new_counselor_session_path
     get counselor_root_path
@@ -28,7 +26,6 @@ class Dashboard::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a removed counselor cannot log in and an existing session dies" do
-    skip "needs C4"
     sign_in_counselor_as counselors(:jo)
     counselors(:jo).remove!
     get counselor_root_path
@@ -39,7 +36,6 @@ class Dashboard::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "logout ends the session" do
-    skip "needs C4"
     sign_in_counselor_as counselors(:logan)
     delete counselor_session_path
     assert_response :see_other
@@ -48,7 +44,6 @@ class Dashboard::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "dashboard pages are never cached" do
-    skip "needs C4"
     sign_in_counselor_as counselors(:logan)
     get counselor_root_path
     assert_match(/no-store/, response.headers["Cache-Control"])

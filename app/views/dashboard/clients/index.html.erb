@@ -1,0 +1,39 @@
+<%# app/views/dashboard/clients/index.html.erb %>
+<% content_for :title, "Clients" %>
+<h2>Clients</h2>
+<p class="c-count"><%= @practice.active_client_count %> of <%= @practice.client_limit %> active this month across the practice.</p>
+
+<% if @active.empty? %>
+  <p class="subtitle">No clients yet. <%= link_to "Create an invite", counselor_invites_path %> to get started.</p>
+<% else %>
+  <table class="c-table">
+    <thead><tr><th>Email</th><th>Joined</th><th>Last active</th><th></th></tr></thead>
+    <tbody>
+      <% @active.each do |client| %>
+        <tr>
+          <td><%= client.email_address %></td>
+          <td><%= client.created_at.to_date %></td>
+          <td><%= client.last_synced_at ? "#{time_ago_in_words(client.last_synced_at)} ago" : "never" %></td>
+          <td><%= button_to "Archive", archive_counselor_client_path(client), method: :patch, class: "c-linkbtn", form_class: "c-inline" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<% if @archived.any? %>
+  <details class="c-archived">
+    <summary><%= @archived.size %> archived</summary>
+    <table class="c-table">
+      <tbody>
+        <% @archived.each do |client| %>
+          <tr>
+            <td><%= client.email_address %></td>
+            <td class="c-muted">archived <%= client.archived_at.to_date %></td>
+            <td><%= button_to "Reactivate", unarchive_counselor_client_path(client), method: :patch, class: "c-linkbtn", form_class: "c-inline" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </details>
+<% end %>
