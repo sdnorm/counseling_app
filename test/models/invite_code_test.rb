@@ -2,7 +2,7 @@ require "test_helper"
 
 class InviteCodeTest < ActiveSupport::TestCase
   test "claim marks an unused code as used and returns it" do
-    code = InviteCode.generate("new@example.com")
+    code = InviteCode.generate("new@example.com", counselor: counselors(:logan))
 
     claimed = InviteCode.claim(code.code)
 
@@ -11,7 +11,7 @@ class InviteCodeTest < ActiveSupport::TestCase
   end
 
   test "claim returns nil for a code that is already used" do
-    code = InviteCode.generate("new@example.com")
+    code = InviteCode.generate("new@example.com", counselor: counselors(:logan))
     InviteCode.claim(code.code)
 
     assert_nil InviteCode.claim(code.code), "a code must only be claimable once"
@@ -24,11 +24,15 @@ class InviteCodeTest < ActiveSupport::TestCase
   end
 
   test "only one of two concurrent claims of the same code succeeds" do
-    code = InviteCode.generate("new@example.com")
+    code = InviteCode.generate("new@example.com", counselor: counselors(:logan))
 
     results = [ InviteCode.claim(code.code), InviteCode.claim(code.code) ]
 
     assert_equal 1, results.compact.size,
       "the same invite code must not be claimable twice"
+  end
+
+  test "email is optional" do
+    assert InviteCode.generate(nil, counselor: counselors(:logan)).persisted?
   end
 end

@@ -9,6 +9,17 @@ class User < ApplicationRecord
   has_one :encrypted_blob, dependent: :destroy
   include PushNotifiable
   belongs_to :invite_code
+  belongs_to :counselor
+  has_one :practice, through: :counselor
+
+  # "Active" for billing means used the app recently, or just joined. The
+  # archive flag is deliberately absent: it is a list-tidying tool.
+  scope :active_recently, -> {
+    since = Practice::ACTIVE_WINDOW.ago
+    where(last_synced_at: since..).or(where(created_at: since..))
+  }
+  scope :archived, -> { where.not(archived_at: nil) }
+  scope :unarchived, -> { where(archived_at: nil) }
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   encrypts :email_address, deterministic: true
@@ -30,6 +41,25 @@ class User < ApplicationRecord
   # Zero-padded HH:MM required: SendGratitudeRemindersJob compares these lexicographically.
   validates :reminder_time, format: { with: /\A([01]\d|2[0-3]):[0-5]\d\z/ }, allow_nil: true
   validate :time_zone_must_be_valid
+
+  def archived?
+    archived_at.present?
+  end
+
+  def archive!
+    update!(archived_at: Time.current)
+  end
+
+  def unarchive!
+    update!(archived_at: nil)
+  end
+
+  # Called on every successful sync. One write per ten minutes is plenty for
+  # a 30-day window and keeps save-on-every-entry usage cheap.
+  def touch_last_synced!
+    return if last_synced_at && last_synced_at > 10.minutes.ago
+    update_column(:last_synced_at, Time.current)
+  end
 
   private
 

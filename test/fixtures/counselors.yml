@@ -1,0 +1,21 @@
+logan:
+  practice: crossroads
+  email_address: logan@crossroadcounselor.com
+  password_digest: <%= BCrypt::Password.create("counselor-secret-123") %>
+  name: Logan
+  role: owner
+  platform_admin: true
+
+jo:
+  practice: crossroads
+  email_address: jo@crossroadcounselor.com
+  password_digest: <%= BCrypt::Password.create("counselor-secret-123") %>
+  name: Jo
+  role: member
+
+sam:
+  practice: riverbend
+  email_address: sam@riverbend.example
+  password_digest: <%= BCrypt::Password.create("counselor-secret-123") %>
+  name: Sam
+  role: owner

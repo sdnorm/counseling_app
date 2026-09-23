@@ -1,0 +1,16 @@
+crossroads:
+  name: Crossroads Professional Counseling
+  slug: crossroads
+  custom_domain: app.crossroadcounselor.com
+  trial_ends_at: <%= 1.year.from_now %>
+  primary_color: "#32b1c3"
+  accent_color: "#f06623"
+  website_url: https://crossroadcounselor.com/
+  booking_url: https://www.therapyportal.com/p/crossroadspc/
+  phone: "(225) 341-4147"
+  appointment_email: logan@crossroadcounselor.com
+
+riverbend:
+  name: Riverbend Therapy
+  slug: riverbend
+  trial_ends_at: <%= 20.days.from_now %>

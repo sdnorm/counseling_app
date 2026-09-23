@@ -45,7 +45,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "password must be an auth hash, never a raw password" do
-    user = User.new(email_address: "k@example.com", invite_code: invite_codes(:danny_invite),
+    user = User.new(email_address: "k@example.com", invite_code: invite_codes(:danny_invite), counselor: counselors(:logan),
       password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY)
 
     user.password = "correct horse battery staple"
@@ -57,7 +57,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "wrapped keys are required and bounded" do
-    user = User.new(email_address: "k@example.com", invite_code: invite_codes(:danny_invite), password: AUTH_HASH)
+    user = User.new(email_address: "k@example.com", invite_code: invite_codes(:danny_invite), counselor: counselors(:logan), password: AUTH_HASH)
     assert_not user.valid?
     assert_includes user.errors[:password_wrapped_key], "can't be blank"
     assert_includes user.errors[:recovery_wrapped_key], "can't be blank"
@@ -77,7 +77,7 @@ class UserTest < ActiveSupport::TestCase
   test "invalid with an email address that already has an account" do
     user = User.new(email_address: "danny@example.com",
       password: AUTH_HASH, password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY,
-      invite_code: invite_codes(:danny_invite))
+      invite_code: invite_codes(:danny_invite), counselor: counselors(:logan))
     assert_not user.valid?
     assert user.errors[:email_address].any?,
       "a duplicate email must fail validation instead of raising at the database"
@@ -86,14 +86,26 @@ class UserTest < ActiveSupport::TestCase
   test "duplicate email detection survives normalization differences" do
     user = User.new(email_address: "  DANNY@example.com ",
       password: AUTH_HASH, password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY,
-      invite_code: invite_codes(:danny_invite))
+      invite_code: invite_codes(:danny_invite), counselor: counselors(:logan))
     assert_not user.valid?
   end
 
   test "invalid without an email address" do
     user = User.new(password: AUTH_HASH, password_wrapped_key: WRAPPED_KEY, recovery_wrapped_key: WRAPPED_KEY,
-      invite_code: invite_codes(:danny_invite))
+      invite_code: invite_codes(:danny_invite), counselor: counselors(:logan))
     assert_not user.valid?
     assert user.errors[:email_address].any?
+  end
+
+  test "touch_last_synced! writes at most every ten minutes" do
+    user = users(:danny)
+    user.touch_last_synced!
+    first = user.reload.last_synced_at
+    assert first
+    user.touch_last_synced!
+    assert_equal first, user.reload.last_synced_at
+    user.update_column(:last_synced_at, 11.minutes.ago)
+    user.touch_last_synced!
+    assert_operator user.reload.last_synced_at, :>, first
   end
 end

@@ -1,11 +1,14 @@
 class InviteCode < ApplicationRecord
   belongs_to :user, optional: true
+  belongs_to :counselor
   validates :code, presence: true, uniqueness: true
-  validates :email_address, presence: true
+  normalizes :email_address, with: ->(e) { e.presence&.strip&.downcase }
   encrypts :email_address, deterministic: true
 
-  def self.generate(email_address)
-    create!(code: SecureRandom.alphanumeric(8).upcase, email_address: email_address)
+  # Email is optional: invites are shared as links first. Keep it when the
+  # counselor gives it so the invite email and the list can show it.
+  def self.generate(email_address, counselor:)
+    create!(code: SecureRandom.alphanumeric(8).upcase, email_address: email_address, counselor: counselor)
   end
 
   # Marks an unused code as used in a single statement so two concurrent signups
