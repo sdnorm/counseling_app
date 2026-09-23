@@ -1,6 +1,6 @@
 // Bumped to evict caches poisoned before /api was excluded above: activate
 // deletes every cache whose name isn't this one.
-const CACHE_NAME = "crossroads-v6";
+const CACHE_NAME = "app-v7";
 const STATIC_ASSETS = ["/"];
 
 self.addEventListener("install", (event) => {
@@ -76,10 +76,10 @@ self.addEventListener("message", (event) => {
 self.addEventListener("push", (event) => {
   const data = event.data?.json() || {};
   event.waitUntil(
-    self.registration.showNotification(data.title || "Crossroads", {
+    self.registration.showNotification(data.title || "Reminder", {
       body: data.body || "Time for your gratitude practice!",
-      icon: "/icon-192.png",
-      badge: "/icon-192.png",
+      icon: data.icon || "/assets/generic/icon-192.png",
+      badge: data.icon || "/assets/generic/icon-192.png",
     })
   );
 });
