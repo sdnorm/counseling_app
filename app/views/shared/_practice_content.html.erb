@@ -1,0 +1,4 @@
+<%# app/views/shared/_practice_content.html.erb
+    The client's counselor's links and booking details, read by the Resources
+    and Schedule screens. Content only, never anything about other clients. %>
+<script type="application/json" id="practice-content"><%= raw brand.practice_content_json.gsub("</", "<\\/") %></script>

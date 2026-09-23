@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { getAll } from "lib/db";
+import { escapeHtml } from "lib/html";
 
 export default class extends Controller {
   static targets = ["main", "title", "nav"];
@@ -9,6 +10,8 @@ export default class extends Controller {
     this.currentValue = "home";
     this.userName = "";
     this.appUnlocked = false;
+    // The layout renders the brand name into the topbar; reuse it for Home.
+    this.brandName = document.getElementById("topbar-title")?.textContent || "";
     // Wait for the sync controller to unlock before rendering
     this.unlockedHandler = async () => {
       this.appUnlocked = true;
@@ -98,12 +101,12 @@ export default class extends Controller {
   render() {
     if (!this.appUnlocked) return;
     const titles = {
-      home: "CROSSROADS", schedule: "Schedule", journal: "My Journal",
+      home: this.brandName, schedule: "Schedule", journal: "My Journal",
       gratitude: "Gratitude Log", emotions: "Emotions", coping: "Coping Skills",
       triangle: "Triangle", checkin: "Check-In", takeaways: "Takeaways",
       agenda: "Agenda", resources: "Resources", settings: "Settings"
     };
-    document.getElementById("topbar-title").textContent = titles[this.currentValue] || "CROSSROADS";
+    document.getElementById("topbar-title").textContent = titles[this.currentValue] || this.brandName;
 
     document.querySelectorAll(".nav-btn").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.id === this.currentValue);
@@ -145,7 +148,15 @@ export default class extends Controller {
   // Pre-filled so the office gets what it needs to book, and the client sees
   // what to include. Body uses CRLF per RFC 6068; encodeURIComponent keeps the
   // href valid inside the template string.
-  appointmentMailto() {
+  practiceContent() {
+    try {
+      return JSON.parse(document.getElementById("practice-content")?.textContent || "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  appointmentMailto(email) {
     const subject = "Appointment request";
     const body = [
       "Hi,",
@@ -156,7 +167,7 @@ export default class extends Controller {
       "My availability is: ",
       "",
     ].join("\r\n");
-    return `mailto:logan@crossroadcounselor.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   legalDisclaimer() {
@@ -169,26 +180,35 @@ export default class extends Controller {
   }
 
   renderSchedule() {
+    const schedule = this.practiceContent().schedule || {};
+    const buttons = [];
+    if (schedule.booking_url) {
+      buttons.push(`<a href="${escapeHtml(schedule.booking_url)}" target="_blank" rel="noopener" class="link-btn" style="background:var(--blue)">
+          🗓️ Book Online
+          <small>Use the online scheduling portal</small>
+        </a>`);
+    }
+    if (schedule.phone) {
+      const tel = schedule.phone.replace(/[^\d+]/g, "");
+      buttons.push(`<a href="tel:${escapeHtml(tel)}" class="link-btn" style="background:var(--orange)">
+          📞 Call the Office
+          <small>${escapeHtml(schedule.phone)}</small>
+        </a>`);
+    }
+    if (schedule.appointment_email) {
+      buttons.push(`<a href="${this.appointmentMailto(schedule.appointment_email)}" class="link-btn" style="background:var(--brown)">
+          ✉️ Email
+          <small>${escapeHtml(schedule.appointment_email)}</small>
+        </a>`);
+    }
+    const body = buttons.length
+      ? `<div class="card">${buttons.join("")}</div>`
+      : `<div class="card"><p class="subtitle">Ask your counselor how to book a session.</p></div>`;
     return `
       <h2>Schedule a Session</h2>
       <p class="subtitle">Choose how you'd like to book your next appointment.</p>
-      <div class="card">
-        <a href="https://www.therapyportal.com/p/crossroadspc/" target="_blank" class="link-btn" style="background:var(--blue)">
-          🗓️ Book Online
-          <small>Use our online scheduling portal</small>
-        </a>
-        <a href="tel:+12253414147" class="link-btn" style="background:var(--orange)">
-          📞 Call Our Office
-          <small>(225) 341-4147</small>
-        </a>
-        <a href="${this.appointmentMailto()}" class="link-btn" style="background:var(--brown)">
-          ✉️ Email Us
-          <small>logan@crossroadcounselor.com</small>
-        </a>
-      </div>
-      <div class="tip" style="margin-top:16px;">${this.legalDisclaimer()}
-        This email address delivers directly to our administrative assistant and is
-        for appointment requests only.</div>
+      ${body}
+      <div class="tip" style="margin-top:16px;">${this.legalDisclaimer()}</div>
     `;
   }
 
