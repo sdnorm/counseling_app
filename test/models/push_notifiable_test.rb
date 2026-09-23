@@ -36,4 +36,22 @@ class PushNotifiableTest < ActiveSupport::TestCase
   test "notify_via_push is a no-op for a user with no subscriptions" do
     assert_nothing_raised { users(:maria).notify_via_push(title: "t", body: "b") }
   end
+
+  test "the payload carries the practice icon when there is one, else the generic icon" do
+    payloads = []
+    capture = ->(**kwargs) { payloads << JSON.parse(kwargs[:message]) }
+
+    WebPush.stub(:payload_send, capture) do
+      @user.notify_via_push(title: "t", body: "b")
+    end
+    assert_match %r{/assets/generic/icon-192}, payloads.last["icon"]
+
+    practice = @user.counselor.practice
+    practice.icon.attach(png_upload(512))
+    practice.save!
+    WebPush.stub(:payload_send, capture) do
+      @user.notify_via_push(title: "t", body: "b")
+    end
+    assert_match %r{/rails/active_storage/representations/proxy/}, payloads.last["icon"]
+  end
 end
