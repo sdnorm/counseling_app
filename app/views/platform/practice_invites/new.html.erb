@@ -10,6 +10,10 @@
       <%= f.label :practice_id, "…or an existing practice" %>
       <%= f.collection_select :practice_id, @practices, :id, :name, include_blank: "—" %>
     </div>
+    <div class="field">
+      <%= f.label :referred_by_practice_id, "Referred by" %>
+      <%= f.collection_select :referred_by_practice_id, @practices, :id, :name, include_blank: "—" %>
+    </div>
     <p class="field-hint">Fill in one or the other.</p>
   </div>
   <div class="actions"><%= f.submit "Send invite", class: "btn" %></div>

@@ -42,4 +42,9 @@ class Platform::PracticeInvitesControllerTest < ActionDispatch::IntegrationTest
     get new_platform_practice_invite_path
     assert_response :not_found
   end
+
+  test "an invite can name the referring practice" do
+    post platform_practice_invites_path, params: { practice_invite: { email_address: "ref@example.com", practice_name: "Referred Co", referred_by_practice_id: practices(:lakeside).id } }
+    assert_equal practices(:lakeside), CounselorInvite.last.referred_by_practice
+  end
 end

@@ -147,6 +147,10 @@ development, practices are reachable at `<slug>.lvh.me:3000`.
 
 Each successful sync records that the client used the app that day (`activity_days`), nothing more. Rows older than 400 days are pruned daily by `PruneActivityDaysJob`.
 
+## Billing
+
+Run `bin/rails stripe:setup` once with `STRIPE_SECRET_KEY` set. Put the printed price IDs (`monthly_price_id`, `yearly_price_id`) plus `secret_key` (a restricted key) and `webhook_secret` under `stripe:` in credentials. Point a Stripe webhook at `/stripe/webhooks` for `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, and `invoice.payment_failed`. Enable Stripe Tax, and configure the Customer Portal to allow switching between the two prices and cancelling. Mark Crossroads and the platform practice complimentary from `/platform`.
+
 ## Useful links
 
 - [Rails Guides](https://guides.rubyonrails.org/)

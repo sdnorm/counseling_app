@@ -12,7 +12,7 @@ class Platform::PracticesController < Platform::BaseController
   # The only place a custom domain is set: each one needs DNS and a Hatchbox
   # domain entry, which is operator work.
   def update
-    if @practice.update(params.require(:practice).permit(:custom_domain, :client_limit_per_counselor, :trial_ends_at))
+    if @practice.update(params.require(:practice).permit(:custom_domain, :client_limit_per_counselor, :trial_ends_at, :complimentary))
       redirect_to platform_practice_path(@practice), notice: "Saved."
     else
       render :show, status: :unprocessable_entity

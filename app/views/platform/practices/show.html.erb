@@ -14,6 +14,7 @@
       <div class="field"><%= f.label :client_limit_per_counselor, "Client limit per counselor" %><%= f.number_field :client_limit_per_counselor, min: 1 %></div>
       <div class="field"><%= f.label :trial_ends_at, "Trial ends" %><%= f.date_field :trial_ends_at, value: @practice.trial_ends_at&.to_date %></div>
     </div>
+    <div class="field"><%= f.check_box :complimentary %> Complimentary (no billing)</div>
   </div>
   <div class="actions"><%= f.submit "Save", class: "btn" %></div>
 <% end %>

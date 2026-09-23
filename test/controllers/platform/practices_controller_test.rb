@@ -36,4 +36,12 @@ class Platform::PracticesControllerTest < ActionDispatch::IntegrationTest
     patch platform_practice_path(practices(:riverbend)), params: { practice: { custom_domain: "app.crossroadcounselor.com" } }
     assert_response :unprocessable_entity
   end
+
+  test "index shows billing status and the practice page toggles complimentary" do
+    sign_in_counselor_as counselors(:logan)
+    get platform_root_path
+    assert_select "td", text: /Active · month/i
+    patch platform_practice_path(practices(:riverbend)), params: { practice: { complimentary: "1" } }
+    assert practices(:riverbend).reload.complimentary?
+  end
 end

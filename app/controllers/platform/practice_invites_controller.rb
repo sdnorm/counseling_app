@@ -8,7 +8,7 @@ class Platform::PracticeInvitesController < Platform::BaseController
   # already exists (practice_id, used for the seeded Crossroads practice).
   # Redirects rather than rendering: Turbo ignores a 200 to a form post.
   def create
-    attrs = params.require(:practice_invite).permit(:email_address, :practice_name, :practice_id)
+    attrs = params.require(:practice_invite).permit(:email_address, :practice_name, :practice_id, :referred_by_practice_id)
     @invite = CounselorInvite.new(attrs.merge(role: "owner", invited_by: current_counselor))
     if @invite.save
       CounselorInvitesMailer.invite(@invite).deliver_later
