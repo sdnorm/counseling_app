@@ -79,7 +79,8 @@ class PracticeTest < ActiveSupport::TestCase
     practice = practices(:riverbend)
     practice.update!(resource_links_attributes: [
       { title: "Second", url: "https://b.example", position: 2 },
-      { title: "First", url: "https://a.example", position: 1 }
+      { title: "First", url: "https://a.example", position: 1 },
+      { title: "", url: "", description: "", position: 0 }
     ])
     assert_equal %w[First Second], practice.resource_links.map(&:title)
     first = practice.resource_links.first

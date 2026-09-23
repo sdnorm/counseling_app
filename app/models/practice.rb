@@ -13,7 +13,10 @@ class Practice < ApplicationRecord
   has_one_attached :logo
   has_one_attached :icon
 
-  accepts_nested_attributes_for :resource_links, allow_destroy: true, reject_if: :all_blank
+  # A blank form row still carries position's column default, so :all_blank
+  # would keep it and then fail on the empty title and URL.
+  accepts_nested_attributes_for :resource_links, allow_destroy: true,
+    reject_if: ->(attrs) { attrs["title"].blank? && attrs["url"].blank? }
 
   normalizes :slug, with: ->(value) { value.to_s.strip.downcase }
   normalizes :custom_domain, with: ->(value) { value.presence&.strip&.downcase }
