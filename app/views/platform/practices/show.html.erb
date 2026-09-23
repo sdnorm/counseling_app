@@ -1,0 +1,29 @@
+<%# app/views/platform/practices/show.html.erb %>
+<% content_for :title, @practice.name %>
+<h2><%= @practice.name %></h2>
+<p class="c-muted">Slug <code><%= @practice.slug %></code> · host <code><%= @practice.host %></code></p>
+<% if @practice.errors.any? %><div class="form-error"><%= @practice.errors.full_messages.to_sentence %></div><% end %>
+
+<%= form_with model: @practice, url: platform_practice_path(@practice), method: :patch do |f| %>
+  <div class="card">
+    <div class="field">
+      <%= f.label :custom_domain, "Custom domain (needs DNS and a Hatchbox domain entry first)" %>
+      <%= f.text_field :custom_domain, placeholder: "app.example.com" %>
+    </div>
+    <div class="c-row">
+      <div class="field"><%= f.label :client_limit_per_counselor, "Client limit per counselor" %><%= f.number_field :client_limit_per_counselor, min: 1 %></div>
+      <div class="field"><%= f.label :trial_ends_at, "Trial ends" %><%= f.date_field :trial_ends_at, value: @practice.trial_ends_at&.to_date %></div>
+    </div>
+  </div>
+  <div class="actions"><%= f.submit "Save", class: "btn" %></div>
+<% end %>
+
+<h3 style="margin-top:20px;">Counselors</h3>
+<table class="c-table">
+  <tbody>
+    <% @practice.counselors.each do |c| %>
+      <tr><td><%= c.name %></td><td><%= c.email_address %></td><td><%= c.role %></td><td><%= c.removed? ? "removed" : "active" %></td></tr>
+    <% end %>
+  </tbody>
+</table>
+<p style="margin-top:12px;"><%= link_to "Invite an owner for this practice", new_platform_practice_invite_path(practice_id: @practice.id) %></p>
