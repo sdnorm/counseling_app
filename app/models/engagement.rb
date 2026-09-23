@@ -30,8 +30,8 @@ class Engagement
   # no sync yet, so a streak doesn't read as broken before the day is over.
   def streak
     start = if @days.include?(today) then today
-            elsif @days.include?(today - 1) then today - 1
-            end
+    elsif @days.include?(today - 1) then today - 1
+    end
     return 0 unless start
     count = 0
     while @days.include?(start - count)
