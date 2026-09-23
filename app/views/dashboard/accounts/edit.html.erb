@@ -1,0 +1,16 @@
+<%# app/views/dashboard/accounts/edit.html.erb %>
+<% content_for :title, "Account" %>
+<h2>Account</h2>
+<%= form_with url: counselor_account_path, scope: :account, method: :patch do |form| %>
+  <div class="card">
+    <div class="field"><%= form.label :name %><%= form.text_field :name, value: current_counselor.name, required: true %></div>
+    <p class="c-muted">Signed in as <%= current_counselor.email_address %>, <%= current_counselor.role %> of <%= current_counselor.practice.name %>.</p>
+  </div>
+  <div class="card">
+    <h3>Change password</h3>
+    <div class="field"><%= form.label :current_password %><%= form.password_field :current_password, autocomplete: "current-password" %></div>
+    <div class="field"><%= form.label :password, "New password" %><%= form.password_field :password, autocomplete: "new-password", minlength: Counselor::MINIMUM_PASSWORD_LENGTH %></div>
+    <div class="field"><%= form.label :password_confirmation, "Confirm new password" %><%= form.password_field :password_confirmation, autocomplete: "new-password" %></div>
+  </div>
+  <div class="actions"><%= form.submit "Save", class: "btn" %></div>
+<% end %>
