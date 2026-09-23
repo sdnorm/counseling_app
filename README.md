@@ -145,6 +145,8 @@ The platform admin invites practice owners from `/platform`. Custom domains
 are set there too and need DNS plus a Hatchbox domain entry first. In
 development, practices are reachable at `<slug>.lvh.me:3000`.
 
+Each successful sync records that the client used the app that day (`activity_days`), nothing more. Rows older than 400 days are pruned daily by `PruneActivityDaysJob`.
+
 ## Useful links
 
 - [Rails Guides](https://guides.rubyonrails.org/)
