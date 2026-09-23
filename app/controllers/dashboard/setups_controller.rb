@@ -25,9 +25,9 @@ class Dashboard::SetupsController < Dashboard::BaseController
     return if @invite&.usable?
 
     @reason = if @invite.nil? then "This invite link isn't valid."
-              elsif @invite.accepted? then "This invite has already been used."
-              else "This invite has expired. Ask for a new one."
-              end
+    elsif @invite.accepted? then "This invite has already been used."
+    else "This invite has expired. Ask for a new one."
+    end
     render :invalid, status: :not_found
   end
 
