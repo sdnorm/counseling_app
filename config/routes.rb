@@ -33,7 +33,7 @@ Rails.application.routes.draw do
   namespace :platform do
     root "practices#index"
     resources :practices, only: [ :index, :show, :update ]
-    resources :practice_invites, only: [ :new, :create ]
+    resources :practice_invites, only: [ :new, :create, :show ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

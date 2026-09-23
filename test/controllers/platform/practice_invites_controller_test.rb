@@ -16,7 +16,8 @@ class Platform::PracticeInvitesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "owner", invite.role
     assert_equal "Calm Waters", invite.practice_name
     assert_nil invite.practice
-    assert_response :success
+    assert_redirected_to platform_practice_invite_path(invite)
+    follow_redirect!
     assert_select "input[value*=?]", "/counselor/setup/#{invite.token}"
   end
 
@@ -25,6 +26,7 @@ class Platform::PracticeInvitesControllerTest < ActionDispatch::IntegrationTest
     invite = CounselorInvite.last
     assert_equal practices(:crossroads), invite.practice
     assert_equal "owner", invite.role
+    follow_redirect!
     assert_select "input[value*=?]", "https://app.crossroadcounselor.com/counselor/setup/"
   end
 
