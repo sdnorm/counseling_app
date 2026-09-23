@@ -22,6 +22,8 @@ class TenancyTest < ActionDispatch::IntegrationTest
     get new_session_path
     assert_select "style", /--blue:\s*#112233/
     assert_select "style", /--orange:\s*#445566/
+    assert_operator response.body.index("<style"), :>, response.body.index("/assets/application-"),
+      "the override must come after the stylesheet or the stylesheet's :root wins"
   end
 
   test "the bare product host and unknown subdomains wear the generic brand" do
