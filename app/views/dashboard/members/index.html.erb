@@ -21,6 +21,9 @@
 
 <div class="card" style="margin-top:16px;">
   <h3>Invite a counselor</h3>
+  <% unless current_counselor.practice.complimentary? %>
+    <p class="c-muted">Adding a counselor adds $<%= current_counselor.practice.next_seat_cost_cents(current_counselor.practice.billing_interval || "month") / 100 %>/<%= current_counselor.practice.billing_interval || "month" %> to your plan.</p>
+  <% end %>
   <%= form_with url: counselor_members_path, scope: :member, class: "c-row" do |form| %>
     <div class="field">
       <%= form.label :email_address, "Email" %>

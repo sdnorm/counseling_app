@@ -9,6 +9,11 @@ class Dashboard::InvitesController < Dashboard::BaseController
   # quiet or a seat is added.
   def create
     practice = current_counselor.practice
+    unless practice.can_invite_clients?
+      load_index
+      flash.now[:alert] = current_counselor.owner? ? "Start your free trial to invite clients." : "Your practice owner needs to start the subscription before clients can be invited."
+      return render :index, status: :unprocessable_entity
+    end
     if practice.at_client_limit?
       load_index
       flash.now[:alert] = "Your practice has #{helpers.pluralize(practice.active_client_count, "active client")} this month, which is your limit. " \

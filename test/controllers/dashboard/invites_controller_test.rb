@@ -48,4 +48,13 @@ class Dashboard::InvitesControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: /used by danny@example.com/
     assert_select "tbody tr", count: 1 + counselors(:logan).invite_codes.where(used: false).count
   end
+
+  test "no subscription means no client invites, with role-specific copy" do
+    sign_in_counselor_as counselors(:sam)
+    assert_no_difference -> { InviteCode.count } do
+      post counselor_invites_path, params: { invite: { email_address: "" } }
+    end
+    assert_response :unprocessable_entity
+    assert_match(/Start your free trial/, response.body)
+  end
 end

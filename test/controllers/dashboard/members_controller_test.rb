@@ -46,4 +46,22 @@ class Dashboard::MembersControllerTest < ActionDispatch::IntegrationTest
     delete counselor_member_path(counselors(:sam))
     assert_response :not_found
   end
+
+  test "accepting a member invite and removing a member enqueue a seat sync" do
+    invite = CounselorInvite.create!(email_address: "new@lakeside.example", role: "member", practice: practices(:lakeside), invited_by: counselors(:lee))
+    assert_enqueued_with(job: StripeSeatSyncJob, args: [ practices(:lakeside).id ]) do
+      post counselor_setup_path(invite.token), params: { name: "New", password: "long enough password" }
+    end
+    member = Counselor.find_by(email_address: "new@lakeside.example")
+    sign_in_counselor_as counselors(:lee)
+    assert_enqueued_with(job: StripeSeatSyncJob, args: [ practices(:lakeside).id ]) do
+      delete counselor_member_path(member)
+    end
+  end
+
+  test "the members page says what the next seat costs" do
+    sign_in_counselor_as counselors(:lee)
+    get counselor_members_path
+    assert_match(/Adding a counselor adds \$50\/month/, response.body)
+  end
 end

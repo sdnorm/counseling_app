@@ -26,6 +26,7 @@ class Dashboard::MembersController < Dashboard::BaseController
       return redirect_to counselor_members_path, alert: "You can't remove yourself."
     end
     member.remove!
+    StripeSeatSyncJob.perform_later(member.practice_id)
     redirect_to counselor_members_path, notice: "#{member.name} removed."
   end
 
