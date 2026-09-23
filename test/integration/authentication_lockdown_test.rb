@@ -66,4 +66,45 @@ class AuthenticationLockdownTest < ActionDispatch::IntegrationTest
     get api_sync_path, headers: { "Accept" => "application/json" }
     assert_includes [ 200, 404 ], response.status  # 404 = no blob saved yet, still authenticated
   end
+
+  COUNSELOR_PAGES = -> {
+    [ counselor_root_path, counselor_invites_path, edit_counselor_practice_path,
+      counselor_members_path, edit_counselor_account_path ]
+  }
+
+  test "every counselor page requires a counselor login" do
+    instance_exec(&COUNSELOR_PAGES).each do |path|
+      get path
+      assert_redirected_to new_counselor_session_path, "expected #{path} to redirect to counselor login"
+    end
+    patch archive_counselor_client_path(users(:danny))
+    assert_redirected_to new_counselor_session_path
+    post counselor_invites_path
+    assert_redirected_to new_counselor_session_path
+  end
+
+  test "a client login does not open counselor pages" do
+    sign_in_as users(:danny)
+    get counselor_root_path
+    assert_redirected_to new_counselor_session_path
+  end
+
+  test "platform pages need a platform admin" do
+    get platform_root_path
+    assert_redirected_to new_counselor_session_path
+    sign_in_counselor_as counselors(:sam)
+    get platform_root_path
+    assert_response :not_found
+  end
+
+  test "counselor login, password reset, setup, and the manifest stay public" do
+    get new_counselor_session_path
+    assert_response :success
+    get new_counselor_password_path
+    assert_response :success
+    get counselor_setup_path("bogus")
+    assert_response :not_found
+    get manifest_path
+    assert_response :success
+  end
 end

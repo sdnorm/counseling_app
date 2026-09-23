@@ -58,8 +58,10 @@ active_record_encryption:
   deterministic_key: "generated_deterministic_key"
   key_derivation_salt: "generated_key_derivation_salt"
 
-admin:
-  password: "your_secure_admin_password"
+wasabi:
+  bucket: "your_wasabi_bucket"
+  access_key_id: "your_wasabi_access_key_id"
+  secret_access_key: "your_wasabi_secret_access_key"
 
 mailgun:
   api_key: "your_mailgun_api_key"
@@ -79,10 +81,6 @@ web_push:
 > ```bash
 > bundle exec ruby -r web-push -e 'key = WebPush.generate_key; puts({public_key: key.public_key, private_key: key.private_key}.to_json)'
 > ```
->
-> The admin dashboard at `/admin/invites` uses HTTP Basic Auth with username
-> `admin` and the password from `Rails.application.credentials.admin&.dig(:password)`,
-> falling back to `changeme`. Configure a real password before deploying.
 >
 > Mailgun is configured to send via the Mailgun API using the domain from
 > `mailgun.domain` (default `mg.crossroadcounselor.com`). Emails are sent from
@@ -128,6 +126,24 @@ Deployment is managed with [Hatchbox](https://hatchbox.io/). The app runs on a
 DigitalOcean droplet at `app.crossroadcounselor.com`, deployed from the `main`
 branch. Trigger deploys from the Hatchbox dashboard (or push to `main` if
 auto-deploy is enabled).
+
+## Practices and the platform admin
+
+Every counselor belongs to a practice. The practice is resolved from the
+request host: a custom domain (`app.crossroadcounselor.com` for Crossroads)
+or `<slug>.$PRODUCT_HOST`. The bare product host shows the generic brand.
+
+Environment: `PRODUCT_HOST` (e.g. `app.example.com`), `PRODUCT_NAME`, and
+`PLATFORM_ADMIN_EMAIL` for seeding the platform admin.
+
+Seeds are idempotent and create the Crossroads practice plus the platform
+admin (printing a one-time password reset link):
+
+    PLATFORM_ADMIN_EMAIL=you@example.com bin/rails db:seed
+
+The platform admin invites practice owners from `/platform`. Custom domains
+are set there too and need DNS plus a Hatchbox domain entry first. In
+development, practices are reachable at `<slug>.lvh.me:3000`.
 
 ## Useful links
 
