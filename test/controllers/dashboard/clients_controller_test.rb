@@ -70,4 +70,15 @@ class Dashboard::ClientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal 1, queries.size, queries.join("\n")
   end
+
+  test "a locked practice is sent to billing; a complimentary one is not" do
+    practices(:lakeside).update!(billing_status: "canceled")
+    sign_in_counselor_as counselors(:lee)
+    get counselor_root_path
+    assert_redirected_to counselor_billing_path
+
+    sign_in_counselor_as counselors(:logan)
+    get counselor_root_path
+    assert_response :success
+  end
 end

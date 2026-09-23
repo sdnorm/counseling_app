@@ -1,0 +1,43 @@
+<% content_for :title, "Billing" %>
+<h2>Billing</h2>
+<% seats = @practice.seat_count %>
+<% if @practice.complimentary? %>
+  <div class="card"><p>Complimentary plan. Nothing to pay.</p></div>
+<% elsif @practice.billing_open? || @practice.billing_locked? %>
+  <div class="card">
+    <% if @practice.billing_status == "past_due" %><div class="form-error">Your last payment failed. Update your card to keep your practice open.</div><% end %>
+    <% if @practice.billing_locked? %><div class="form-error">Your subscription has ended. Restart it to keep using the dashboard. Your clients are not affected.</div><% end %>
+    <p><strong><%= @practice.billing_interval == "year" ? "Yearly" : "Monthly" %> plan</strong> · <%= pluralize(seats, "seat") %> ·
+      $<%= Practice.seat_unit_cents(@practice.billing_interval || "month", seats) * seats / 100 %> per <%= @practice.billing_interval || "month" %> before tax</p>
+    <p class="c-muted">Status: <%= @practice.billing_status.humanize %><% if @practice.current_period_end %> · renews <%= @practice.current_period_end.to_date %><% end %><% if @practice.billing_status == "trialing" && @practice.trial_ends_at %> · trial ends <%= @practice.trial_ends_at.to_date %><% end %></p>
+    <% if @practice.billing_locked? %>
+      <%= button_to "Restart monthly", checkout_counselor_billing_path, params: { interval: "month" }, class: "btn" %>
+      <%= button_to "Restart yearly", checkout_counselor_billing_path, params: { interval: "year" }, class: "btn btn-o" %>
+    <% else %>
+      <%= button_to "Manage billing", portal_counselor_billing_path, class: "btn" %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card">
+    <h3>Start your 30-day free trial</h3>
+    <p class="subtitle">You'll enter a card now and won't be charged until the trial ends. <%= pluralize(seats, "counselor seat") %> today; seats follow your counselors automatically.</p>
+    <div class="c-row">
+      <div class="field"><p><strong>$<%= Practice.seat_unit_cents("month", seats) * seats / 100 %>/month</strong> <span class="c-muted">$50 per seat, $40 at 3+</span></p>
+        <%= button_to "Start monthly", checkout_counselor_billing_path, params: { interval: "month" }, class: "btn" %></div>
+      <div class="field"><p><strong>$<%= Practice.seat_unit_cents("year", seats) * seats / 100 %>/year</strong> <span class="c-muted">$400 per seat, $320 at 3+ · save $200 per seat</span></p>
+        <%= button_to "Start yearly", checkout_counselor_billing_path, params: { interval: "year" }, class: "btn btn-o" %></div>
+    </div>
+    <p class="field-hint">Tax is added at checkout based on your address.</p>
+  </div>
+<% end %>
+
+<div class="card" style="margin-top:16px;">
+  <h3>Referrals</h3>
+  <p class="subtitle">For every two practices you refer that pay their first invoice, you get a credit: one month of your plan, or 10% of your yearly plan.</p>
+  <% if @referrals.empty? %><p class="c-muted">No referrals yet. Ask the platform admin to mark practices you refer.</p><% else %>
+    <table class="c-table"><tbody>
+      <% @referrals.each do |r| %><tr><td><%= r.name %></td><td><%= r.first_paid_at ? "paid" : "not yet paid" %></td></tr><% end %>
+    </tbody></table>
+    <p class="c-muted"><%= pluralize(@practice.referral_rewards_granted, "credit") %> granted.</p>
+  <% end %>
+</div>

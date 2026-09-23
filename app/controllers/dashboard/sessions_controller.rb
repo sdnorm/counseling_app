@@ -1,6 +1,7 @@
 # app/controllers/dashboard/sessions_controller.rb
 class Dashboard::SessionsController < Dashboard::BaseController
   allow_unauthenticated_counselor_access only: %i[ new create ]
+  skip_before_action :require_billing_open
   rate_limit to: 10, within: 3.minutes, only: :create,
     with: -> { redirect_to new_counselor_session_path, alert: "Try again later." }
 

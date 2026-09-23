@@ -28,6 +28,7 @@
           <% if current_counselor.owner? %>
             <%= link_to "Practice", edit_counselor_practice_path %>
             <%= link_to "Members", counselor_members_path %>
+            <%= link_to "Billing", counselor_billing_path %>
           <% end %>
           <% if current_counselor.platform_admin? %>
             <%= link_to "Platform", platform_root_path %>
